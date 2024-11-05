@@ -99,11 +99,8 @@ export default function Features() {
         {/* small size view */}
         <div className="md:hidden mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2">
           {features.map((feature, idx) => (
-            <div className="pt-6">
-              <div
-                key={idx}
-                className="flow-root bg-gray-50 rounded-lg px-6 pb-8"
-              >
+            <div className="pt-6" key={idx}>
+              <div className="flow-root bg-gray-50 rounded-lg px-6 pb-8">
                 <div className="-mt-6">
                   <div>
                     <span className="inline-flex items-center justify-center p-3 bg-black rounded-md shadow-lg">
