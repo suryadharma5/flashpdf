@@ -56,14 +56,14 @@ export default function Features() {
 
   return (
     <div className="mt-16" id="features">
-      <h2 className="text-3xl font-extrabold text-gray-900 text-center">
+      <h2 className="text-center text-3xl font-extrabold text-gray-900">
         Features
       </h2>
       <div className="relative overflow-hidden">
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto max-w-7xl">
           {/* Carousel for medium size view */}
-          <div className="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32 hidden md:block">
-            <div className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
+          <div className="relative z-10 hidden bg-white pb-8 sm:pb-16 md:block md:pb-20 lg:pb-28 xl:pb-32">
+            <div className="mx-auto mt-10 max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
               <div className="flex overflow-hidden p-2">
                 <div
                   className="flex transition-transform duration-500 ease-in-out"
@@ -74,15 +74,15 @@ export default function Features() {
                 >
                   {features.map((feature, index) => (
                     <div key={index} className="w-1/3 flex-shrink-0 px-4">
-                      <div className="bg-white p-6 rounded-lg shadow-md h-full">
-                        <div className="flex flex-col items-center text-center h-full">
-                          <div className="flex items-center justify-center h-20 w-20 rounded-md bg-black text-white mb-4">
+                      <div className="h-full rounded-lg bg-white p-6 shadow-md">
+                        <div className="flex h-full flex-col items-center text-center">
+                          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-md bg-black text-white">
                             {feature.icon}
                           </div>
-                          <h3 className="text-xl font-semibold mb-2">
+                          <h3 className="mb-2 text-xl font-semibold">
                             {feature.title}
                           </h3>
-                          <p className="text-gray-600 hidden flex-grow md:block">
+                          <p className="hidden flex-grow text-gray-600 md:block">
                             {feature.subtitle}
                           </p>
                         </div>
@@ -97,17 +97,17 @@ export default function Features() {
         {/* End carousel view */}
 
         {/* small size view */}
-        <div className="md:hidden mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2">
+        <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 md:hidden">
           {features.map((feature, idx) => (
             <div className="pt-6" key={idx}>
-              <div className="flow-root bg-gray-50 rounded-lg px-6 pb-8">
+              <div className="flow-root rounded-lg bg-gray-50 px-6 pb-8">
                 <div className="-mt-6">
                   <div>
-                    <span className="inline-flex items-center justify-center p-3 bg-black rounded-md shadow-lg">
+                    <span className="inline-flex items-center justify-center rounded-md bg-black p-3 shadow-lg">
                       {feature.icon}
                     </span>
                   </div>
-                  <h3 className="mt-8 text-lg font-medium text-gray-900 tracking-tight">
+                  <h3 className="mt-8 text-lg font-medium tracking-tight text-gray-900">
                     {feature.title}
                   </h3>
                   <p className="mt-5 text-base text-gray-500">
