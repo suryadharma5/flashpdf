@@ -1,5 +1,8 @@
+"use client";
+
 import PlaceHolderImage from "@/public/placeholder.svg";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 
 export default function Guidance() {
@@ -25,6 +28,8 @@ export default function Guidance() {
         "Use the generated flashcards to study efficiently and track your progress.",
     },
   ];
+
+  const router = useRouter();
 
   return (
     <>
@@ -70,7 +75,10 @@ export default function Guidance() {
           Ready to revolutionize your study method?
         </h2>
         <div className="mt-8">
-          <Button className="rounded-md border border-transparent bg-black px-8 py-3 text-base font-medium text-white transition hover:scale-110 hover:bg-gray-800 md:px-10 md:py-4 md:text-lg">
+          <Button
+            className="rounded-md border border-transparent bg-black px-8 py-3 text-base font-medium text-white transition hover:scale-110 hover:bg-gray-800 md:px-10 md:py-4 md:text-lg"
+            onClick={() => router.push("/sign-in")}
+          >
             Start Creating Flashcards
           </Button>
         </div>

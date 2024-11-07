@@ -1,8 +1,12 @@
+"use client";
+
 import HeroImage from "@/public/reading.png";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 
 export default function HeroSection() {
+  const router = useRouter();
   return (
     <div className="flex h-[80vh] items-center justify-center px-4 py-6 sm:px-0">
       <div className="bg-red-400c text-center">
@@ -16,8 +20,19 @@ export default function HeroSection() {
         </p>
         <div className="mx-auto mt-5 max-w-md sm:flex sm:justify-center md:mt-8">
           <div className="rounded-md shadow">
-            <Button className="flex w-full items-center justify-center rounded-md bg-black px-8 py-3 text-base font-medium text-white transition hover:scale-110 hover:bg-gray-800 md:px-10 md:py-4 md:text-lg">
+            <Button
+              className="flex w-full items-center justify-center rounded-md bg-black px-8 py-3 text-base font-medium text-white transition hover:bg-gray-800 md:px-10 md:py-4 md:text-lg"
+              onClick={() => router.push("/sign-in")}
+            >
               Get started
+            </Button>
+          </div>
+          <div className="mt-3 rounded-md shadow sm:ml-3 sm:mt-0">
+            <Button
+              variant="outline"
+              className="flex w-full items-center justify-center rounded-md bg-white px-8 py-3 text-base font-medium text-black transition md:px-10 md:py-4 md:text-lg"
+            >
+              <a href="#how-it-works">Learn more</a>
             </Button>
           </div>
         </div>
