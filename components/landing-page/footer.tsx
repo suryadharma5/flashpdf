@@ -47,7 +47,7 @@ export default function Footer() {
         </div>
         <div className="mt-8 md:order-1 md:mt-0">
           <p className="text-center text-base text-gray-400">
-            &copy; 2023 FlashAI, Inc. All rights reserved.
+            &copy; 2024 FlashAI, Inc. All rights reserved.
           </p>
         </div>
       </div>

@@ -28,7 +28,7 @@ export default function Guidance() {
 
   return (
     <>
-      <div className="mt-16" id="how-it-works">
+      <div className="mt-8" id="how-it-works">
         <h2 className="mb-12 text-center text-3xl font-extrabold text-gray-900">
           How FlashAI Works
         </h2>
