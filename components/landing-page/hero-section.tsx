@@ -7,6 +7,17 @@ import { Button } from "../ui/button";
 
 export default function HeroSection() {
   const router = useRouter();
+
+  const scrollToElement = (elementID: string) => {
+    const section = document.getElementById(elementID);
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
   return (
     <div className="flex h-[80vh] items-center justify-center px-4 py-6 sm:px-0">
       <div className="bg-red-400c text-center">
@@ -31,8 +42,9 @@ export default function HeroSection() {
             <Button
               variant="outline"
               className="flex w-full items-center justify-center rounded-md bg-white px-8 py-3 text-base font-medium text-black transition md:px-10 md:py-4 md:text-lg"
+              onClick={() => scrollToElement("how-it-works")}
             >
-              <a href="#how-it-works">Learn more</a>
+              Learn more
             </Button>
           </div>
         </div>
