@@ -12,6 +12,7 @@
     "no-console": 1,
     "prettier/prettier": 2,
     "no-empty-interface": "off",
-    "react/no-unescaped-entities": "off"
+    "react/no-unescaped-entities": "off",
+    "@typescript-eslint/no-empty-object-type": "off"
   }
 }
