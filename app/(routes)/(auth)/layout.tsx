@@ -14,7 +14,7 @@ export default function AuthLayout({
   return (
     <div className="flex h-screen max-h-screen overflow-hidden">
       {/* Image Section */}
-      <div className="relative hidden items-center justify-center bg-black lg:flex lg:w-[40%]">
+      <div className="relative hidden items-center justify-center bg-black md:flex md:w-1/2">
         <div className="relative h-full max-w-2xl px-8">
           <Image
             src={LoginImage}
