@@ -20,7 +20,7 @@ import {
   TQuestionFormSchema,
 } from "@/lib/types/question-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 
 type InputModalProps = {
@@ -36,11 +36,13 @@ export const InputModal = ({
   isDialogOpen,
   onOpenChange,
 }: InputModalProps) => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const form = useForm<TQuestionFormSchema>({
     resolver: zodResolver(questionFormSchema),
     defaultValues: {
       document: undefined,
-      numQuestions: 1,
+      numQuestions: 0,
       documentTitle: "",
     },
   });
@@ -48,6 +50,9 @@ export const InputModal = ({
   const handleSubmit = (data: TQuestionFormSchema) => {
     try {
       console.log(data);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
       form.reset();
     } catch (error) {
       console.log(error);
@@ -80,6 +85,7 @@ export const InputModal = ({
                       <FormLabel>PDF File</FormLabel>
                       <FormControl>
                         <Input
+                          ref={fileInputRef}
                           type="file"
                           accept=".pdf"
                           onChange={(e) => {
@@ -105,7 +111,7 @@ export const InputModal = ({
                       <FormLabel>Number of Questions</FormLabel>
                       <FormControl>
                         <Input
-                          type="number"
+                          type="text"
                           {...field}
                           onChange={(e) =>
                             field.onChange(Number(e.target.value))

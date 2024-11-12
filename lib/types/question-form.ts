@@ -22,7 +22,7 @@ export const questionFormSchema = z.object({
   numQuestions: z
     .number()
     .int()
-    .min(1, "Minimum 10 questions required")
+    .min(10, "Minimum 10 questions required")
     .max(50, "Maximum 50 questions allowed")
     .refine((value) => !isNaN(value), "Number of questions is required"),
 });
