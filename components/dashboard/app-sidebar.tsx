@@ -9,6 +9,7 @@ import {
   House,
   LayoutDashboard,
   Library,
+  MessagesSquare,
 } from "lucide-react";
 import * as React from "react";
 
@@ -26,7 +27,6 @@ import { usePathname } from "next/navigation";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathName = usePathname();
-  console.log(pathName);
 
   const data = {
     user: {
@@ -85,6 +85,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "/dashboard/progress",
         icon: ChartNoAxesCombined,
         isActive: pathName === "/dashboard/progress",
+      },
+      {
+        title: "Forum",
+        url: "/dashboard/forum",
+        icon: MessagesSquare,
+        isActive: pathName === "/dashboard/forum",
       },
     ],
   };
