@@ -53,12 +53,15 @@ export default function CreatePage() {
     }
   };
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles?.length) {
-      form.setValue("document", acceptedFiles[0]);
-      setIsDropping(false);
-    }
-  }, []);
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles?.length) {
+        form.setValue("document", acceptedFiles[0]);
+        setIsDropping(false);
+      }
+    },
+    [form],
+  );
 
   const handleRemoveFile = () => {
     form.resetField("document");
@@ -67,14 +70,13 @@ export default function CreatePage() {
     }
   };
 
-  const { getRootProps, getInputProps, isDragActive, fileRejections } =
-    useDropzone({
-      onDrop,
-      accept: {
-        "application/pdf": [".pdf"],
-      },
-      multiple: false,
-    });
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: {
+      "application/pdf": [".pdf"],
+    },
+    multiple: false,
+  });
 
   return (
     <div className="space-y-6">
