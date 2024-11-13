@@ -12,7 +12,8 @@ export const questionFormSchema = z.object({
     .refine(
       (file: File) => file?.type === ACCEPTED_FILE_TYPE,
       "Only PDF files are accepted",
-    ),
+    )
+    .nullable(),
   documentTitle: z
     .string()
     .min(3, "Title must be at least 3 characters")
@@ -20,11 +21,15 @@ export const questionFormSchema = z.object({
     .trim()
     .refine((value) => value.length > 0, "Document title is required"),
   numQuestions: z
-    .number()
-    .int()
-    .min(10, "Minimum 10 questions required")
-    .max(50, "Maximum 50 questions allowed")
-    .refine((value) => !isNaN(value), "Number of questions is required"),
+    .string()
+    .refine((val) => {
+      const number = Number(val);
+      return !isNaN(number) && Number.isInteger(number);
+    }, "Please input a valid number")
+    .transform((val) => Number(val))
+    .refine((val) => val >= 10 && val <= 50, {
+      message: "Number of questions must be between 10 and 50",
+    }),
 });
 
 export type TQuestionFormSchema = z.infer<typeof questionFormSchema>;

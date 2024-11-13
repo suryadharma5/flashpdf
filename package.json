@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --ext ts,json",
+    "lint": "eslint . --ext ts,json,.ts,.tsx",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "prepare": "husky install"
@@ -36,6 +36,7 @@
     "next-themes": "^0.4.3",
     "react": "^18",
     "react-dom": "^18",
+    "react-dropzone": "^14.3.5",
     "react-hook-form": "^7.53.2",
     "react-icons": "^5.3.0",
     "sonner": "^1.7.0",
