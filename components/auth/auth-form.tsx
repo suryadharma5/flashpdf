@@ -17,18 +17,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-type RegisterUserProps = {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
-
-type LoginUserProps = {
-  email: string;
-  password: string;
-};
-
 type AuthFormProps = {
   type: "login" | "register";
 };
