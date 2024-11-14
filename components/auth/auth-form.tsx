@@ -55,11 +55,6 @@ export default function AuthForm({ type }: AuthFormProps) {
     }
   };
 
-  const handleGoogleLogin = () => {
-    // Handle Google login logic here
-    console.log("Google login attempted");
-  };
-
   return (
     <div className="mt-6">
       <Form {...form}>
