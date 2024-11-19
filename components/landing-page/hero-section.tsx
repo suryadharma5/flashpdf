@@ -1,6 +1,6 @@
 "use client";
 
-import HeroImage from "@/public/reading.png";
+import HeroImage from "@/public/Chill-Time.svg";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
@@ -20,7 +20,7 @@ export default function HeroSection() {
 
   return (
     <div className="flex h-[80vh] items-center justify-center px-4 py-6 sm:px-0">
-      <div className="bg-red-400c text-center">
+      <div className="text-center">
         <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
           <span className="block">Transform Your Documents into</span>
           <span className="block text-black">Intelligent Flashcards</span>
@@ -49,7 +49,7 @@ export default function HeroSection() {
           </div>
         </div>
         <Image
-          className="mt-8 justify-self-center md:mt-14"
+          className="justify-self-center"
           src={HeroImage}
           alt="hero image"
           width={500}
