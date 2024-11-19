@@ -93,3 +93,22 @@ export const updateUserEmailStatus = async (
 
   return updatedUser;
 };
+
+export const updateUserUsername = async (
+  userId: string,
+  username: string,
+  tx?: PrismaTransaction,
+) => {
+  const prismaTx = tx || prismaClient;
+
+  const updatedUser = await prismaTx.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      username: username,
+    },
+  });
+
+  return updatedUser;
+};
