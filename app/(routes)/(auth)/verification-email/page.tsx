@@ -58,17 +58,25 @@ const VerificationPage = () => {
         </>
       ) : (
         <>
-          <Image
-            src={EmailFailedImage}
-            alt="Failed to verify email"
-            width={250}
-            height={250}
-          />
-          <h1 className="mt-12 text-5xl font-bold">Failed to verify email</h1>
-          <p className="mt-4 text-gray-400">Try to signing in again</p>
-          <Link href="/sign-in">
-            <Button className="mt-5 px-12 py-2">Sign In</Button>
-          </Link>
+          {error ? (
+            <>
+              <Image
+                src={EmailFailedImage}
+                alt="Failed to verify email"
+                width={400}
+                height={400}
+              />
+              <h1 className="mt-12 text-5xl font-bold">
+                Failed to verify email
+              </h1>
+              <p className="mt-4 text-gray-400">Try to signing in again</p>
+              <Link href="/sign-in">
+                <Button className="mt-5 px-12 py-2">Sign In</Button>
+              </Link>
+            </>
+          ) : (
+            <div></div>
+          )}
         </>
       )}
     </div>
