@@ -1,3 +1,5 @@
+import { User } from "@prisma/client";
+import { Omit } from "@prisma/client/runtime/library";
 import { z } from "zod";
 
 export const registerSchema = z
@@ -31,3 +33,9 @@ export const loginSchema = z.object({
 
 export type TRegisterSchema = z.infer<typeof registerSchema>;
 export type TLoginSchema = z.infer<typeof loginSchema>;
+
+export type UserResponse = {
+  user: Omit<User, "password"> & {
+    token: string;
+  };
+};
