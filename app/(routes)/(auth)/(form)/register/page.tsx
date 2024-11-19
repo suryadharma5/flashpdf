@@ -3,34 +3,35 @@
 import AuthForm from "@/components/auth/auth-form";
 import { Button } from "@/components/ui/button";
 import { useAuthLabel } from "@/hooks/useAuthLabel";
+import { signInWithGoogle } from "@/lib/auth/oauth/oauth";
 import { useEffect } from "react";
-import { FaGoogle } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const { setLabel, setSubLabel } = useAuthLabel();
 
   const handleGoogleLogin = () => {
-    console.log("Google login attempted");
+    signInWithGoogle();
   };
 
   useEffect(() => {
-    setLabel("Level up your learning");
-    setSubLabel("Create and study smarter with AI-powered tools");
+    setLabel("Start your learning journey");
+    setSubLabel("Create an account and unlock AI-powered study tools");
   }, [setLabel, setSubLabel]);
 
   return (
     <div className="mx-auto w-full max-w-sm lg:w-96">
       <div>
         <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-          Welcome back
+          Create your account
         </h2>
         <p className="mt-2 text-sm text-gray-600">
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <a
-            href="/register"
+            href="/sign-in"
             className="font-medium text-black hover:text-gray-800 hover:underline"
           >
-            Sign up
+            Sign in
           </a>
         </p>
       </div>
@@ -41,8 +42,8 @@ export default function LoginPage() {
             onClick={handleGoogleLogin}
             className="flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
           >
-            <FaGoogle size={20} />
-            Continue with Google
+            <FcGoogle size={20} />
+            Sign up with Google
           </Button>
         </div>
 
@@ -60,7 +61,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <AuthForm type="login" />
+        <AuthForm type="register" />
       </div>
     </div>
   );
