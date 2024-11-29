@@ -32,8 +32,11 @@ export default function HeroSection() {
         <div className="mx-auto mt-5 max-w-md sm:flex sm:justify-center md:mt-8">
           <div className="rounded-md shadow">
             <Button
+              type="button"
               className="flex w-full items-center justify-center rounded-md bg-black px-8 py-3 text-base font-medium text-white transition hover:bg-gray-800 md:px-10 md:py-4 md:text-lg"
-              onClick={() => router.push("/sign-in")}
+              onClick={() => {
+                router.push("/sign-in");
+              }}
             >
               Get started
             </Button>
@@ -43,6 +46,7 @@ export default function HeroSection() {
               variant="outline"
               className="flex w-full items-center justify-center rounded-md bg-white px-8 py-3 text-base font-medium text-black transition md:px-10 md:py-4 md:text-lg"
               onClick={() => scrollToElement("how-it-works")}
+              type="button"
             >
               Learn more
             </Button>
