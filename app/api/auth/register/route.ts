@@ -15,7 +15,6 @@ export async function POST(req: NextRequest) {
     const validatedData = registerSchema.safeParse(body);
 
     if (!validatedData.success) {
-      console.log(validatedData.error);
       throw new Error("validation error");
     }
 
@@ -66,18 +65,23 @@ export async function POST(req: NextRequest) {
       };
     });
 
-    return NextResponse.json({
-      status: 201,
-      message: "user created",
-      data: result,
-    });
+    return NextResponse.json(
+      {
+        status: 201,
+        message: "user created",
+        data: { ...result },
+      },
+      {
+        status: 201,
+      },
+    );
   } catch (error: any) {
     switch (error.message) {
       case "validation error":
         return NextResponse.json(
           {
             status: 400,
-            message: "invalid field format",
+            message: "Invalid field format",
           },
           {
             status: 400,
@@ -87,7 +91,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(
           {
             status: 400,
-            message: "username already existed",
+            message: "Username already existed",
           },
           {
             status: 400,
@@ -97,7 +101,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(
           {
             status: 400,
-            message: "email already existed",
+            message: "Email already existed",
           },
           {
             status: 400,
