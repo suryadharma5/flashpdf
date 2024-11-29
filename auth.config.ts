@@ -4,6 +4,7 @@ import bcryptjs from "bcryptjs";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import { isFromVerifyEmail, setIsFromVerifyEmail } from "./lib/auth/constants";
 
 export default {
   providers: [
@@ -26,13 +27,18 @@ export default {
 
           if (!user || !user.password) return null;
 
-          const isPasswordValid = await bcryptjs.compare(
-            password,
-            user.password,
-          );
-
-          if (isPasswordValid) {
+          if (isFromVerifyEmail) {
+            setIsFromVerifyEmail(false);
             return user;
+          } else {
+            const isPasswordValid = await bcryptjs.compare(
+              password,
+              user.password,
+            );
+
+            if (isPasswordValid) {
+              return user;
+            }
           }
         }
 

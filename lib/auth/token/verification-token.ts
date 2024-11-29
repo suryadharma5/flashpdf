@@ -47,29 +47,32 @@ export const verifyVerificationToken = async (
   try {
     const existingToken = await getToken(token, tx);
     if (!existingToken) {
-      return { error: "token not found" };
+      return { error: "token not found", user: null };
     }
-    console.log("Token found");
 
     const hasExpired = new Date() > new Date(existingToken.expiresAt);
 
     if (hasExpired) {
-      return { error: "expired" };
+      return { error: "expired", user: null };
     }
 
     const existingUser = await getUserByEmail(existingToken.email, tx);
 
     if (!existingUser) {
-      return { error: "user not found" };
+      return { error: "user not found", user: null };
     }
 
-    await updateUserEmailStatus(existingUser.id, tx);
+    const user = await updateUserEmailStatus(existingUser.id, tx);
+
+    const { password, ...userWithoutPassword } = user;
+    const unusedVar = password; // eslint-disable-line @typescript-eslint/no-unused-vars
 
     await deleteTokenById(existingToken.id, tx);
 
-    // handle session
-
-    return { success: "Email verified successfully!" };
+    return {
+      success: "Email verified successfully!",
+      user: userWithoutPassword,
+    };
   } catch (error: any) {
     console.log("Transaction failed with log: ", error.message);
 
