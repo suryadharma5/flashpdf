@@ -4,13 +4,10 @@ import { verifyVerificationToken } from "@/lib/auth/token/verification-token";
 import { prismaClient } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-type APIContext = {
-  params: {
-    token: string;
-  };
-};
-
-export async function GET(_req: NextRequest, context: APIContext) {
+export async function GET(
+  _req: NextRequest,
+  context: { params: { token: string } },
+) {
   try {
     const { token } = await context.params;
 
