@@ -1,6 +1,9 @@
 import authConfig from "@/auth.config";
 import { prismaClient } from "@/lib/db";
-import { getUserById } from "@/lib/repository/auth/userRepository";
+import {
+  getUserById,
+  updateUserUsername,
+} from "@/lib/repository/auth/userRepository";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth from "next-auth";
 
@@ -42,6 +45,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
       if (existingUser.username) {
         token.username = existingUser.username;
+      } else {
+        const newUsername = existingUser.email.split("@")[0].slice(0, 20);
+        await updateUserUsername(existingUser.id, newUsername);
       }
 
       return token;
