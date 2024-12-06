@@ -2,14 +2,14 @@
 
 import {
   BookmarkIcon,
-  BookPlus,
-  ChartNoAxesCombined,
+  ChartLine,
+  Files,
   GalleryVerticalEnd,
   History,
   House,
   LayoutDashboard,
-  Library,
   MessagesSquare,
+  Plus,
 } from "lucide-react";
 import * as React from "react";
 
@@ -56,13 +56,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "New",
-            icon: BookPlus,
+            icon: Plus,
             url: "/dashboard/material/create",
             isActive: pathName === "/dashboard/material/create",
           },
           {
-            title: "Created",
-            icon: Library,
+            title: "Library",
+            icon: Files,
             url: "/dashboard/material/library",
             isActive: pathName === "/dashboard/material/library",
           },
@@ -83,7 +83,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {
         title: "Progress",
         url: "/dashboard/progress",
-        icon: ChartNoAxesCombined,
+        icon: ChartLine,
         isActive: pathName === "/dashboard/progress",
       },
       {
