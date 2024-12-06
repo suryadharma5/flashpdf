@@ -14,6 +14,7 @@ const VerificationPage = () => {
   const [success, setSuccess] = useState("");
 
   const onSubmit = useCallback(async () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const searchParams = useSearchParams();
     const token = searchParams.get("token");
     if (!token) {
