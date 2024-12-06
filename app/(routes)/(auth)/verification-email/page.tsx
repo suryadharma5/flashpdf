@@ -10,13 +10,12 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 const VerificationPage = () => {
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
-
   const [error, setError] = useState(""); // eslint-disable-line @typescript-eslint/no-unused-vars
   const [success, setSuccess] = useState("");
 
   const onSubmit = useCallback(async () => {
+    const searchParams = useSearchParams();
+    const token = searchParams.get("token");
     if (!token) {
       setError("Missing token!");
       return;
@@ -32,7 +31,7 @@ const VerificationPage = () => {
         setError(e);
         console.log(e.message);
       });
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     onSubmit();
