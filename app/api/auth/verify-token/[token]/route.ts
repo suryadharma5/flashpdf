@@ -4,18 +4,15 @@ import { verifyVerificationToken } from "@/lib/auth/token/verification-token";
 import { prismaClient } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  _req: NextRequest,
-  {
-    params,
-  }: {
-    params: {
-      token: string;
-    };
-  },
-) {
+type APIContext = {
+  params: {
+    token: string;
+  };
+};
+
+export async function GET(_req: NextRequest, context: APIContext) {
   try {
-    const { token } = await params;
+    const { token } = await context.params;
 
     const result = await prismaClient.$transaction(async (tx) => {
       const { user, error } = await verifyVerificationToken(token, tx);
