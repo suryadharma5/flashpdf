@@ -6,10 +6,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   _req: NextRequest,
-  context: { params: { token: string } },
+  params: Promise<{ token: string }>,
 ) {
   try {
-    const { token } = await context.params;
+    const { token } = await params;
 
     const result = await prismaClient.$transaction(async (tx) => {
       const { user, error } = await verifyVerificationToken(token, tx);
