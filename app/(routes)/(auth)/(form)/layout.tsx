@@ -14,7 +14,10 @@ export default function AuthLayout({
   return (
     <div className="flex h-screen max-h-screen overflow-hidden">
       {/* Image Section */}
-      <div className="relative hidden items-center justify-center bg-black md:flex md:w-1/2">
+      <div className="relative hidden flex-col items-center justify-center bg-black md:flex md:w-1/2">
+        <span className="flex w-full items-center px-8 py-5 text-3xl font-bold text-white">
+          FlashAI
+        </span>
         <div className="relative h-full max-w-2xl px-8">
           <Image
             src={LoginImage}

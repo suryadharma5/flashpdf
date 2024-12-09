@@ -30,13 +30,15 @@ import { useForm } from "react-hook-form";
 
 export default function CreatePage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const [isDropping, setIsDropping] = useState(false);
 
   const form = useForm<TQuestionFormSchema>({
     resolver: zodResolver(questionFormSchema),
     defaultValues: {
       document: null,
-      numQuestions: undefined,
+      numQuestions: 10,
       documentTitle: "",
     },
   });
@@ -50,6 +52,14 @@ export default function CreatePage() {
       form.reset();
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handleFocus = () => {
+    const input = inputRef.current;
+    if (input) {
+      const length = input.value.length;
+      input.setSelectionRange(length, length);
     }
   };
 
@@ -105,19 +115,15 @@ export default function CreatePage() {
                 <div className="flex flex-col space-y-2">
                   <FormField
                     control={form.control}
-                    name="numQuestions"
+                    name="documentTitle"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Number of Questions</FormLabel>
+                        <FormLabel>Document Title</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            onChange={(e) =>
-                              // field.onChange(Number(e.target.value))
-                              field.onChange(e.target.value)
-                            }
                             className="col-span-3"
-                            placeholder="10"
+                            placeholder="Physics Test"
                             required
                           />
                         </FormControl>
@@ -130,15 +136,21 @@ export default function CreatePage() {
                 <div className="flex flex-col space-y-2">
                   <FormField
                     control={form.control}
-                    name="documentTitle"
+                    name="numQuestions"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Document Title</FormLabel>
+                        <FormLabel>Number of Questions</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
+                            onChange={(e) =>
+                              // field.onChange(Number(e.target.value))
+                              field.onChange(e.target.value)
+                            }
+                            ref={inputRef}
+                            onFocus={handleFocus}
                             className="col-span-3"
-                            placeholder="Physics Test"
+                            placeholder="10"
                             required
                           />
                         </FormControl>

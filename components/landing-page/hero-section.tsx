@@ -1,6 +1,6 @@
 "use client";
 
-import HeroImage from "@/public/reading.png";
+import HeroImage from "@/public/Chill-Time.svg";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
@@ -20,7 +20,7 @@ export default function HeroSection() {
 
   return (
     <div className="flex h-[80vh] items-center justify-center px-4 py-6 sm:px-0">
-      <div className="bg-red-400c text-center">
+      <div className="text-center">
         <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
           <span className="block">Transform Your Documents into</span>
           <span className="block text-black">Intelligent Flashcards</span>
@@ -32,8 +32,11 @@ export default function HeroSection() {
         <div className="mx-auto mt-5 max-w-md sm:flex sm:justify-center md:mt-8">
           <div className="rounded-md shadow">
             <Button
+              type="button"
               className="flex w-full items-center justify-center rounded-md bg-black px-8 py-3 text-base font-medium text-white transition hover:bg-gray-800 md:px-10 md:py-4 md:text-lg"
-              onClick={() => router.push("/sign-in")}
+              onClick={() => {
+                router.push("/sign-in");
+              }}
             >
               Get started
             </Button>
@@ -43,13 +46,14 @@ export default function HeroSection() {
               variant="outline"
               className="flex w-full items-center justify-center rounded-md bg-white px-8 py-3 text-base font-medium text-black transition md:px-10 md:py-4 md:text-lg"
               onClick={() => scrollToElement("how-it-works")}
+              type="button"
             >
               Learn more
             </Button>
           </div>
         </div>
         <Image
-          className="mt-8 justify-self-center md:mt-14"
+          className="justify-self-center"
           src={HeroImage}
           alt="hero image"
           width={500}

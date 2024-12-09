@@ -9,7 +9,8 @@
     "lint": "eslint . --ext ts,json,.ts,.tsx",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "postinstall": "prisma generate"
   },
   "lint-staged": {
     "*.{css,html,json,js,ts,tsx}": [
@@ -18,7 +19,9 @@
     "*.ts": "eslint --fix"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.7.3",
     "@hookform/resolvers": "^3.9.1",
+    "@prisma/client": "^5.22.0",
     "@radix-ui/react-avatar": "^1.1.1",
     "@radix-ui/react-collapsible": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.2",
@@ -29,23 +32,33 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.3",
+    "@react-email/components": "^0.0.28",
+    "@tanstack/react-query": "^5.61.5",
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.454.0",
     "next": "15.0.2",
+    "next-auth": "^5.0.0-beta.25",
     "next-themes": "^0.4.3",
     "react": "^18",
     "react-dom": "^18",
     "react-dropzone": "^14.3.5",
+    "react-email": "^3.0.2",
     "react-hook-form": "^7.53.2",
     "react-icons": "^5.3.0",
+    "react-spinners": "^0.14.1",
+    "resend": "^4.0.1-alpha.0",
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.0.3",
     "zod": "^3.23.8",
     "zustand": "^5.0.1"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -62,6 +75,7 @@
     "prettier-plugin-organize-attributes": "^1.0.0",
     "prettier-plugin-organize-imports": "^4.1.0",
     "prettier-plugin-tailwindcss": "^0.6.8",
+    "prisma": "^5.22.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   },
