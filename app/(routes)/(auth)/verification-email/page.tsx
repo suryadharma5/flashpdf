@@ -7,15 +7,14 @@ import EmailVerifiedImage from "@/public/email-verified.svg";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 const VerificationPage = () => {
   const [error, setError] = useState(""); // eslint-disable-line @typescript-eslint/no-unused-vars
   const [success, setSuccess] = useState("");
+  const searchParams = useSearchParams();
 
   const onSubmit = useCallback(async () => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const searchParams = useSearchParams();
     const token = searchParams.get("token");
     if (!token) {
       setError("Missing token!");
@@ -83,4 +82,12 @@ const VerificationPage = () => {
   );
 };
 
-export default VerificationPage;
+const Page = () => {
+  return (
+    <Suspense>
+      <VerificationPage />
+    </Suspense>
+  );
+};
+
+export default Page;
