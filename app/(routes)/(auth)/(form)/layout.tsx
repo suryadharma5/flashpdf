@@ -26,7 +26,7 @@ export default function AuthLayout({
             height={400}
             className="mx-auto h-full scale-110 transform"
           />
-          <div className="absolute bottom-0 left-0 right-0 mb-20 mt-5 px-8">
+          <div className="absolute bottom-0 left-0 right-0 mb-10 px-8">
             <h2 className="text-3xl font-bold text-white">{label}</h2>
             <p className="mt-2 text-lg text-gray-300">{sublabel}</p>
           </div>
