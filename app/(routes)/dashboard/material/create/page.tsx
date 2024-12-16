@@ -1,7 +1,7 @@
 "use client";
 
+import { LoadingPage } from "@/components/dashboard/loading";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,15 +18,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { axiosInstance } from "@/lib/axios";
 import {
   questionFormSchema,
   TQuestionFormSchema,
 } from "@/lib/types/question-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { AlertCircle, CloudUpload, File, Trash2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export default function CreatePage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -34,25 +39,51 @@ export default function CreatePage() {
 
   const [isDropping, setIsDropping] = useState(false);
 
+  const router = useRouter();
+
   const form = useForm<TQuestionFormSchema>({
     resolver: zodResolver(questionFormSchema),
     defaultValues: {
       document: null,
-      numQuestions: 10,
+      numQuestions: "",
       documentTitle: "",
     },
   });
 
-  const handleSubmit = (data: TQuestionFormSchema) => {
-    try {
-      console.log(data);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+  const createQuestionMutation = useMutation({
+    mutationFn: async (data: TQuestionFormSchema) => {
+      const formData = new FormData();
+      formData.append("document", data.document!);
+      formData.append("documentTitle", data.documentTitle);
+      formData.append("numQuestions", data.numQuestions);
+
+      const res = await axiosInstance.post("/api/material", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return res.data;
+    },
+    onSuccess: (data) => {
       form.reset();
-    } catch (error) {
-      console.log(error);
-    }
+      router.push(
+        `/dashboard/material/library/document/${data.data.id}/pretest`,
+      );
+      toast.success("Questions created!", {
+        duration: 3000,
+      });
+
+      // router.push("/dashboard/material/pretest");
+    },
+    onError: (e) => {
+      toast.error("Failed to create question, please try again");
+      console.log("fail", e);
+    },
+  });
+
+  const handleSubmit = async (data: TQuestionFormSchema) => {
+    createQuestionMutation.mutate(data);
   };
 
   const handleFocus = () => {
@@ -88,8 +119,12 @@ export default function CreatePage() {
     multiple: false,
   });
 
+  if (createQuestionMutation.isPending) {
+    return <LoadingPage text="AI's cooking something up for you..." />;
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="max-w-5xl space-y-6">
       <h2 className="text-3xl font-bold">Create New Flashcard</h2>
       <Alert>
         <AlertCircle className="h-4 w-4" />
@@ -143,10 +178,8 @@ export default function CreatePage() {
                         <FormControl>
                           <Input
                             {...field}
-                            onChange={(e) =>
-                              // field.onChange(Number(e.target.value))
-                              field.onChange(e.target.value)
-                            }
+                            onChange={(e) => field.onChange(e.target.value)}
+                            value={field.value || ""}
                             ref={inputRef}
                             onFocus={handleFocus}
                             className="col-span-3"
@@ -187,7 +220,7 @@ export default function CreatePage() {
                             ) : (
                               <div
                                 {...getRootProps()}
-                                className={`flex h-32 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed hover:cursor-pointer ${isDropping ? "scale-y-110 transition" : "transition"}`}
+                                className={`flex h-32 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed hover:cursor-pointer ${isDropping ? "scale-y-110 bg-blue-100 transition" : "transition"}`}
                                 onDragEnter={() => setIsDropping(true)}
                                 onDragLeave={() => setIsDropping(false)}
                                 onDragOver={(e: React.DragEvent) => {
@@ -223,13 +256,12 @@ export default function CreatePage() {
                 </div>
               </div>
 
-              <Button
-                type="submit"
-                disabled={form.formState.isSubmitting}
-                className="mt-5 w-full"
-              >
-                Generate flashcard
-              </Button>
+              <div className="mt-5">
+                <SubmitButton
+                  title="Generate Flashcard"
+                  isDisabled={createQuestionMutation.isPending}
+                />
+              </div>
             </form>
           </Form>
         </CardContent>
