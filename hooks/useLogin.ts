@@ -48,7 +48,6 @@ export const useLogin = (
             status: 400,
           });
         } else {
-          console.log("Masuk sini");
           onError({
             message: "Something went wrong",
             status: 500,
