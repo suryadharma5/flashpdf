@@ -1,6 +1,6 @@
 "use client";
 
-import Review from "@/components/dashboard/material/review/review";
+import Review from "@/components/dashboard/history/review/review";
 import { useParams } from "next/navigation";
 
 type ParamsProps = {
