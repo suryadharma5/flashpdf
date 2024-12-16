@@ -14,6 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// authentication
 model User {
   id            String    @id @default(cuid())
   username      String?   @unique
@@ -24,8 +25,11 @@ model User {
   image         String?
   accounts      Account[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  Document      Document[]
+  History       History[]
+  AnswerHistory AnswerHistory[]
 
   @@map("users")
 }
@@ -60,4 +64,85 @@ model Account {
 
   @@id([provider, providerAccountId])
   @@map("accounts")
+}
+
+// question generation
+model Document {
+  id        String     @id @default(cuid())
+  title     String
+  questions Question[]
+  userId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User      @relation(fields: [userId], references: [id])
+  History History[]
+
+  @@map("documents")
+}
+
+model Question {
+  id            String   @id @default(cuid())
+  question      String   @db.VarChar()
+  correctAnswer String
+  options       Option[]
+  documentId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document Document? @relation(fields: [documentId], references: [id])
+
+  @@map("questions")
+}
+
+model Option {
+  id         String @id @default(cuid())
+  text       String @db.VarChar()
+  questionId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  question Question? @relation(fields: [questionId], references: [id])
+
+  @@map("options")
+}
+
+enum TestType {
+  PRETEST
+  POSTTEST
+}
+
+model History {
+  id         String   @id @default(cuid())
+  grade      Int
+  type       TestType
+  userId     String
+  documentId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User?           @relation(fields: [userId], references: [id])
+  document      Document?       @relation(fields: [documentId], references: [id])
+  AnswerHistory AnswerHistory[]
+
+  @@map("histories")
+}
+
+model AnswerHistory {
+  id        String @id @default(cuid())
+  answer    String
+  userId    String
+  historyId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User?   @relation(fields: [userId], references: [id])
+  history History @relation(fields: [historyId], references: [id])
+
+  @@map("answer_histories")
 }
