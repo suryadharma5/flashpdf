@@ -63,11 +63,12 @@ export const getAllDocuments = async () => {
     where: {
       userId: userId,
     },
-    // select: {
-    //   id: true,
-    //   createdAt: true,
-    //   title: true,
-    // },
+    include: {
+      History: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   if (!documents) {
