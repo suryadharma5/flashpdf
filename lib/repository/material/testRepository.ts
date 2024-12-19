@@ -74,3 +74,30 @@ export const getUserAnswerHistory = async (
 
   return userAnswersHistory;
 };
+
+export const getUserAnswerHistories = async (
+  userId: string,
+  tx?: PrismaTransaction,
+) => {
+  const prismaTx = tx || prismaClient;
+
+  const userAnswersHistory = await prismaTx.history.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      document: {
+        select: {
+          title: true,
+        },
+      },
+      AnswerHistory: false,
+    },
+  });
+
+  if (!userAnswersHistory) {
+    return null;
+  }
+
+  return userAnswersHistory;
+};
