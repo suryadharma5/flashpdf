@@ -18,7 +18,7 @@ export const useUserAnswer = (documentId: string, historyId: string) => {
     queryKey: ["fetchUserAnswer", documentId, historyId],
     queryFn: async () => {
       const res = await axiosInstance.get(
-        `/api/material/history?documentId=${documentId}&historyId=${historyId}`,
+        `/api/history?documentId=${documentId}&historyId=${historyId}`,
       );
 
       return res.data;
