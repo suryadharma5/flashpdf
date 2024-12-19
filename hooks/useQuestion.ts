@@ -26,7 +26,14 @@ export const useQuestions = (documentId: string) => {
       correctAnswer: q.correctAnswer,
     })) || [];
 
+  let documentTitle = "";
+
+  if (isSuccess) {
+    documentTitle = data.data.title;
+  }
+
   return {
+    documentTitle,
     questions,
     isLoading,
     isError,
