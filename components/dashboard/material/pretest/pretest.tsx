@@ -68,7 +68,7 @@ export default function Pretest({ documentId }: PretestProps) {
 
   const submitAnswer = useMutation({
     mutationFn: async (data: TUploadHistorySchema) => {
-      const res = await axiosInstance.post("/api/material/history", {
+      const res = await axiosInstance.post("/api/history", {
         data: data,
       });
 
