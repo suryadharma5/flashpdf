@@ -30,6 +30,7 @@ model User {
   Document      Document[]
   History       History[]
   AnswerHistory AnswerHistory[]
+  Chat          Chat[]
 
   @@map("users")
 }
@@ -78,6 +79,7 @@ model Document {
 
   user    User      @relation(fields: [userId], references: [id])
   History History[]
+  Chat    Chat[]
 
   @@map("documents")
 }
@@ -145,4 +147,19 @@ model AnswerHistory {
   history History @relation(fields: [historyId], references: [id])
 
   @@map("answer_histories")
+}
+
+model Chat {
+  id         String @id @default(cuid())
+  messages   Json
+  documentId String
+  userId     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document Document? @relation(fields: [documentId], references: [id])
+  user     User?     @relation(fields: [userId], references: [id])
+
+  @@map("chats")
 }
