@@ -1,5 +1,12 @@
 import { openai } from "@ai-sdk/openai";
-import { embed, generateObject } from "ai";
+import {
+  CoreAssistantMessage,
+  CoreMessage,
+  CoreToolMessage,
+  embed,
+  generateObject,
+  streamText,
+} from "ai";
 import { z } from "zod";
 
 export const createQuestion = async (text: string, numOfQuestions: string) => {
@@ -10,7 +17,7 @@ export const createQuestion = async (text: string, numOfQuestions: string) => {
     maxTokens: 700,
     temperature: 0.5,
     prompt: `
-        Create ${numOfQuestions} multiple-choice questions based on the following text. Use the format:
+        Create 1 multiple-choice questions based on the following text. Use the format:
         - Question
         - Options (A, B, C, D)
         - Correct Answer
@@ -38,40 +45,19 @@ export const createQuestion = async (text: string, numOfQuestions: string) => {
   return { questions, usage };
 };
 
-export const summarizeText = async (text: string) => {
-  const { object: keyContent, usage } = await generateObject({
+export const chatAI = (prompt: string) => {
+  const result = streamText({
     model: openai("gpt-4o-mini"),
-    maxTokens: 500,
-    temperature: 0.3,
-    prompt: `
-        Extract the most important sections from the following text:
-        ---
-        ${text}
-        ---
-        Instructions: 
-        - Identify key concepts
-        - Extract critical information
-        - Highlight main arguments
-        - Select essential details for understanding
-    `,
-    schema: z.object({
-      keyParagraphs: z
-        .array(z.string())
-        .describe("Most important paragraphs that capture core knowledge"),
-      mainConcepts: z
-        .array(z.string())
-        .describe("Core ideas that should be the basis for questions"),
-      centralTheme: z.string().describe("Overall theme or subject of the text"),
-    }),
+    prompt: prompt,
   });
 
-  console.log("Usage of summarizing paragraph:", usage);
+  console.log(result.usage);
 
-  return (
-    keyContent.keyParagraphs.join("\n") +
-    "\n\nMain Concepts:\n" +
-    keyContent.mainConcepts.join("\n")
-  );
+  // for await (const textPart of textStream) {
+  //   process.stdout.write(textPart);
+  // }
+
+  return result.toDataStreamResponse({});
 };
 
 export const embedDocument = async (text: string) => {
@@ -84,3 +70,47 @@ export const embedDocument = async (text: string) => {
 
   return embedding as number[];
 };
+
+export function getMostRecentUserMessage(messages: Array<CoreMessage>) {
+  const userMessages = messages.filter((message) => message.role === "user");
+  return userMessages.at(-1);
+}
+
+export function sanitizeResponseMessages(
+  messages: Array<CoreToolMessage | CoreAssistantMessage>,
+): Array<CoreToolMessage | CoreAssistantMessage> {
+  const toolResultIds: Array<string> = [];
+
+  for (const message of messages) {
+    if (message.role === "tool") {
+      for (const content of message.content) {
+        if (content.type === "tool-result") {
+          toolResultIds.push(content.toolCallId);
+        }
+      }
+    }
+  }
+
+  const messagesBySanitizedContent = messages.map((message) => {
+    if (message.role !== "assistant") return message;
+
+    if (typeof message.content === "string") return message;
+
+    const sanitizedContent = message.content.filter((content) =>
+      content.type === "tool-call"
+        ? toolResultIds.includes(content.toolCallId)
+        : content.type === "text"
+          ? content.text.length > 0
+          : true,
+    );
+
+    return {
+      ...message,
+      content: sanitizedContent,
+    };
+  });
+
+  return messagesBySanitizedContent.filter(
+    (message) => message.content.length > 0,
+  );
+}
