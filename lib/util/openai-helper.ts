@@ -5,7 +5,6 @@ import {
   CoreToolMessage,
   embed,
   generateObject,
-  streamText,
 } from "ai";
 import { z } from "zod";
 
@@ -43,21 +42,6 @@ export const createQuestion = async (text: string, numOfQuestions: string) => {
   });
 
   return { questions, usage };
-};
-
-export const chatAI = (prompt: string) => {
-  const result = streamText({
-    model: openai("gpt-4o-mini"),
-    prompt: prompt,
-  });
-
-  console.log(result.usage);
-
-  // for await (const textPart of textStream) {
-  //   process.stdout.write(textPart);
-  // }
-
-  return result.toDataStreamResponse({});
 };
 
 export const embedDocument = async (text: string) => {
