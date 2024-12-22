@@ -69,7 +69,7 @@ export default function Page() {
               <CardHeader>
                 <div className="flex max-w-full items-start justify-between">
                   <div className="max-w-full flex-1">
-                    <CardTitle className="overflow-hidden truncate">
+                    <CardTitle className="overflow-x-clip">
                       {data.title
                         .replace(
                           data.title.charAt(0),
@@ -107,7 +107,7 @@ export default function Page() {
               </CardHeader>
               <CardFooter className="flex flex-wrap gap-2">
                 {data.History.length > 0 ? (
-                  <div className="mb-2 flex w-full gap-2">
+                  <div className="mb-2 mt-[3px] flex w-full gap-2">
                     <Button
                       variant="outline"
                       size="sm"
@@ -126,9 +126,9 @@ export default function Page() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="mb-2 flex rounded-md bg-yellow-100 px-3 py-1 text-yellow-800 dark:bg-yellow-900">
+                  <div className="mb-2 flex rounded-md bg-yellow-100 px-3 py-1 text-yellow-800">
                     <CircleAlert className="mr-2 h-4 w-4" />
-                    <p className="text-xs dark:text-yellow-200">
+                    <p className="text-xs">
                       Complete the pretest to unlock full flashcard features.
                     </p>
                   </div>
@@ -151,7 +151,7 @@ export default function Page() {
                   className="w-full"
                 >
                   <Button variant="outline" size="sm" className="w-full">
-                    Take {data.History[idx] ? "Post-test" : "Pre-test"}
+                    Take {data.History.length > 0 ? "Post-test" : "Pre-test"}
                   </Button>
                 </Link>
               </CardFooter>
