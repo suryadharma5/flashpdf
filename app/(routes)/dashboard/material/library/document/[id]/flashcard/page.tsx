@@ -1,6 +1,6 @@
 "use client";
 
-import Flashcard from "@/components/dashboard/material/flashcard/flashcard";
+import FlashcardPage from "@/components/dashboard/material/flashcard/flashcard-page";
 import { useParams } from "next/navigation";
 
 type ParamsProps = {
@@ -9,5 +9,5 @@ type ParamsProps = {
 
 export default function Page() {
   const params: ParamsProps = useParams();
-  return <Flashcard id={params.id} />;
+  return <FlashcardPage id={params.id} />;
 }

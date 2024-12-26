@@ -35,7 +35,6 @@ export default function AIInput({
   });
 
   const submitInput = useCallback(() => {
-    console.log(input);
     handleSubmit();
     adjustHeight(true);
   }, [adjustHeight, input]);

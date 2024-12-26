@@ -1,0 +1,136 @@
+"use client";
+
+import { ChatDialog } from "@/components/chat/chat-dialog";
+import { LoadingPage } from "@/components/dashboard/loading";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useQuestions } from "@/hooks/useQuestion";
+import { axiosInstance } from "@/lib/axios";
+import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { useChat } from "ai/react";
+import { useCallback, useState } from "react";
+import { Flashcard } from "./flashcard";
+
+type FlashcardProps = {
+  id: string;
+};
+
+const FlashcardPage = ({ id }: FlashcardProps) => {
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  const isMobile = useIsMobile();
+
+  const { documentTitle, questions, isError, isLoading, error } =
+    useQuestions(id);
+
+  const {
+    data,
+    isLoading: chatRetrieveLoading,
+    isError: isChatError,
+    error: chatError,
+  } = useQuery({
+    queryKey: ["fetchChat", id],
+    queryFn: async () => {
+      const res = await axiosInstance.get(`/api/chat?documentId=${id}`);
+      return res.data.data;
+    },
+  });
+
+  const {
+    messages,
+    handleSubmit,
+    input,
+    setInput,
+    isLoading: aiLoading,
+    stop,
+  } = useChat({
+    id,
+    initialMessages: data?.messages ?? [],
+    body: { id },
+    onFinish: () => {
+      console.log("Finish");
+    },
+  });
+
+  const flipCard = () => setIsFlipped(!isFlipped);
+
+  const nextCard = useCallback(() => {
+    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % questions.length);
+    setIsFlipped(false);
+  }, [questions]);
+
+  const prevCard = useCallback(() => {
+    setCurrentCardIndex(
+      (prevIndex) => (prevIndex - 1 + questions.length) % questions.length,
+    );
+    setIsFlipped(false);
+  }, [questions]);
+
+  if (isLoading || chatRetrieveLoading) {
+    return <LoadingPage />;
+  }
+
+  if (isError || isChatError) {
+    console.log({ error });
+    console.log({ chatError });
+  }
+
+  return (
+    <div className="-mt-12 flex max-h-screen w-full flex-col items-center justify-center space-y-12 p-4">
+      <Card className="w-full max-w-4xl border-0 bg-white shadow-none">
+        <CardContent className={cn("py-6", isMobile && "px-0")}>
+          <div className="mb-8 w-full">
+            <div className="mb-4 w-full [perspective:1000px]">
+              <div className="absolute inset-0 flex w-full flex-col justify-center rounded-lg border border-gray-200 bg-white p-8 text-center shadow-md">
+                <p className="text-start text-2xl font-semibold text-gray-800">
+                  {documentTitle.replace(
+                    documentTitle.charAt(0),
+                    documentTitle.charAt(0).toUpperCase(),
+                  )}{" "}
+                  flashcards
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Tabs defaultValue="flashcard" className="w-full max-w-[53rem]">
+        <TabsList className="grid w-full grid-cols-2 rounded-md px-1">
+          <TabsTrigger value="flashcard">Flashcard</TabsTrigger>
+          <TabsTrigger value="notes">Notes</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="flashcard">
+          <Flashcard
+            currentCardIndex={currentCardIndex}
+            isMobile={isMobile}
+            isFlipped={isFlipped}
+            flipCard={flipCard}
+            nextCard={nextCard}
+            prevCard={prevCard}
+            questions={questions}
+          />
+        </TabsContent>
+
+        <TabsContent value="notes">
+          <div>Halo</div>
+        </TabsContent>
+      </Tabs>
+
+      <ChatDialog
+        handleSubmit={handleSubmit}
+        input={input}
+        isLoading={aiLoading}
+        messages={messages}
+        setInput={setInput}
+        stop={stop}
+      />
+    </div>
+  );
+};
+
+export default FlashcardPage;
