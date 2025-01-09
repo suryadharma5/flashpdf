@@ -75,6 +75,41 @@ export const getUserAnswerHistory = async (
   return userAnswersHistory;
 };
 
+export const getUserHistoriesByDocumentId = async (
+  documentId: string,
+  userId: string,
+  tx?: PrismaTransaction,
+) => {
+  const prismaTx = tx || prismaClient;
+
+  const userHistory = await prismaTx.history.findMany({
+    where: {
+      AND: [
+        {
+          documentId: documentId,
+        },
+        {
+          userId: userId,
+        },
+      ],
+    },
+    include: {
+      document: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (!userHistory) {
+    return null;
+  }
+
+  console.log({ userHistory });
+
+  return userHistory;
+};
+
 export const getUserAnswerHistories = async (
   userId: string,
   tx?: PrismaTransaction,
