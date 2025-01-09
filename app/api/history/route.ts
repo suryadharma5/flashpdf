@@ -5,6 +5,7 @@ import {
   createTestHistory,
   getUserAnswerHistories,
   getUserAnswerHistory,
+  getUserHistoriesByDocumentId,
 } from "@/lib/repository/material/testRepository";
 import { uploadHistorySchema } from "@/lib/types/question-form";
 import { NextRequest, NextResponse } from "next/server";
@@ -108,6 +109,24 @@ export async function GET(req: NextRequest) {
       {
         status: 200,
         data: userAnswers,
+        message: "OK",
+      },
+      {
+        status: 200,
+      },
+    );
+  } else if (documentId) {
+    const histories = await getUserHistoriesByDocumentId(
+      documentId,
+      userId!.user.id,
+    );
+
+    const data = histories != null ? histories : [];
+
+    return NextResponse.json(
+      {
+        status: 200,
+        data: data,
         message: "OK",
       },
       {
