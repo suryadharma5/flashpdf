@@ -1,11 +1,19 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useQuestions } from "@/hooks/useQuestion";
 import { useUserAnswer } from "@/hooks/useUserAnswer";
 import { BarChart, CheckCircle, XCircle } from "lucide-react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
 import { LoadingPage } from "../../loading";
@@ -45,7 +53,7 @@ export default function Review({ documentId, historyId }: ReviewProps) {
       {isLoading || historyLoading ? (
         <LoadingPage />
       ) : isSuccess && historySuccess ? (
-        <>
+        <div className="flex w-full flex-col items-center justify-center space-y-4">
           <Card className="w-full max-w-4xl shadow-lg">
             <CardHeader className="rounded-t-md">
               <CardTitle>
@@ -107,8 +115,22 @@ export default function Review({ documentId, historyId }: ReviewProps) {
                 </div>
               ))}
             </CardContent>
+
+            <CardFooter className="grid w-full max-w-4xl grid-cols-2 gap-4">
+              <Link className="w-full" href="/dashboard/history">
+                <Button variant="outline" className="w-full">
+                  Back to history
+                </Button>
+              </Link>
+              <Link
+                className="w-full"
+                href={`/dashboard/material/library/document/${documentId}/flashcard`}
+              >
+                <Button className="w-full">View flashcards</Button>
+              </Link>
+            </CardFooter>
           </Card>
-        </>
+        </div>
       ) : (
         <div></div>
       )}
