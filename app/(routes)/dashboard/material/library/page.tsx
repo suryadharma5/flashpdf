@@ -61,7 +61,7 @@ export default function Page() {
       <h1 className="mb-6 text-3xl font-bold">Your Documents</h1>
       <div className="grid w-full gap-4 md:grid-cols-2 lg:grid-cols-3">
         {documents.length > 0 ? (
-          documents.map((data, idx) => (
+          documents.map((data) => (
             <Card
               key={data.id}
               className="flex w-full flex-col transition-all duration-300 hover:shadow-lg"
@@ -136,7 +136,7 @@ export default function Page() {
 
                 <Link
                   className="w-full"
-                  href={`http://localhost:3000/dashboard/material/library/document/${data.id}/flashcard`}
+                  href={`/dashboard/material/library/document/${data.id}/flashcard`}
                 >
                   <Button
                     size="sm"
