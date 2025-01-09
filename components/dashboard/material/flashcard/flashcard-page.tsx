@@ -2,6 +2,7 @@
 
 import { ChatDialog } from "@/components/chat/chat-dialog";
 import { LoadingPage } from "@/components/dashboard/loading";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -10,6 +11,8 @@ import { axiosInstance } from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useChat } from "ai/react";
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useState } from "react";
 import { Flashcard } from "./flashcard";
 
@@ -85,13 +88,20 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
           <div className="mb-8 w-full">
             <div className="mb-4 w-full [perspective:1000px]">
               <div className="absolute inset-0 flex w-full flex-col justify-center rounded-lg border border-gray-200 bg-white p-8 text-center shadow-md">
-                <p className="text-start text-2xl font-semibold text-gray-800">
-                  {documentTitle.replace(
-                    documentTitle.charAt(0),
-                    documentTitle.charAt(0).toUpperCase(),
-                  )}{" "}
-                  flashcards
-                </p>
+                <div className="flex items-center gap-4">
+                  <Link href="/dashboard/material/library">
+                    <Button variant="ghost" size={"icon"}>
+                      <ChevronLeft className="h-7 w-7" />
+                    </Button>
+                  </Link>
+                  <p className="text-start text-2xl font-semibold text-gray-800">
+                    {documentTitle.replace(
+                      documentTitle.charAt(0),
+                      documentTitle.charAt(0).toUpperCase(),
+                    )}{" "}
+                    flashcards
+                  </p>
+                </div>
               </div>
             </div>
           </div>
