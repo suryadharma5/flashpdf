@@ -119,7 +119,7 @@ export default function Review({ documentId, historyId }: ReviewProps) {
             <CardFooter className="grid w-full max-w-4xl grid-cols-2 gap-4">
               <Link className="w-full" href="/dashboard/history">
                 <Button variant="outline" className="w-full">
-                  Back to history
+                  View history
                 </Button>
               </Link>
               <Link

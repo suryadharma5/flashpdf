@@ -7,7 +7,7 @@ type ParamsProps = {
   id: string;
 };
 
-export default function PretestPage() {
+export default function PostTestPage() {
   const params: ParamsProps = useParams();
 
   return (

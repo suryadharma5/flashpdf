@@ -29,7 +29,7 @@ import { axiosInstance } from "@/lib/axios";
 import { TTestTypeEnum, TUploadHistorySchema } from "@/lib/types/question-form";
 import { useMutation } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Flag, HelpCircle } from "lucide-react";
-import { redirect, useRouter } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IoFlagSharp } from "react-icons/io5";
 import { toast } from "sonner";
@@ -40,13 +40,16 @@ type PretestProps = {
   documentId: string;
 };
 
-export default function Pretest({ documentId }: PretestProps) {
+export default function Test({ documentId }: PretestProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [flaggedQuestions, setFlaggedQuestions] = useState(new Set());
   const [userAnswers, setUserAnswers] = useState(Array(0).fill(null));
 
   const user = useCurrentUser();
   const router = useRouter();
+  const pathName = usePathname();
+
+  const suffix = pathName.split("/").filter(Boolean).pop();
 
   const handleAnswer = (answer: string) => {
     const newAnswers = [...userAnswers];
@@ -114,7 +117,7 @@ export default function Pretest({ documentId }: PretestProps) {
     const uploadHistoryData = {
       history: {
         grade: (score / questions.length) * 100,
-        type: "PRETEST" as TTestTypeEnum,
+        type: suffix?.toUpperCase() as TTestTypeEnum,
         userId: user.id,
         documentId: documentId,
       },
@@ -141,8 +144,10 @@ export default function Pretest({ documentId }: PretestProps) {
     });
   };
 
-  const { questions, isError, isLoading, error, isSuccess } =
+  const { questions, isError, isLoading, error, isSuccess, documentTitle } =
     useQuestions(documentId);
+
+  console.log(documentTitle);
 
   if (isError) {
     console.error(error);
@@ -184,7 +189,14 @@ export default function Pretest({ documentId }: PretestProps) {
             <CardHeader className="rounded-t-md">
               <CardTitle className="text-start font-bold">
                 <div>
-                  Pretest Questions
+                  {documentTitle.charAt(0).toUpperCase() +
+                    documentTitle.slice(1)}
+                  <p className="mb-3 text-sm font-normal text-muted-foreground">
+                    {suffix?.toLowerCase() === "pretest"
+                      ? "Pretest"
+                      : "Posttest"}{" "}
+                    questions
+                  </p>
                   <div className="mb-4 flex items-center justify-between font-normal">
                     <div className="mt-2 flex items-center space-x-2">
                       <small className="text-xs text-muted-foreground">

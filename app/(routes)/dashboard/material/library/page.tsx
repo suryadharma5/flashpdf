@@ -146,14 +146,26 @@ export default function Page() {
                     View Flashcards
                   </Button>
                 </Link>
-                <Link
-                  href={`/dashboard/material/library/document/${data.id}/pretest`}
-                  className="w-full"
-                >
-                  <Button variant="outline" size="sm" className="w-full">
-                    Take {data.History.length > 0 ? "Post-test" : "Pre-test"}
-                  </Button>
-                </Link>
+
+                {data.History.length > 0 ? (
+                  <Link
+                    href={`/dashboard/material/library/document/${data.id}/posttest`}
+                    className="w-full"
+                  >
+                    <Button variant="outline" size="sm" className="w-full">
+                      Take Post-test
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link
+                    href={`/dashboard/material/library/document/${data.id}/pretest`}
+                    className="w-full"
+                  >
+                    <Button variant="outline" size="sm" className="w-full">
+                      Take Pre-test
+                    </Button>
+                  </Link>
+                )}
               </CardFooter>
             </Card>
           ))
