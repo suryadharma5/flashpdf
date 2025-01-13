@@ -73,6 +73,7 @@ model Document {
   title     String
   questions Question[]
   userId    String
+  namespace String     @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
