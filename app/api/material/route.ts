@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { prismaClient } from "@/lib/db";
+import { loadDocumentIntoPineCone } from "@/lib/pinecone";
 import {
   createDocumentQuestion,
   getAllDocuments,
@@ -7,8 +8,6 @@ import {
 } from "@/lib/repository/material/questionRepository";
 import { questionFormSchema, TDocumentSchema } from "@/lib/types/question-form";
 import { createQuestion } from "@/lib/util/openai-helper";
-import { PDFPage, prepareDocument } from "@/lib/util/pdf-helper";
-import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -34,16 +33,28 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const loader = new PDFLoader(validatedData.data?.document ?? "");
-  const pages = (await loader.load()) as PDFPage[];
-  const documents = await Promise.all(
-    pages.map((page) => prepareDocument(page)),
-  );
+  const { document, documentTitle, numQuestions } = validatedData.data;
+
+  console.log({ document });
 
   // TODO: save to pinecone
-  // const vector = await Promise.all(documents.flat().map(vectoriseDocument));
+  const processedFile = await loadDocumentIntoPineCone(
+    validatedData.data.document ?? null,
+  );
 
-  // console.log({ vector });
+  if (!processedFile) {
+    return NextResponse.json(
+      {
+        status: 400,
+        message: "Invalid field format",
+      },
+      {
+        status: 400,
+      },
+    );
+  }
+
+  const { documents, uuid: namespace } = processedFile;
 
   const combinedText = documents
     .flatMap((doc) => doc.map((chunk) => chunk.pageContent))
@@ -51,16 +62,13 @@ export async function POST(req: NextRequest) {
 
   const session = await auth();
 
-  const { questions, usage } = await createQuestion(
-    combinedText,
-    validatedData.data.numQuestions,
-  );
+  const { questions, usage } = await createQuestion(combinedText, numQuestions);
 
   console.log("Question creation usage:", usage);
 
   const docData: TDocumentSchema = {
     userId: session?.user.id,
-    title: validatedData.data.documentTitle,
+    title: documentTitle,
     questions: questions.questions.map((q) => ({
       question: q.question,
       correctAnswer: q.correctAnswer,
@@ -68,6 +76,7 @@ export async function POST(req: NextRequest) {
         text: option,
       })),
     })),
+    namespace: namespace,
   };
 
   const result = await prismaClient.$transaction(async (tx) => {
@@ -88,8 +97,6 @@ export async function POST(req: NextRequest) {
 
     return docs;
   });
-
-  console.log({ result });
 
   return NextResponse.json(
     {

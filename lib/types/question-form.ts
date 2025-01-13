@@ -60,6 +60,7 @@ const documentSchema = z.object({
   questions: z
     .array(questionSchema)
     .min(1, "Dokumen harus memiliki minimal 1 pertanyaan"),
+  namespace: z.string().min(1, "Namespace is required"),
 });
 /* eslint-enable @typescript-eslint/no-unused-vars */
 

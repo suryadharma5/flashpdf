@@ -24,6 +24,7 @@ export const createDocumentQuestion = async (
           },
         })),
       },
+      namespace: request.namespace,
     },
   });
 

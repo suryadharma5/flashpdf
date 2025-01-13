@@ -27,9 +27,11 @@ export const useQuestions = (documentId: string) => {
     })) || [];
 
   let documentTitle = "";
+  let namespace = "";
 
   if (isSuccess) {
     documentTitle = data.data.title;
+    namespace = data.data.namespace;
   }
 
   return {
@@ -39,5 +41,6 @@ export const useQuestions = (documentId: string) => {
     isError,
     isSuccess,
     error,
+    namespace,
   };
 };
