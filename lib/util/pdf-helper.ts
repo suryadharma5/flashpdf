@@ -1,7 +1,5 @@
 import { Document } from "langchain/document";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import md5 from "md5";
-import { embedDocument } from "./openai-helper";
 
 export type PDFPage = {
   pageContent: string;
@@ -50,18 +48,4 @@ export async function prepareDocument(page: PDFPage) {
   ]);
 
   return docs;
-}
-
-export async function vectoriseDocument(doc: Document) {
-  const embeddings = await embedDocument(doc.pageContent);
-  const hash = md5(doc.pageContent);
-
-  return {
-    id: hash,
-    values: embeddings,
-    metadata: {
-      text: doc.metadata.text,
-      pageNumber: doc.metadata.pageNumber,
-    },
-  };
 }
