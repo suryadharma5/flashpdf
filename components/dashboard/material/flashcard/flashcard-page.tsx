@@ -26,7 +26,7 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
 
   const isMobile = useIsMobile();
 
-  const { documentTitle, questions, isError, isLoading, error } =
+  const { documentTitle, questions, isError, isLoading, error, namespace } =
     useQuestions(id);
 
   const {
@@ -52,7 +52,10 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
   } = useChat({
     id,
     initialMessages: data?.messages ?? [],
-    body: { id },
+    body: {
+      documentId: id,
+      namespace,
+    },
     onFinish: () => {
       console.log("Finish");
     },
