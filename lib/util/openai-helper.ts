@@ -14,7 +14,7 @@ export const createQuestion = async (text: string, numOfQuestions: string) => {
   const { object: questions, usage } = await generateObject({
     model: openai("gpt-4o-mini"),
     maxTokens: 700,
-    temperature: 0.5,
+    temperature: 0.6,
     prompt: `
         Create 1 multiple-choice questions based on the following text. Use the format:
         - Question
@@ -44,7 +44,7 @@ export const createQuestion = async (text: string, numOfQuestions: string) => {
   return { questions, usage };
 };
 
-export const embedDocument = async (text: string) => {
+export const getEmbeddings = async (text: string) => {
   const { embedding, usage } = await embed({
     model: openai.embedding("text-embedding-3-small"),
     value: text.replace(/\n/g, " "),
