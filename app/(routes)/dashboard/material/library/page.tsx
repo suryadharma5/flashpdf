@@ -58,10 +58,10 @@ export default function Page() {
 
   return (
     <div className="container mx-auto max-w-7xl p-4 sm:p-6">
-      <h1 className="mb-6 text-3xl font-bold">Your Documents</h1>
-      <div className="grid w-full gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {documents.length > 0 ? (
-          documents.map((data) => (
+      <h1 className="mb-6 text-3xl font-bold">Library</h1>
+      {documents.length > 0 ? (
+        documents.map((data) => (
+          <div className="grid w-full gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Card
               key={data.id}
               className="flex w-full flex-col transition-all duration-300 hover:shadow-lg"
@@ -168,26 +168,20 @@ export default function Page() {
                 )}
               </CardFooter>
             </Card>
-          ))
-        ) : (
-          <div className="flex h-[80vh] w-full flex-col items-center justify-center">
-            <Image
-              src={EmptyImage}
-              alt="empty image"
-              width={250}
-              height={250}
-            />
-            <p className="mt-12 text-center text-2xl font-light">
-              You don't have any flashcard yet
-            </p>
-            <Link href="/dashboard/material/create">
-              <Button className="mt-4" type="button">
-                Create now
-              </Button>
-            </Link>
           </div>
-        )}
-      </div>
+        ))
+      ) : (
+        <div className="flex h-[80vh] w-full flex-col items-center justify-center">
+          <Image src={EmptyImage} alt="empty image" width={300} height={300} />
+          <p className="mt-12 text-center text-2xl font-bold">OOPS</p>
+          <p className="mt-2 text-xl">You have not upload any document yet </p>
+          <Link href="/dashboard/material/create">
+            <Button className="mt-4" type="button">
+              Upload now
+            </Button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
