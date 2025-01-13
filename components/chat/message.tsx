@@ -48,7 +48,7 @@ export const MessageBlock = ({ messages }: MessageProps) => {
             {message.role === "user" ? (
               <>
                 <div className="w-3/4 flex-1 rounded-lg border border-gray-200 p-3">
-                  <div className="text-end text-sm">{message.content}</div>
+                  <div className="text-sm">{message.content}</div>
                 </div>
                 <CircleUser className="mt-1 h-5 w-5 text-gray-500" />
               </>
