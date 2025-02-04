@@ -3,7 +3,7 @@
 import { ChatDialog } from "@/components/chat/chat-dialog";
 import { LoadingPage } from "@/components/dashboard/loading";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useQuestions } from "@/hooks/useQuestion";
@@ -14,6 +14,7 @@ import { useChat } from "ai/react";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 import { Flashcard } from "./flashcard";
 
 type FlashcardProps = {
@@ -49,6 +50,7 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
     setInput,
     isLoading: aiLoading,
     stop,
+    error: aiError,
   } = useChat({
     id,
     initialMessages: data?.messages ?? [],
@@ -84,10 +86,18 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
     console.log({ chatError });
   }
 
+  if (aiError) {
+    console.error({ aiError });
+    toast.error("Something went wrong!", {
+      duration: 3000,
+      position: "top-right",
+    });
+  }
+
   return (
     <div className="-mt-12 flex max-h-screen w-full flex-col items-center justify-center space-y-12 p-4">
       <Card className="w-full max-w-4xl border-0 bg-white shadow-none">
-        <CardContent className={cn("py-6", isMobile && "px-0")}>
+        <CardHeader className={cn("py-6", isMobile && "px-0")}>
           <div className="mb-8 w-full">
             <div className="mb-4 w-full [perspective:1000px]">
               <div className="absolute inset-0 flex w-full flex-col justify-center rounded-lg border border-gray-200 bg-white p-8 text-center shadow-md">
@@ -108,7 +118,7 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
               </div>
             </div>
           </div>
-        </CardContent>
+        </CardHeader>
       </Card>
 
       <Tabs defaultValue="flashcard" className="w-full max-w-[53rem]">
