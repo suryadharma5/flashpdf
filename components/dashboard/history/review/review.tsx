@@ -104,7 +104,7 @@ export default function Review({ documentId, historyId }: ReviewProps) {
                           className={`h-auto w-full justify-start overflow-hidden whitespace-normal break-words rounded-md border px-2 py-6 text-left text-foreground transition-all ${isCorrect ? "bg-green-500" : ""} ${isUserAnswer && !isCorrect ? "bg-red-500" : ""} ${!isCorrect && !isUserAnswer ? "bg-background" : ""}`}
                         >
                           <span
-                            className={`max-w-full text-sm ${isCorrect ? "font-semibo text-white" : ""} ${isUserAnswer && !isCorrect ? "font-semibo text-white" : ""}`}
+                            className={`max-w-full text-sm ${isCorrect ? "font-semibold text-white" : ""} ${isUserAnswer && !isCorrect ? "font-semibo text-white" : ""}`}
                           >
                             {option}
                           </span>
