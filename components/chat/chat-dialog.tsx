@@ -11,17 +11,6 @@ import { BotMessageSquare } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import AIInput from "./chat-input";
 
-type ChatDataProps = {
-  assistant: {
-    role: string;
-    content: any;
-  };
-  user: {
-    role: string;
-    content: any;
-  };
-};
-
 type ChatDialogProps = {
   messages: Message[];
   input: string;

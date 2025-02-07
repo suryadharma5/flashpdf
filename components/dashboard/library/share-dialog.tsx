@@ -12,10 +12,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { HistoryProps } from "@/hooks/useUserAnswer";
 import { axiosInstance } from "@/lib/axios";
 import { TForumSchema } from "@/lib/types/forum";
-import { Question } from "@prisma/client";
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -27,19 +25,6 @@ interface ShareDialogProps {
   documentId: string;
   queryClient: QueryClient;
 }
-
-type DocumentProps = {
-  id: string;
-  createdAt: string;
-  title: string;
-  isPublic: boolean;
-  questions: Question[];
-  History: HistoryProps[];
-};
-
-type QueryDataProps = {
-  data: DocumentProps[];
-};
 
 export function ShareDialog({
   open,
