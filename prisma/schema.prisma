@@ -31,6 +31,7 @@ model User {
   History       History[]
   AnswerHistory AnswerHistory[]
   Chat          Chat[]
+  Forum         Forum[]
 
   @@map("users")
 }
@@ -72,8 +73,9 @@ model Document {
   id        String     @id @default(cuid())
   title     String
   questions Question[]
-  userId    String
+  userId    String     @unique
   namespace String     @unique
+  isPublic  Boolean    @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -81,6 +83,7 @@ model Document {
   user    User      @relation(fields: [userId], references: [id])
   History History[]
   Chat    Chat[]
+  Forum   Forum[]
 
   @@map("documents")
 }
@@ -163,4 +166,20 @@ model Chat {
   user     User?     @relation(fields: [userId], references: [id])
 
   @@map("chats")
+}
+
+model Forum {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  documentId  String
+  userId      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document Document? @relation(fields: [documentId], references: [id])
+  user     User?     @relation(fields: [userId], references: [id])
+
+  @@map("forums")
 }
