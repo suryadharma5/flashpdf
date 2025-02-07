@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prismaClient } from "@/lib/db";
 import { PrismaTransaction } from "@/lib/repository/auth/tokenRepository";
 import { TDocumentSchema } from "@/lib/types/question-form";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export const createDocumentQuestion = async (
   request: TDocumentSchema,
@@ -66,6 +67,16 @@ export const getAllDocuments = async () => {
     },
     include: {
       History: true,
+      questions: {
+        select: {
+          question: true,
+        },
+      },
+      Forum: {
+        select: {
+          id: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
@@ -77,4 +88,45 @@ export const getAllDocuments = async () => {
   }
 
   return documents;
+};
+
+export const updateDocumentStatus = async (
+  id: string,
+  userId: string,
+  isPublic: boolean,
+  tx?: PrismaTransaction,
+) => {
+  const prismaTx = tx || prismaClient;
+
+  try {
+    await prismaTx.document.update({
+      where: {
+        id: id,
+        userId: userId,
+      },
+      data: {
+        isPublic: isPublic,
+      },
+    });
+
+    return {
+      success: true,
+      message: "success",
+    };
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        // Error: Record not found
+        return {
+          success: false,
+          message: "not found",
+        };
+      }
+    }
+
+    return {
+      success: false,
+      message: "something went wrong",
+    };
+  }
 };
