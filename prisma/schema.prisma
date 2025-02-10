@@ -32,6 +32,8 @@ model User {
   AnswerHistory AnswerHistory[]
   Chat          Chat[]
   Forum         Forum[]
+  ForumLike     ForumLike[]
+  ForumComment  Comment[]
 
   @@map("users")
 }
@@ -174,12 +176,42 @@ model Forum {
   description String
   documentId  String
   userId      String
+  totalLike   Int    @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  document Document? @relation(fields: [documentId], references: [id])
-  user     User?     @relation(fields: [userId], references: [id])
+  document Document?   @relation(fields: [documentId], references: [id])
+  user     User?       @relation(fields: [userId], references: [id])
+  likes    ForumLike[]
+  comments Comment[]
 
   @@map("forums")
+}
+
+model ForumLike {
+  id        String   @id @default(cuid())
+  userId    String
+  forumId   String
+  createdAt DateTime @default(now())
+
+  forum Forum @relation(fields: [forumId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([forumId, userId])
+  @@map("forum_likes")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  comment   String
+  forumId   String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  forum Forum @relation(fields: [forumId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@map("comments")
 }
