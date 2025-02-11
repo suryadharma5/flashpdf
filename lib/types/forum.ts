@@ -24,6 +24,12 @@ export const deleteForumSchema = z.object({
   forumId: z.string().min(1),
 });
 
+export const commentSchema = z.object({
+  comment: z.string().min(1),
+  forumId: z.string().min(1),
+});
+
 export type TForumSchema = z.infer<typeof forumSchema>;
 export type TCreateForumSchema = z.infer<typeof createForumSchema>;
 export type TDeleteForumSchema = z.infer<typeof deleteForumSchema>;
+export type TCommentSchema = z.infer<typeof commentSchema>;
