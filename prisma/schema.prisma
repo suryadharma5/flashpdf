@@ -82,7 +82,7 @@ model Document {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user    User      @relation(fields: [userId], references: [id])
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   History History[]
   Chat    Chat[]
   Forum   Forum[]
@@ -100,7 +100,7 @@ model Question {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  document Document? @relation(fields: [documentId], references: [id])
+  document Document? @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@map("questions")
 }
@@ -113,7 +113,7 @@ model Option {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  question Question? @relation(fields: [questionId], references: [id])
+  question Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@map("options")
 }
@@ -133,8 +133,8 @@ model History {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user          User?           @relation(fields: [userId], references: [id])
-  document      Document?       @relation(fields: [documentId], references: [id])
+  user          User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document      Document?       @relation(fields: [documentId], references: [id], onDelete: Cascade)
   AnswerHistory AnswerHistory[]
 
   @@map("histories")
@@ -149,8 +149,8 @@ model AnswerHistory {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user    User?   @relation(fields: [userId], references: [id])
-  history History @relation(fields: [historyId], references: [id])
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  history History @relation(fields: [historyId], references: [id], onDelete: Cascade)
 
   @@map("answer_histories")
 }
@@ -164,8 +164,8 @@ model Chat {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  document Document? @relation(fields: [documentId], references: [id])
-  user     User?     @relation(fields: [userId], references: [id])
+  document Document? @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("chats")
 }
@@ -181,8 +181,8 @@ model Forum {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  document Document?   @relation(fields: [documentId], references: [id])
-  user     User?       @relation(fields: [userId], references: [id])
+  document Document?   @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   likes    ForumLike[]
   comments Comment[]
 
@@ -210,8 +210,8 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  forum Forum @relation(fields: [forumId], references: [id])
-  user  User  @relation(fields: [userId], references: [id])
+  forum Forum @relation(fields: [forumId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("comments")
 }
