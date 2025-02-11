@@ -1,5 +1,6 @@
 "use client";
 
+import { Empty } from "@/components/dashboard/empty";
 import ErrorPage from "@/components/dashboard/error";
 import { Alert } from "@/components/dashboard/library/alert-dialog";
 import { ShareDialog } from "@/components/dashboard/library/share-dialog";
@@ -21,7 +22,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { axiosInstance } from "@/lib/axios";
 import { TDeleteForumSchema } from "@/lib/types/forum";
-import EmptyImage from "@/public/empty.svg";
 import { Forum, Question } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
@@ -33,7 +33,6 @@ import {
   Clock9,
   MoreHorizontal,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -277,16 +276,12 @@ export default function Page() {
           </div>
         ))
       ) : (
-        <div className="flex h-[80vh] w-full flex-col items-center justify-center">
-          <Image src={EmptyImage} alt="empty image" width={300} height={300} />
-          <p className="mt-12 text-center text-2xl font-bold">OOPS</p>
-          <p className="mt-2 text-xl">You have not upload any document yet </p>
-          <Link href="/dashboard/material/create">
-            <Button className="mt-4" type="button">
-              Upload now
-            </Button>
-          </Link>
-        </div>
+        <Empty
+          description="You have not upload any document yet"
+          isActionButtonNeeded={true}
+          actionButtonLink="/dashboard/material/create"
+          actionButtonText="Upload now"
+        />
       )}
     </div>
   );
