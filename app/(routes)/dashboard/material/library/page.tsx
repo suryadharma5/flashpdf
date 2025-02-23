@@ -54,6 +54,11 @@ type DocumentProps = {
 export default function Page() {
   const [showDialog, setShowDialog] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [onSubmitAction, setOnSubmitAction] = useState<() => void>(
+    () => () => {},
+  );
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertDescription, setAlertDescription] = useState("");
 
   const queryClient = useQueryClient();
 
@@ -84,6 +89,17 @@ export default function Page() {
       console.log(e.message);
     },
   });
+
+  const showAlert = (
+    title: string,
+    description: string,
+    onSubmit: () => void,
+  ) => {
+    setOnSubmitAction(() => onSubmit);
+    setIsAlertOpen(true);
+    setAlertTitle(title);
+    setAlertDescription(description);
+  };
 
   const handleDelete = (documentId: string, forumId: string) => {
     const data = {
@@ -148,7 +164,13 @@ export default function Page() {
                             <DropdownMenuItem
                               className="hover:cursor-pointer"
                               onClick={() => {
-                                handleDelete(data.id, data.Forum[0].id);
+                                // handleDelete(data.id, data.Forum[0].id);
+                                showAlert(
+                                  "Are you sure?",
+                                  "Changing this document to private will remove its associated forum data. Are you sure you want to proceed?",
+                                  () => handleDelete(data.id, data.Forum[0].id),
+                                );
+                                document.body.style.pointerEvents = "";
                               }}
                             >
                               Make private
@@ -268,10 +290,11 @@ export default function Page() {
             </Card>
 
             <Alert
-              title="Are you sure?"
-              description="This action cannot be undone. This will permanently delete your document."
+              title={alertTitle}
+              description={alertDescription}
               open={isAlertOpen}
               onOpenChange={(open) => setIsAlertOpen(open)}
+              onSubmit={onSubmitAction}
             />
           </div>
         ))

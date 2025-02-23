@@ -14,9 +14,16 @@ type AlertProps = {
   description: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSubmit: () => void;
 };
 
-export function Alert({ title, description, open, onOpenChange }: AlertProps) {
+export function Alert({
+  title,
+  description,
+  open,
+  onOpenChange,
+  onSubmit,
+}: AlertProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -33,7 +40,7 @@ export function Alert({ title, description, open, onOpenChange }: AlertProps) {
           >
             Cancel
           </AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={onSubmit}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
