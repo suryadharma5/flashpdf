@@ -35,6 +35,7 @@ model User {
   ForumLike     ForumLike[]
   ForumComment  Comment[]
   SavedDocument SavedDocument[]
+  Notes         Notes[]
 
   @@map("users")
 }
@@ -88,6 +89,7 @@ model Document {
   Chat          Chat[]
   Forum         Forum[]
   SavedDocument SavedDocument[]
+  Notes         Notes[]
 
   @@map("documents")
 }
@@ -231,4 +233,19 @@ model SavedDocument {
 
   @@unique([userId, documentId])
   @@map("saved_documents")
+}
+
+model Notes {
+  id         String @id @default(cuid())
+  userId     String
+  documentId String
+  notes      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document Document? @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notes")
 }
