@@ -34,6 +34,7 @@ model User {
   Forum         Forum[]
   ForumLike     ForumLike[]
   ForumComment  Comment[]
+  SavedDocument SavedDocument[]
 
   @@map("users")
 }
@@ -82,10 +83,11 @@ model Document {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  History History[]
-  Chat    Chat[]
-  Forum   Forum[]
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  History       History[]
+  Chat          Chat[]
+  Forum         Forum[]
+  SavedDocument SavedDocument[]
 
   @@map("documents")
 }
@@ -214,4 +216,19 @@ model Comment {
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("comments")
+}
+
+model SavedDocument {
+  id         String @id @default(cuid())
+  userId     String
+  documentId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, documentId])
+  @@map("saved_documents")
 }
