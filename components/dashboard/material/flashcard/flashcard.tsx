@@ -31,7 +31,7 @@ export const Flashcard = ({
       <CardContent className="px-0 py-6">
         <div className="mb-8 w-full">
           <div
-            className="mb-4 h-96 w-full cursor-pointer [perspective:1000px]"
+            className="mb-4 h-[28rem] w-full cursor-pointer [perspective:1000px]"
             onClick={flipCard}
             tabIndex={0}
             role="button"

@@ -95,25 +95,23 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
   }
 
   return (
-    <div className="-mt-12 flex max-h-screen w-full flex-col items-center justify-center space-y-12 p-4">
-      <Card className="w-full max-w-4xl border-0 bg-white shadow-none">
-        <CardHeader className={cn("py-6", isMobile && "px-0")}>
-          <div className="mb-8 w-full">
-            <div className="mb-4 w-full [perspective:1000px]">
-              <div className="absolute inset-0 flex w-full flex-col justify-center rounded-lg border border-gray-200 bg-white p-8 text-center shadow-md">
-                <div className="flex items-center gap-4">
+    <div className="flex w-full flex-col items-center justify-center space-y-4">
+      <Card className="w-full max-w-4xl border-0 shadow-none">
+        <CardHeader className={cn("px-0 py-6", isMobile && "px-0")}>
+          <div className="w-full">
+            <div className="w-full [perspective:1000px]">
+              <div className="absolute inset-0 flex w-full flex-col justify-center rounded-lg border-none text-center">
+                <div className="flex items-center gap-2">
                   <Link href="/dashboard/material/library">
                     <Button variant="ghost" size={"icon"}>
                       <ChevronLeft className="h-7 w-7" />
                     </Button>
                   </Link>
-                  <p className="text-start text-2xl font-semibold text-gray-800">
-                    {documentTitle.replace(
-                      documentTitle.charAt(0),
-                      documentTitle.charAt(0).toUpperCase(),
-                    )}{" "}
-                    flashcards
-                  </p>
+                  <div className="flex w-full items-center justify-between">
+                    <h1 className="text-start text-2xl font-semibold text-gray-800">
+                      Review Flashcards
+                    </h1>
+                  </div>
                 </div>
               </div>
             </div>
@@ -122,7 +120,7 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
       </Card>
 
       <Tabs defaultValue="flashcard" className="w-full max-w-[53rem]">
-        <TabsList className="grid w-full grid-cols-2 rounded-md px-1">
+        <TabsList className="grid w-full grid-cols-2 rounded-md bg-white">
           <TabsTrigger value="flashcard">Flashcard</TabsTrigger>
           <TabsTrigger value="notes">Notes</TabsTrigger>
         </TabsList>
