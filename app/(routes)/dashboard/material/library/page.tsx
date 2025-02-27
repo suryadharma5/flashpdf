@@ -22,11 +22,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { axiosInstance } from "@/lib/axios";
 import { TDeleteForumSchema } from "@/lib/types/forum";
+import EmptyImage from "@/public/Chill-Time.svg";
 import { Forum, Question } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
-  Book,
   CheckCircle,
   ChevronsUp,
   CircleAlert,
@@ -211,9 +211,9 @@ export default function Page() {
                         </p>
                       </div>
                       <div className="mt-2 flex items-center gap-1">
-                        <Book size={15} />
-                        <p className="text-xs">
-                          {data.questions.length} questions
+                        <p className="text-sm">
+                          {data.questions.length} question
+                          {data.questions.length !== 1 ? "s" : ""}
                         </p>
                       </div>
                     </CardDescription>
@@ -300,6 +300,7 @@ export default function Page() {
         ))
       ) : (
         <Empty
+          image={EmptyImage}
           description="You have not upload any document yet"
           isActionButtonNeeded={true}
           actionButtonLink="/dashboard/material/create"
