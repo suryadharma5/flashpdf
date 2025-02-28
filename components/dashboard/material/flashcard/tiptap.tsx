@@ -1,54 +1,54 @@
 "use client";
 
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Bold from "@tiptap/extension-bold";
-import Italic from "@tiptap/extension-italic";
-import Underline from "@tiptap/extension-underline";
-import Strike from "@tiptap/extension-strike";
 import Blockquote from "@tiptap/extension-blockquote";
-import Heading from "@tiptap/extension-heading";
+import Bold from "@tiptap/extension-bold";
 import BulletList from "@tiptap/extension-bullet-list";
-import ListItem from "@tiptap/extension-list-item";
 import CodeBlock from "@tiptap/extension-code-block";
+import Heading from "@tiptap/extension-heading";
+import Italic from "@tiptap/extension-italic";
+import ListItem from "@tiptap/extension-list-item";
+import Placeholder from "@tiptap/extension-placeholder";
+import Strike from "@tiptap/extension-strike";
 import TextAlign from "@tiptap/extension-text-align";
-import Placeholder from '@tiptap/extension-placeholder';
+import Underline from "@tiptap/extension-underline";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import "./tiptap.css";
 
 import {
-  Bold as BoldIcon,
-  Italic as ItalicIcon,
-  Underline as UnderlineIcon,
-  Strikethrough as StrikethroughIcon,
-  Quote as BlockquoteIcon,
-  List as ListIcon,
-  Code as CodeIcon,
-  AlignLeft as AlignLeftIcon,
   AlignCenter as AlignCenterIcon,
+  AlignLeft as AlignLeftIcon,
   AlignRight as AlignRightIcon,
+  Quote as BlockquoteIcon,
+  Bold as BoldIcon,
+  Code as CodeIcon,
   Heading1 as H1Icon,
   Heading2 as H2Icon,
   Heading3 as H3Icon,
+  Italic as ItalicIcon,
+  List as ListIcon,
+  Strikethrough as StrikethroughIcon,
+  Underline as UnderlineIcon,
 } from "lucide-react";
 
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { saveNotes, getNotes } from "@/lib/repository/material/noteRepository";
-import { useMutation, useQuery, useQueryClient  } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axios";
-import { LoadingPage } from "./loading";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { LoadingPage } from "../../loading";
 
 export default function Tiptap({ documentId }: { documentId: string }) {
   const { data: session } = useSession();
   const userId = session?.user?.id;
   const queryClient = useQueryClient();
-  
-  const [notes, setNotes] = useState<string>("");
 
+  const [notes, setNotes] = useState<string>("");
 
   const saveNotesMutation = useMutation({
     mutationFn: async (data: string) => {
       const res = await axiosInstance.put(
-        `/api/material/notes?documentId=${documentId}`, { notes: data }
+        `/api/material/notes?documentId=${documentId}`,
+        { notes: data },
       );
 
       return res.data;
@@ -63,15 +63,12 @@ export default function Tiptap({ documentId }: { documentId: string }) {
     },
   });
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-  } = useQuery<string>({
+  const { data, isLoading, isError, error } = useQuery<string>({
     queryKey: ["fetchNotes", documentId],
     queryFn: async () => {
-      const res = await axiosInstance.get(`/api/material/notes?documentId=${documentId}`);
+      const res = await axiosInstance.get(
+        `/api/material/notes?documentId=${documentId}`,
+      );
       return res.data.data;
     },
     refetchOnWindowFocus: true, // Refetch when tab is focused
@@ -93,7 +90,7 @@ export default function Tiptap({ documentId }: { documentId: string }) {
       Heading.configure({ levels: [1, 2, 3] }),
       TextAlign.configure({ types: ["paragraph", "heading"] }),
       Placeholder.configure({
-        placeholder: 'Start writing here...', 
+        placeholder: "Start writing here...",
       }),
     ],
     content: notes, // Set initial cont
@@ -104,14 +101,13 @@ export default function Tiptap({ documentId }: { documentId: string }) {
     },
   });
 
-
   useEffect(() => {
     if (data && editor) {
       editor.commands.setContent(data);
     }
-  }, [data,editor]);
+  }, [data, editor]);
 
-  if(isLoading) {
+  if (isLoading) {
     return <LoadingPage />;
   }
 
@@ -120,7 +116,7 @@ export default function Tiptap({ documentId }: { documentId: string }) {
     return <div>Error loading notes</div>;
   }
 
-  if(!editor) {
+  if (!editor) {
     return null;
   }
 
@@ -131,12 +127,12 @@ export default function Tiptap({ documentId }: { documentId: string }) {
   }
 
   return (
-    <div className="flex flex-col w-full h-[calc(100vh-60px)] p-4">
+    <div className="flex h-[calc(100vh-60px)] w-full flex-col p-4">
       {/* Toolbar */}
-      <div className="flex gap-2 mb-2 bg-gray-100 p-2 rounded-lg shadow-sm">
+      <div className="mb-2 flex gap-2 rounded-lg bg-gray-100 p-2 shadow-sm">
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`p-2 rounded-md ${
+          className={`rounded-md p-2 ${
             editor.isActive("bold") ? "bg-blue-500 text-white" : "bg-gray-200"
           }`}
         >
@@ -144,7 +140,7 @@ export default function Tiptap({ documentId }: { documentId: string }) {
         </button>
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`p-2 rounded-md ${
+          className={`rounded-md p-2 ${
             editor.isActive("italic") ? "bg-blue-500 text-white" : "bg-gray-200"
           }`}
         >
@@ -152,15 +148,17 @@ export default function Tiptap({ documentId }: { documentId: string }) {
         </button>
         <button
           onClick={() => editor.chain().focus().toggleUnderline().run()}
-          className={`p-2 rounded-md ${
-            editor.isActive("underline") ? "bg-blue-500 text-white" : "bg-gray-200"
+          className={`rounded-md p-2 ${
+            editor.isActive("underline")
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200"
           }`}
         >
           <UnderlineIcon size={18} />
         </button>
         <button
           onClick={() => editor.chain().focus().toggleStrike().run()}
-          className={`p-2 rounded-md ${
+          className={`rounded-md p-2 ${
             editor.isActive("strike") ? "bg-blue-500 text-white" : "bg-gray-200"
           }`}
         >
@@ -168,80 +166,107 @@ export default function Tiptap({ documentId }: { documentId: string }) {
         </button>
         <button
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={`p-2 rounded-md ${
-            editor.isActive("blockquote") ? "bg-blue-500 text-white" : "bg-gray-200"
+          className={`rounded-md p-2 ${
+            editor.isActive("blockquote")
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200"
           }`}
         >
           <BlockquoteIcon size={18} />
         </button>
         <button
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`p-2 rounded-md ${
-            editor.isActive("bulletList") ? "bg-blue-500 text-white" : "bg-gray-200"
+          className={`rounded-md p-2 ${
+            editor.isActive("bulletList")
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200"
           }`}
         >
           <ListIcon size={18} />
         </button>
         <button
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-          className={`p-2 rounded-md ${
-            editor.isActive("codeBlock") ? "bg-blue-500 text-white" : "bg-gray-200"
+          className={`rounded-md p-2 ${
+            editor.isActive("codeBlock")
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200"
           }`}
         >
           <CodeIcon size={18} />
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign("left").run()}
-          className={`p-2 rounded-md ${
-            editor.isActive({ textAlign: "left" }) ? "bg-blue-500 text-white" : "bg-gray-200"
+          className={`rounded-md p-2 ${
+            editor.isActive({ textAlign: "left" })
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200"
           }`}
         >
           <AlignLeftIcon size={18} />
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign("center").run()}
-          className={`p-2 rounded-md ${
-            editor.isActive({ textAlign: "center" }) ? "bg-blue-500 text-white" : "bg-gray-200"
+          className={`rounded-md p-2 ${
+            editor.isActive({ textAlign: "center" })
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200"
           }`}
         >
           <AlignCenterIcon size={18} />
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign("right").run()}
-          className={`p-2 rounded-md ${
-            editor.isActive({ textAlign: "right" }) ? "bg-blue-500 text-white" : "bg-gray-200"
+          className={`rounded-md p-2 ${
+            editor.isActive({ textAlign: "right" })
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200"
           }`}
         >
           <AlignRightIcon size={18} />
         </button>
         <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          className={`p-2 rounded-md ${
-            editor.isActive("heading", { level: 1 }) ? "bg-blue-500 text-white" : "bg-gray-200"
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 1 }).run()
+          }
+          className={`rounded-md p-2 ${
+            editor.isActive("heading", { level: 1 })
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200"
           }`}
         >
           <H1Icon size={18} />
         </button>
         <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={`p-2 rounded-md ${
-            editor.isActive("heading", { level: 2 }) ? "bg-blue-500 text-white" : "bg-gray-200"
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
+          className={`rounded-md p-2 ${
+            editor.isActive("heading", { level: 2 })
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200"
           }`}
         >
           <H2Icon size={18} />
         </button>
         <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          className={`p-2 rounded-md ${
-            editor.isActive("heading", { level: 3 }) ? "bg-blue-500 text-white" : "bg-gray-200"
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 3 }).run()
+          }
+          className={`rounded-md p-2 ${
+            editor.isActive("heading", { level: 3 })
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200"
           }`}
         >
           <H3Icon size={18} />
         </button>
       </div>
 
-      <div className="flex-1 border rounded-lg bg-white p-4 shadow-sm overflow-auto">
-        <EditorContent editor={editor} className="prose w-full min-h-full focus:outline-none border-none" />
+      <div className="flex-1 overflow-auto rounded-lg border bg-white p-4 shadow-sm">
+        <EditorContent
+          editor={editor}
+          className="prose min-h-full w-full border-none focus:outline-none"
+        />
       </div>
     </div>
   );
