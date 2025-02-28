@@ -164,7 +164,6 @@ export default function Page() {
                             <DropdownMenuItem
                               className="hover:cursor-pointer"
                               onClick={() => {
-                                // handleDelete(data.id, data.Forum[0].id);
                                 showAlert(
                                   "Are you sure?",
                                   "Changing this document to private will remove its associated forum data. Are you sure you want to proceed?",
@@ -193,7 +192,11 @@ export default function Page() {
                           <DropdownMenuItem
                             className="text-red-600 hover:cursor-pointer"
                             onClick={() => {
-                              setIsAlertOpen(true);
+                              showAlert(
+                                "Are you sure?",
+                                "Deleting this document is permanent and cannot be reversed. Are you sure you want to proceed?",
+                                () => handleDelete(data.id, data.Forum[0].id),
+                              );
                               document.body.style.pointerEvents = "";
                             }}
                           >
