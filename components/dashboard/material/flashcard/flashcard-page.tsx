@@ -16,6 +16,8 @@ import Link from "next/link";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { Flashcard } from "./flashcard";
+import { FormField, FormItem } from "@/components/ui/form";
+import Tiptap from "@/components/dashboard/tiptap";
 
 type FlashcardProps = {
   id: string;
@@ -138,7 +140,11 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
         </TabsContent>
 
         <TabsContent value="notes">
-          <div>Halo</div>
+            <div className="min-h-screen flex flex-col items-center bg-gray-100">
+            <div className="w-full max-w-4xl">
+            <Tiptap documentId={id} />
+            </div>
+            </div>   
         </TabsContent>
       </Tabs>
 
