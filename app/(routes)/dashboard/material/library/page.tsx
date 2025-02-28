@@ -52,7 +52,7 @@ type DocumentProps = {
 };
 
 export default function Page() {
-  const [showDialog, setShowDialog] = useState(false);
+  const [openDialogId, setOpenDialogId] = useState<string | null>(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [onSubmitAction, setOnSubmitAction] = useState<() => void>(
     () => () => {},
@@ -110,13 +110,11 @@ export default function Page() {
     deleteForumMutation.mutate(data);
   };
 
-  const isPostTestComplete = (histories: HistoryProps[]) => {
-    for (const history of histories) {
-      if (history.type.toLowerCase() === "posttest") {
-        return true;
-      }
-    }
-    return false;
+  const isPostTestComplete = (histories: HistoryProps[]) =>
+    histories.some((history) => history.type.toLowerCase() === "posttest");
+
+  const toggleDialog = (id: string) => {
+    setOpenDialogId((prevId) => (prevId === id ? null : id));
   };
 
   if (isPending) {
@@ -133,174 +131,176 @@ export default function Page() {
     <div className="container mx-auto max-w-7xl p-4 sm:p-6">
       <h1 className="mb-6 text-3xl font-bold">Library</h1>
       {documents.length > 0 ? (
-        documents.map((data) => (
-          <div
-            className="grid w-full gap-4 md:grid-cols-2 lg:grid-cols-3"
-            key={data.id}
-          >
-            <Card className="flex w-full flex-col transition-all duration-300 hover:shadow-lg">
-              <CardHeader>
-                <div className="flex w-full">
-                  <div className="w-full p-0">
-                    <CardTitle className="flex w-full items-center justify-between">
-                      {data.title
-                        .replace(
-                          data.title.charAt(0),
-                          data.title.charAt(0).toUpperCase(),
-                        )
-                        .slice(0, 20)}
+        <div className="grid w-full gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {documents.map((data) => (
+            <div key={data.id}>
+              <Card className="flex w-full flex-col transition-all duration-300 hover:shadow-lg">
+                <CardHeader>
+                  <div className="flex w-full">
+                    <div className="w-full p-0">
+                      <CardTitle className="flex w-full items-center justify-between">
+                        {data.title
+                          .replace(
+                            data.title.charAt(0),
+                            data.title.charAt(0).toUpperCase(),
+                          )
+                          .slice(0, 20)}
 
-                      {data.title.length > 20 ? "..." : ""}
+                        {data.title.length > 20 ? "..." : ""}
 
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="center">
-                          {data.isPublic ? (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="center">
+                            {data.isPublic ? (
+                              <DropdownMenuItem
+                                className="hover:cursor-pointer"
+                                onClick={() => {
+                                  showAlert(
+                                    "Are you sure?",
+                                    "Changing this document to private will remove its associated forum data. Are you sure you want to proceed?",
+                                    () =>
+                                      handleDelete(data.id, data.Forum[0].id),
+                                  );
+                                  document.body.style.pointerEvents = "";
+                                }}
+                              >
+                                Make private
+                              </DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem
+                                className="hover:cursor-pointer"
+                                onClick={() => {
+                                  toggleDialog(data.id);
+                                  document.body.style.pointerEvents = "";
+                                }}
+                              >
+                                Make public
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem className="hover:cursor-pointer">
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem
-                              className="hover:cursor-pointer"
+                              className="text-red-600 hover:cursor-pointer"
                               onClick={() => {
                                 showAlert(
                                   "Are you sure?",
-                                  "Changing this document to private will remove its associated forum data. Are you sure you want to proceed?",
-                                  () => handleDelete(data.id, data.Forum[0].id),
+                                  "Deleting this document is permanent and cannot be reversed. Are you sure you want to proceed?",
+                                  () => {
+                                    console.log("halo");
+                                  },
                                 );
                                 document.body.style.pointerEvents = "";
                               }}
                             >
-                              Make private
+                              Delete
                             </DropdownMenuItem>
-                          ) : (
-                            <DropdownMenuItem
-                              className="hover:cursor-pointer"
-                              onClick={() => {
-                                setShowDialog(!showDialog);
-                                document.body.style.pointerEvents = "";
-                              }}
-                            >
-                              Make public
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuItem className="hover:cursor-pointer">
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-red-600 hover:cursor-pointer"
-                            onClick={() => {
-                              showAlert(
-                                "Are you sure?",
-                                "Deleting this document is permanent and cannot be reversed. Are you sure you want to proceed?",
-                                () => handleDelete(data.id, data.Forum[0].id),
-                              );
-                              document.body.style.pointerEvents = "";
-                            }}
-                          >
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </CardTitle>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </CardTitle>
 
-                    <CardDescription className="flex w-full items-center justify-between">
-                      <div className="mt-2 flex items-center gap-1">
-                        <Clock9 size={15} />
-                        <p className="text-xs">
-                          {formatDistanceToNowStrict(data.createdAt)} ago
-                        </p>
-                      </div>
-                      <div className="mt-2 flex items-center gap-1">
-                        <p className="text-sm">
-                          {data.questions.length} question
-                          {data.questions.length !== 1 ? "s" : ""}
-                        </p>
-                      </div>
-                    </CardDescription>
+                      <CardDescription className="flex w-full items-center justify-between">
+                        <div className="mt-2 flex items-center gap-1">
+                          <Clock9 size={15} />
+                          <p className="text-xs">
+                            {formatDistanceToNowStrict(data.createdAt)} ago
+                          </p>
+                        </div>
+                        <div className="mt-2 flex items-center gap-1">
+                          <p className="text-sm">
+                            {data.questions.length} question
+                            {data.questions.length !== 1 ? "s" : ""}
+                          </p>
+                        </div>
+                      </CardDescription>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardFooter className="flex flex-wrap gap-2">
-                {data.History.length < 0 ? (
-                  <div className="mb-2 flex rounded-md bg-yellow-100 px-3 py-1 text-yellow-800">
-                    <CircleAlert className="mr-2 h-4 w-4" />
-                    <p className="text-xs">
-                      Complete the pretest to unlock full flashcard features.
-                    </p>
-                  </div>
-                ) : isPostTestComplete(data.History) ? (
-                  <div className="mb-2 flex w-full rounded-md bg-green-100 px-3 py-1 text-green-800">
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                    <p className="text-xs">Post-test completed!</p>
-                  </div>
-                ) : (
-                  <div className="mb-2 flex w-full rounded-md bg-blue-100 px-3 py-1 text-blue-800">
-                    <ChevronsUp className="mr-2 h-4 w-4" />
-                    <p className="text-xs">
-                      Boost your skills with a quick post-test!
-                    </p>
-                  </div>
-                )}
-
-                <div className="flex w-full gap-2">
-                  <Link
-                    className="w-full"
-                    href={`/dashboard/material/library/document/${data.id}/flashcard`}
-                  >
-                    <Button
-                      size="sm"
-                      className="w-full"
-                      disabled={data.History.length <= 0}
-                    >
-                      View Flashcards
-                    </Button>
-                  </Link>
-
-                  {data.History.length > 0 ? (
-                    <Link
-                      href={`/dashboard/material/library/document/${data.id}/posttest`}
-                      className="w-full"
-                    >
-                      <Button variant="outline" size="sm" className="w-full">
-                        {isPostTestComplete(data.History)
-                          ? "Retake Post-test"
-                          : "Take Post-test"}
-                      </Button>
-                    </Link>
+                </CardHeader>
+                <CardFooter className="flex flex-wrap gap-2">
+                  {data.History.length === 0 ? (
+                    <div className="mb-2 flex rounded-md bg-yellow-100 px-3 py-1 text-yellow-800">
+                      <CircleAlert className="mr-2 h-4 w-4" />
+                      <p className="text-xs">
+                        Complete the pretest to unlock full flashcard features.
+                      </p>
+                    </div>
+                  ) : isPostTestComplete(data.History) ? (
+                    <div className="mb-2 flex w-full rounded-md bg-green-100 px-3 py-1 text-green-800">
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      <p className="text-xs">Post-test completed!</p>
+                    </div>
                   ) : (
+                    <div className="mb-2 flex w-full rounded-md bg-blue-100 px-3 py-1 text-blue-800">
+                      <ChevronsUp className="mr-2 h-4 w-4" />
+                      <p className="text-xs">
+                        Boost your skills with a quick post-test!
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="flex w-full gap-2">
                     <Link
-                      href={`/dashboard/material/library/document/${data.id}/pretest`}
                       className="w-full"
+                      href={`/dashboard/material/library/document/${data.id}/flashcard`}
                     >
-                      <Button variant="outline" size="sm" className="w-full">
-                        Take Pre-test
+                      <Button
+                        size="sm"
+                        className="w-full"
+                        disabled={data.History.length <= 0}
+                      >
+                        View Flashcards
                       </Button>
                     </Link>
-                  )}
-                </div>
-              </CardFooter>
 
-              <ShareDialog
-                open={showDialog}
-                onOpenChange={setShowDialog}
-                documentTitle={data.title}
-                documentId={data.id}
-                queryClient={queryClient}
+                    {data.History.length > 0 ? (
+                      <Link
+                        href={`/dashboard/material/library/document/${data.id}/posttest`}
+                        className="w-full"
+                      >
+                        <Button variant="outline" size="sm" className="w-full">
+                          {isPostTestComplete(data.History)
+                            ? "Retake Post-test"
+                            : "Take Post-test"}
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/dashboard/material/library/document/${data.id}/pretest`}
+                        className="w-full"
+                      >
+                        <Button variant="outline" size="sm" className="w-full">
+                          Take Pre-test
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                </CardFooter>
+
+                <ShareDialog
+                  open={openDialogId === data.id}
+                  onOpenChange={() => setOpenDialogId(null)}
+                  documentTitle={data.title}
+                  documentId={data.id}
+                  queryClient={queryClient}
+                />
+              </Card>
+
+              <Alert
+                title={alertTitle}
+                description={alertDescription}
+                open={isAlertOpen}
+                onOpenChange={(open) => setIsAlertOpen(open)}
+                onSubmit={onSubmitAction}
               />
-            </Card>
-
-            <Alert
-              title={alertTitle}
-              description={alertDescription}
-              open={isAlertOpen}
-              onOpenChange={(open) => setIsAlertOpen(open)}
-              onSubmit={onSubmitAction}
-            />
-          </div>
-        ))
+            </div>
+          ))}
+        </div>
       ) : (
         <Empty
           image={EmptyImage}
