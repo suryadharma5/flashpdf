@@ -3,7 +3,7 @@ import { PrismaTransaction } from "../auth/tokenRepository";
 
 export const getNotes = async (documentId: string, userId: string) => {
   const notes = await prismaClient.notes.findFirst({
-    where: {    
+    where: {
       documentId: documentId,
       userId: userId,
     },
@@ -37,7 +37,6 @@ export const saveNotes = async (
 
     return newNotes;
   } else {
-
     console.log("existingNotes", existingNotes);
     if (existingNotes.notes) {
       console.log("existingNotes.messages is an array");
@@ -50,8 +49,7 @@ export const saveNotes = async (
       console.log("updatedNotes", updatedNotes);
 
       return updatedNotes;
-    }
-    else{
+    } else {
       console.log("existingNotes.messages is not an array");
     }
   }
@@ -61,7 +59,7 @@ export const updateNotes = async (
   documentId: string,
   userId: string,
   newContent: string,
-  tx?: PrismaTransaction
+  tx?: PrismaTransaction,
 ) => {
   const prismaTx = tx || prismaClient;
 
