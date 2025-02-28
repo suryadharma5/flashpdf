@@ -41,13 +41,6 @@ export async function POST(req: NextRequest) {
 
   const session = await auth();
 
-  if (!session) {
-    return NextResponse.json(
-      { status: 401, message: "Unauthorized" },
-      { status: 401 },
-    );
-  }
-
   const coreMessages = convertToCoreMessages(messages);
   const userMessage = getMostRecentUserMessage(coreMessages);
 
