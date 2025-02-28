@@ -47,6 +47,11 @@ export const getDocumentQuestion = async (documentId: string) => {
           options: true,
         },
       },
+      user: {
+        select: {
+          id: true,
+        },
+      },
     },
   });
 

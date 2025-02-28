@@ -28,10 +28,12 @@ export const useQuestions = (documentId: string) => {
 
   let documentTitle = "";
   let namespace = "";
+  let userId = "";
 
   if (isSuccess) {
     documentTitle = data.data.title;
     namespace = data.data.namespace;
+    userId = data.data.user.id;
   }
 
   return {
@@ -42,5 +44,7 @@ export const useQuestions = (documentId: string) => {
     isSuccess,
     error,
     namespace,
+    documentId,
+    userId,
   };
 };
