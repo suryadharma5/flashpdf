@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { axiosInstance } from "@/lib/axios";
-import EmptyImage from "@/public/not-found-page.svg";
+import EmptyImage from "@/public/Chill-Time.svg";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
 import { ArrowUpRight, Heart, MessageCircle } from "lucide-react";
@@ -131,7 +131,7 @@ export default function ForumPage() {
               </CardHeader>
               <CardContent className="py-2">
                 <Link
-                  href={"#"}
+                  href={`/dashboard/forum/${post.documentId}/flashcard`}
                   className="group flex items-start space-x-2 rounded-md p-2 transition-colors hover:bg-secondary"
                 >
                   <div className="flex-grow">
@@ -189,7 +189,7 @@ export default function ForumPage() {
           ))
         ) : (
           <Empty
-            description="There are no posts available"
+            description="There are no forum available"
             isActionButtonNeeded={false}
             image={EmptyImage}
           />
