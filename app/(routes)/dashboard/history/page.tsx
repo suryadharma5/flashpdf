@@ -110,8 +110,8 @@ export default function HistoryPage() {
           <CardContent>
             <div className="text-2xl font-bold">{totalTests}</div>
             <p className="text-xs text-muted-foreground">
-              Pre-test{(pretestCount ?? 0 > 0) ? "s" : ""}: {pretestCount} |
-              Post-test{(posttestCount ?? 0 > 0) ? "s" : ""}: {posttestCount}
+              Pre-test{(pretestCount ?? 0) > 1 ? "s" : ""}: {pretestCount} |
+              Post-test{(posttestCount ?? 0) > 1 ? "s" : ""}: {posttestCount}
             </p>
           </CardContent>
         </Card>
