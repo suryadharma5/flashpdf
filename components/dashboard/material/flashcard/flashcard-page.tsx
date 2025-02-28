@@ -2,6 +2,7 @@
 
 import { ChatDialog } from "@/components/chat/chat-dialog";
 import { LoadingPage } from "@/components/dashboard/loading";
+import Tiptap from "@/components/dashboard/material/flashcard/tiptap";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,8 +17,6 @@ import Link from "next/link";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { Flashcard } from "./flashcard";
-import { FormField, FormItem } from "@/components/ui/form";
-import Tiptap from "@/components/dashboard/tiptap";
 
 type FlashcardProps = {
   id: string;
@@ -29,8 +28,7 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
 
   const isMobile = useIsMobile();
 
-  const { documentTitle, questions, isError, isLoading, error, namespace } =
-    useQuestions(id);
+  const { questions, isError, isLoading, error, namespace } = useQuestions(id);
 
   const {
     data,
@@ -44,6 +42,8 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
       return res.data.data;
     },
   });
+
+  console.log({ data });
 
   const {
     messages,
@@ -103,14 +103,18 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
           <div className="w-full">
             <div className="w-full [perspective:1000px]">
               <div className="absolute inset-0 flex w-full flex-col justify-center rounded-lg border-none text-center">
-                <div className="flex items-center gap-2">
+                <div
+                  className={`flex items-center ${isMobile ? "gap-2" : "gap-4"}`}
+                >
                   <Link href="/dashboard/material/library">
                     <Button variant="ghost" size={"icon"}>
                       <ChevronLeft className="h-7 w-7" />
                     </Button>
                   </Link>
                   <div className="flex w-full items-center justify-between">
-                    <h1 className="text-start text-2xl font-semibold text-gray-800">
+                    <h1
+                      className={`text-start ${isMobile ? "text-xl" : "text-2xl"} font-semibold text-gray-800`}
+                    >
                       Review Flashcards
                     </h1>
                   </div>
@@ -140,11 +144,11 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
         </TabsContent>
 
         <TabsContent value="notes">
-            <div className="min-h-screen flex flex-col items-center bg-gray-100">
+          <div className="flex min-h-screen flex-col items-center bg-gray-100">
             <div className="w-full max-w-4xl">
-            <Tiptap documentId={id} />
+              <Tiptap documentId={id} />
             </div>
-            </div>   
+          </div>
         </TabsContent>
       </Tabs>
 
