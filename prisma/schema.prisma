@@ -77,8 +77,8 @@ model Document {
   id        String     @id @default(cuid())
   title     String
   questions Question[]
-  userId    String     @unique
-  namespace String     @unique
+  userId    String
+  namespace String
   isPublic  Boolean    @default(false)
 
   createdAt DateTime @default(now())
