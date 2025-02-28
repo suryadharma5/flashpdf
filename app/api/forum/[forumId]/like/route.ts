@@ -8,9 +8,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
   _: NextRequest,
-  { params }: { params: { forumId: string } },
+  { params }: { params: Promise<{ forumId: string }> },
 ) {
-  const forumId = params.forumId;
+  const forumId = (await params).forumId;
 
   if (forumId == null) {
     return NextResponse.json(

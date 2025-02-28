@@ -54,9 +54,10 @@ export async function POST(req: NextRequest) {
 
 export async function GET(
   _: NextRequest,
-  { params }: { params: { forumId: string } },
+  { params }: { params: Promise<{ forumId: string }> },
 ) {
-  const comments = await getCommentsById(params.forumId);
+  const forumId = (await params).forumId;
+  const comments = await getCommentsById(forumId);
   const data = comments === null ? [] : comments;
 
   return NextResponse.json(
