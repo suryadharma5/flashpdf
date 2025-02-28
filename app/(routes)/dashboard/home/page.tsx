@@ -10,14 +10,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import PlaceHolderImage from "@/public/placeholder.svg";
 import { BookmarkPlus, Plus } from "lucide-react";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function HomePage() {
-  
   const user = useCurrentUser();
   const username = user.username ? user.username : user.name;
 
@@ -46,7 +45,7 @@ export default function HomePage() {
     <main className="flex-1 overflow-y-auto overflow-x-hidden">
       <div className="mx-auto px-4 py-8 xl:max-w-5xl">
         <h1 className="mb-8 text-center text-4xl font-bold text-black">
-          Welcome back, {username}! 
+          Welcome back, {username}!
         </h1>
         <h2 className="mb-4 text-center text-xl font-semibold">
           What would you like to learn today?
