@@ -144,7 +144,7 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
         </TabsContent>
 
         <TabsContent value="notes">
-          <div className="flex min-h-screen flex-col items-center bg-gray-100">
+          <div className="flex flex-col items-center">
             <div className="w-full max-w-4xl">
               <Tiptap documentId={id} />
             </div>

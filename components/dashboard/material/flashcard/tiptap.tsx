@@ -11,7 +11,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Strike from "@tiptap/extension-strike";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
-import { EditorContent, useEditor } from "@tiptap/react";
+import { BubbleMenu, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import "./tiptap.css";
 
@@ -31,16 +31,18 @@ import {
   Underline as UnderlineIcon,
 } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { LoadingPage } from "../../loading";
 
 export default function Tiptap({ documentId }: { documentId: string }) {
+  const isMobile = useIsMobile();
   const { data: session } = useSession();
   const userId = session?.user?.id;
-  const queryClient = useQueryClient();
 
   const [notes, setNotes] = useState<string>("");
 
@@ -56,7 +58,6 @@ export default function Tiptap({ documentId }: { documentId: string }) {
     onSuccess: (data) => {
       console.log(data);
       setNotes(data.notes); // Update local state
-      // queryClient.invalidateQueries(["notes", documentId]);
     },
     onError: (e) => {
       console.log(e.message);
@@ -93,7 +94,7 @@ export default function Tiptap({ documentId }: { documentId: string }) {
         placeholder: "Start writing here...",
       }),
     ],
-    content: notes, // Set initial cont
+    content: <span style={{ fontFamily: "Inter, sans-serif" }}>{notes}</span>, // Set initial cont
     onBlur: ({ editor }) => {
       if (userId) {
         saveNotesMutation.mutate(editor.getHTML());
@@ -104,6 +105,7 @@ export default function Tiptap({ documentId }: { documentId: string }) {
   useEffect(() => {
     if (data && editor) {
       editor.commands.setContent(data);
+      editor.setEditable(true);
     }
   }, [data, editor]);
 
@@ -127,142 +129,191 @@ export default function Tiptap({ documentId }: { documentId: string }) {
   }
 
   return (
-    <div className="flex h-[calc(100vh-60px)] w-full flex-col p-4">
+    <div
+      className={`tiptap-container flex ${isMobile ? "" : "h-[calc(100vh-60px)]"} w-full flex-col rounded-lg border bg-white p-4`}
+    >
       {/* Toolbar */}
-      <div className="mb-2 flex gap-2 rounded-lg bg-gray-100 p-2 shadow-sm">
-        <button
+      <div className="mb-2 flex gap-2 rounded-lg border p-2 shadow-sm">
+        <Button
+          size={"icon"}
+          variant={"outline"}
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`rounded-md p-2 ${
-            editor.isActive("bold") ? "bg-blue-500 text-white" : "bg-gray-200"
+          className={`rounded-md p-2 hover:bg-gray-600 hover:text-white ${
+            editor.isActive("bold") ? "bg-primary text-white" : ""
           }`}
         >
           <BoldIcon size={18} />
-        </button>
-        <button
+        </Button>
+        <Button
+          size={"icon"}
+          variant={"outline"}
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`rounded-md p-2 ${
-            editor.isActive("italic") ? "bg-blue-500 text-white" : "bg-gray-200"
+          className={`rounded-md p-2 hover:bg-gray-600 hover:text-white ${
+            editor.isActive("italic") ? "bg-primary text-white" : ""
           }`}
         >
           <ItalicIcon size={18} />
-        </button>
-        <button
+        </Button>
+        <Button
+          size={"icon"}
+          variant={"outline"}
           onClick={() => editor.chain().focus().toggleUnderline().run()}
-          className={`rounded-md p-2 ${
-            editor.isActive("underline")
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200"
+          className={`rounded-md p-2 hover:bg-gray-600 hover:text-white ${
+            editor.isActive("underline") ? "bg-primary text-white" : ""
           }`}
         >
           <UnderlineIcon size={18} />
-        </button>
-        <button
+        </Button>
+        <Button
+          size={"icon"}
+          variant={"outline"}
           onClick={() => editor.chain().focus().toggleStrike().run()}
-          className={`rounded-md p-2 ${
-            editor.isActive("strike") ? "bg-blue-500 text-white" : "bg-gray-200"
+          className={`rounded-md p-2 hover:bg-gray-600 hover:text-white ${
+            editor.isActive("strike") ? "bg-primary text-white" : ""
           }`}
         >
           <StrikethroughIcon size={18} />
-        </button>
-        <button
+        </Button>
+        <Button
+          size={"icon"}
+          variant={"outline"}
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={`rounded-md p-2 ${
-            editor.isActive("blockquote")
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200"
+          className={`rounded-md p-2 hover:bg-gray-600 hover:text-white ${
+            editor.isActive("blockquote") ? "bg-primary text-white" : ""
           }`}
         >
           <BlockquoteIcon size={18} />
-        </button>
-        <button
+        </Button>
+        <Button
+          size={"icon"}
+          variant={"outline"}
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`rounded-md p-2 ${
-            editor.isActive("bulletList")
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200"
+          className={`rounded-md p-2 hover:bg-gray-600 hover:text-white ${
+            editor.isActive("bulletList") ? "bg-primary text-white" : ""
           }`}
         >
           <ListIcon size={18} />
-        </button>
-        <button
+        </Button>
+        <Button
+          size={"icon"}
+          variant={"outline"}
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-          className={`rounded-md p-2 ${
-            editor.isActive("codeBlock")
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200"
+          className={`rounded-md p-2 hover:bg-gray-600 hover:text-white ${
+            editor.isActive("codeBlock") ? "bg-primary text-white" : ""
           }`}
         >
           <CodeIcon size={18} />
-        </button>
-        <button
+        </Button>
+        <Button
+          size={"icon"}
+          variant={"outline"}
           onClick={() => editor.chain().focus().setTextAlign("left").run()}
-          className={`rounded-md p-2 ${
+          className={`rounded-md p-2 hover:bg-gray-600 hover:text-white ${
             editor.isActive({ textAlign: "left" })
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200"
+              ? "bg-primary text-white"
+              : ""
           }`}
         >
           <AlignLeftIcon size={18} />
-        </button>
-        <button
+        </Button>
+        <Button
+          size={"icon"}
+          variant={"outline"}
           onClick={() => editor.chain().focus().setTextAlign("center").run()}
-          className={`rounded-md p-2 ${
+          className={`rounded-md p-2 hover:bg-gray-600 hover:text-white ${
             editor.isActive({ textAlign: "center" })
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200"
+              ? "bg-primary text-white"
+              : ""
           }`}
         >
           <AlignCenterIcon size={18} />
-        </button>
-        <button
+        </Button>
+        <Button
+          size={"icon"}
+          variant={"outline"}
           onClick={() => editor.chain().focus().setTextAlign("right").run()}
-          className={`rounded-md p-2 ${
+          className={`rounded-md p-2 hover:bg-gray-600 hover:text-white ${
             editor.isActive({ textAlign: "right" })
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200"
+              ? "bg-primary text-white"
+              : ""
           }`}
         >
           <AlignRightIcon size={18} />
-        </button>
-        <button
+        </Button>
+        <Button
+          size={"icon"}
+          variant={"outline"}
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 1 }).run()
           }
-          className={`rounded-md p-2 ${
+          className={`rounded-md p-2 hover:bg-gray-600 hover:text-white ${
             editor.isActive("heading", { level: 1 })
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200"
+              ? "bg-primary text-white"
+              : ""
           }`}
         >
           <H1Icon size={18} />
-        </button>
-        <button
+        </Button>
+        <Button
+          size={"icon"}
+          variant={"outline"}
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 2 }).run()
           }
-          className={`rounded-md p-2 ${
+          className={`rounded-md p-2 hover:bg-gray-600 hover:text-white ${
             editor.isActive("heading", { level: 2 })
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200"
+              ? "bg-primary text-white"
+              : ""
           }`}
         >
           <H2Icon size={18} />
-        </button>
-        <button
+        </Button>
+        <Button
+          size={"icon"}
+          variant={"outline"}
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 3 }).run()
           }
-          className={`rounded-md p-2 ${
+          className={`rounded-md p-2 hover:bg-gray-600 hover:text-white ${
             editor.isActive("heading", { level: 3 })
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200"
+              ? "bg-primary text-white"
+              : ""
           }`}
         >
           <H3Icon size={18} />
-        </button>
+        </Button>
       </div>
 
-      <div className="flex-1 overflow-auto rounded-lg border bg-white p-4 shadow-sm">
+      {/* Bubble Menu */}
+      <BubbleMenu
+        editor={editor}
+        tippyOptions={{ duration: 100 }}
+        className="space-x-2 rounded-lg border bg-white px-2 shadow-sm"
+      >
+        <Button
+          size={"icon"}
+          variant={"ghost"}
+          onClick={() => editor.chain().focus().toggleBold().run()}
+        >
+          Bold
+        </Button>
+        <Button
+          size={"icon"}
+          variant={"ghost"}
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+        >
+          Italic
+        </Button>
+        <Button
+          size={"icon"}
+          variant={"ghost"}
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+        >
+          Strike
+        </Button>
+      </BubbleMenu>
+
+      <div className="flex-1 overflow-auto rounded-lg border p-4 shadow-sm">
         <EditorContent
           editor={editor}
           className="prose min-h-full w-full border-none focus:outline-none"
