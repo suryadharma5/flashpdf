@@ -107,6 +107,28 @@ export async function PUT(req: NextRequest) {
   const user = await auth();
   const userId = user?.user.id;
 
+  const existingNotes = await getNotes(documentId ?? "", userId ?? "");
+
+  if (!existingNotes) {
+    const newNotes = await saveNotes(
+      documentId ?? "",
+      userId ?? "",
+      body.notes,
+    );
+
+    if (!newNotes) {
+      return NextResponse.json(
+        { status: 500, message: "Internal Server Error" },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json(
+      { status: 201, message: "Created", data: newNotes },
+      { status: 200 },
+    );
+  }
+
   const updatedNotes = await updateNotes(
     documentId ?? "",
     userId ?? "",
