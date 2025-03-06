@@ -139,7 +139,7 @@ export default function ForumPreview() {
                         variant={savedData !== null ? "default" : "outline"}
                         onClick={() => saveDocumentMutation.mutate(documentId)}
                         className={
-                          false
+                          savedData !== null
                             ? "bg-primary text-primary-foreground hover:bg-primary/90"
                             : ""
                         }
