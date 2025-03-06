@@ -1,6 +1,7 @@
 "use client";
 
 import { LoadingPage } from "@/components/dashboard/loading";
+import { ComboBoxCategory } from "@/components/dashboard/material/combo-box";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
@@ -38,6 +39,7 @@ export default function CreatePage() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [isDropping, setIsDropping] = useState(false);
+  const [openCombobox, setOpenCombobox] = useState(false);
 
   const router = useRouter();
 
@@ -47,6 +49,7 @@ export default function CreatePage() {
       document: null,
       numQuestions: "",
       documentTitle: "",
+      category: "",
     },
   });
 
@@ -56,6 +59,7 @@ export default function CreatePage() {
       formData.append("document", data.document!);
       formData.append("documentTitle", data.documentTitle);
       formData.append("numQuestions", data.numQuestions);
+      formData.append("category", data.category);
 
       const res = await axiosInstance.post("/api/material", formData, {
         headers: {
@@ -124,8 +128,10 @@ export default function CreatePage() {
   }
 
   return (
-    <div className="max-w-5xl space-y-6">
-      <h2 className="text-3xl font-bold">Create New Flashcard</h2>
+    <div className="container mx-auto max-w-7xl space-y-6 p-4">
+      <h1 className="w-full text-start text-3xl font-bold">
+        Create New Flashcard
+      </h1>
       <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Important</AlertTitle>
@@ -168,29 +174,56 @@ export default function CreatePage() {
                   />
                 </div>
 
-                <div className="flex flex-col space-y-2">
-                  <FormField
-                    control={form.control}
-                    name="numQuestions"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Number of Questions</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            onChange={(e) => field.onChange(e.target.value)}
-                            value={field.value || ""}
-                            ref={inputRef}
-                            onFocus={handleFocus}
-                            className="col-span-3"
-                            placeholder="10"
-                            required
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <div className="space-y-5 lg:grid lg:grid-cols-2 lg:gap-5 lg:space-y-0">
+                  <div className="flex flex-col space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="numQuestions"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Number of Questions</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              onChange={(e) => field.onChange(e.target.value)}
+                              value={field.value || ""}
+                              ref={inputRef}
+                              onFocus={handleFocus}
+                              className="col-span-3"
+                              placeholder="10"
+                              required
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex flex-col space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Category</FormLabel>
+                          <FormControl>
+                            <div className="col-span-3">
+                              <ComboBoxCategory
+                                openCombobox={openCombobox}
+                                setOpenCombobox={setOpenCombobox}
+                                selectedCategory={field.value}
+                                setSelectedCategory={(value) => {
+                                  field.onChange(value);
+                                }}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
 
                 <div className="flex flex-col space-y-2">
