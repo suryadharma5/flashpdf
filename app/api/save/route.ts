@@ -4,7 +4,7 @@ import {
   getSavedDocument,
   getSavedDocumentsByUserId,
   saveDocument,
-} from "@/components/save/saveRepository";
+} from "@/lib/repository/save/saveRepository";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
