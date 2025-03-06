@@ -61,13 +61,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             isActive: pathName === "/dashboard/material/create",
           },
           {
-            title: "My Document",
+            title: "My Documents",
             icon: Files,
             url: "/dashboard/material/library",
             isActive: pathName === "/dashboard/material/library",
           },
           {
-            title: "Saved Document",
+            title: "Saved Documents",
             icon: BookmarkIcon,
             url: "/dashboard/material/saved",
             isActive: pathName === "/dashboard/material/saved",
