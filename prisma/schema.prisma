@@ -74,12 +74,13 @@ model Account {
 
 // question generation
 model Document {
-  id        String     @id @default(cuid())
-  title     String
-  questions Question[]
-  userId    String
-  namespace String
-  isPublic  Boolean    @default(false)
+  id         String     @id @default(cuid())
+  title      String
+  questions  Question[]
+  userId     String
+  categoryId String
+  namespace  String
+  isPublic   Boolean    @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -90,8 +91,21 @@ model Document {
   Forum         Forum[]
   SavedDocument SavedDocument[]
   Notes         Notes[]
+  Category      Category?       @relation(fields: [categoryId], references: [id])
 
   @@map("documents")
+}
+
+model Category {
+  id   String @id @default(cuid())
+  name String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document Document[]
+
+  @@map("categories")
 }
 
 model Question {
