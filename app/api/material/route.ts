@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
     document: formData.get("document") as File,
     documentTitle: formData.get("documentTitle") as string,
     numQuestions: formData.get("numQuestions") as string,
+    category: formData.get("category") as string,
   };
 
   const validatedData = questionFormSchema.safeParse(data);
@@ -33,14 +34,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { document, documentTitle, numQuestions } = validatedData.data;
+  const { document, documentTitle, numQuestions, category } =
+    validatedData.data;
 
   console.log({ document });
 
   // TODO: save to pinecone
-  const processedFile = await loadDocumentIntoPineCone(
-    validatedData.data.document ?? null,
-  );
+  const processedFile = await loadDocumentIntoPineCone(document);
 
   if (!processedFile) {
     return NextResponse.json(
@@ -77,6 +77,7 @@ export async function POST(req: NextRequest) {
       })),
     })),
     namespace: namespace,
+    category: category,
   };
 
   const result = await prismaClient.$transaction(async (tx) => {

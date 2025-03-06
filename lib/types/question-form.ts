@@ -30,6 +30,10 @@ export const questionFormSchema = z.object({
       const number = Number(val);
       return number >= 10 && number <= 50;
     }, "Number of questions must be between 10 and 50"),
+  category: z
+    .string()
+    .min(3, "Category must be at least 3 characters")
+    .max(50, "Category must not exceed 50 characters"),
 });
 
 const optionSchema = z.object({
@@ -61,6 +65,7 @@ const documentSchema = z.object({
     .array(questionSchema)
     .min(1, "Dokumen harus memiliki minimal 1 pertanyaan"),
   namespace: z.string().min(1, "Namespace is required"),
+  category: z.string().min(1, "Category is required"),
 });
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
