@@ -26,6 +26,7 @@ export const createDocumentQuestion = async (
         })),
       },
       namespace: request.namespace,
+      categoryId: request.category,
     },
   });
 
