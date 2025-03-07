@@ -5,6 +5,8 @@ import ErrorPage from "@/components/dashboard/error";
 import { Alert } from "@/components/dashboard/library/alert-dialog";
 import { ShareDialog } from "@/components/dashboard/library/share-dialog";
 import { LoadingPage } from "@/components/dashboard/loading";
+import { Dropdown } from "@/components/dashboard/material/dropdown-library";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,26 +15,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
 import { TDeleteForumSchema } from "@/lib/types/forum";
 import EmptyImage from "@/public/Chill-Time.svg";
 import { Forum, Question } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
-import {
-  CheckCircle,
-  ChevronsUp,
-  CircleAlert,
-  Clock9,
-  MoreHorizontal,
-} from "lucide-react";
+import { CheckCircle, ChevronsUp, CircleAlert, Clock9 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -49,6 +39,18 @@ type DocumentProps = {
   questions: Question[];
   History: HistoryProps[];
   Forum: Forum[];
+  Category: {
+    name: string;
+  };
+};
+
+const categoryColors: Record<string, string> = {
+  science: "green-400",
+  "social study": "zinc-400",
+  programming: "yellow-400",
+  language: "rose-200",
+  math: "purple-400",
+  others: "indigo-400",
 };
 
 export default function Page() {
@@ -61,6 +63,7 @@ export default function Page() {
   const [alertDescription, setAlertDescription] = useState("");
 
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
 
   const { data, isError, isPending } = useQuery({
     queryKey: ["fetchDocument"],
@@ -129,80 +132,72 @@ export default function Page() {
 
   return (
     <div className="container mx-auto max-w-7xl p-4 sm:p-6">
-      <h1 className="mb-6 text-3xl font-bold">Library</h1>
+      <h1 className="mb-8 w-full text-start text-3xl font-bold">Library</h1>
       {documents.length > 0 ? (
-        <div className="grid w-full gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          className={`grid w-full md:grid-cols-2 lg:grid-cols-3 ${isMobile ? "gap-4" : "gap-6"}`}
+        >
           {documents.map((data) => (
             <div key={data.id}>
               <Card className="flex w-full flex-col transition-all duration-300 hover:shadow-lg">
                 <CardHeader>
                   <div className="flex w-full">
                     <div className="w-full p-0">
-                      <CardTitle className="flex w-full items-center justify-between">
-                        {data.title
-                          .replace(
-                            data.title.charAt(0),
-                            data.title.charAt(0).toUpperCase(),
-                          )
-                          .slice(0, 20)}
+                      <CardTitle className="">
+                        <div className="mb-2 flex w-full items-center justify-between">
+                          <Badge
+                            className={`border-2 border-${categoryColors[data.Category.name]}`}
+                            variant={"outline"}
+                          >
+                            {data.Category.name.replace(
+                              data.Category.name.charAt(0),
+                              data.Category.name.charAt(0).toUpperCase(),
+                            )}
+                          </Badge>
 
-                        {data.title.length > 20 ? "..." : ""}
-
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="center">
-                            {data.isPublic ? (
-                              <DropdownMenuItem
-                                className="hover:cursor-pointer"
-                                onClick={() => {
+                          <Dropdown
+                            items={[
+                              data.isPublic
+                                ? {
+                                    label: "Make private",
+                                    onClick: () =>
+                                      showAlert(
+                                        "Are you sure?",
+                                        "Changing this document to private will remove its associated forum data. Are you sure you want to proceed?",
+                                        () =>
+                                          handleDelete(
+                                            data.id,
+                                            data.Forum[0].id,
+                                          ),
+                                      ),
+                                  }
+                                : {
+                                    label: "Make public",
+                                    onClick: () => toggleDialog(data.id),
+                                  },
+                              {
+                                label: "Delete",
+                                className: "text-red-600",
+                                onClick: () =>
                                   showAlert(
                                     "Are you sure?",
-                                    "Changing this document to private will remove its associated forum data. Are you sure you want to proceed?",
-                                    () =>
-                                      handleDelete(data.id, data.Forum[0].id),
-                                  );
-                                  document.body.style.pointerEvents = "";
-                                }}
-                              >
-                                Make private
-                              </DropdownMenuItem>
-                            ) : (
-                              <DropdownMenuItem
-                                className="hover:cursor-pointer"
-                                onClick={() => {
-                                  toggleDialog(data.id);
-                                  document.body.style.pointerEvents = "";
-                                }}
-                              >
-                                Make public
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem className="hover:cursor-pointer">
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-red-600 hover:cursor-pointer"
-                              onClick={() => {
-                                showAlert(
-                                  "Are you sure?",
-                                  "Deleting this document is permanent and cannot be reversed. Are you sure you want to proceed?",
-                                  () => {
-                                    console.log("halo");
-                                  },
-                                );
-                                document.body.style.pointerEvents = "";
-                              }}
-                            >
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                                    "Deleting this document is permanent and cannot be reversed. Are you sure you want to proceed?",
+                                    () => console.log("halo"),
+                                  ),
+                              },
+                            ]}
+                          />
+                        </div>
+
+                        <p className="text-xl font-semibold text-gray-900">
+                          {data.title
+                            .replace(
+                              data.title.charAt(0),
+                              data.title.charAt(0).toUpperCase(),
+                            )
+                            .slice(0, 20)}
+                          {data.title.length > 20 ? "..." : ""}
+                        </p>
                       </CardTitle>
 
                       <CardDescription className="flex w-full items-center justify-between">
@@ -244,7 +239,7 @@ export default function Page() {
                     </div>
                   )}
 
-                  <div className="flex w-full gap-2">
+                  <div className="flex w-full flex-col gap-2">
                     <Link
                       className="w-full"
                       href={`/dashboard/material/library/document/${data.id}/flashcard`}
