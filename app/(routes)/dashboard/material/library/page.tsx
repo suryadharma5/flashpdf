@@ -85,6 +85,26 @@ export default function Page() {
     },
   });
 
+  const deleteDocumentMutation = useMutation({
+    mutationFn: async (documentId: string) => {
+      const res = await axiosInstance.delete(
+        `/api/material?documentId=${documentId}`,
+      );
+
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success("Document removed!", {
+        duration: 3000,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["fetchDocument"] });
+    },
+    onError: (e) => {
+      console.log(e.message);
+    },
+  });
+
   const showAlert = (
     title: string,
     description: string,
@@ -180,7 +200,9 @@ export default function Page() {
                                   showAlert(
                                     "Are you sure?",
                                     "Deleting this document is permanent and cannot be reversed. Are you sure you want to proceed?",
-                                    () => console.log("halo"),
+                                    () => {
+                                      deleteDocumentMutation.mutate(data.id);
+                                    },
                                   );
                                   // document.body.style.pointerEvents = "";
                                 },
