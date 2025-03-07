@@ -160,7 +160,7 @@ export default function Page() {
                               data.isPublic
                                 ? {
                                     label: "Make private",
-                                    onClick: () =>
+                                    onClick: () => {
                                       showAlert(
                                         "Are you sure?",
                                         "Changing this document to private will remove its associated forum data. Are you sure you want to proceed?",
@@ -169,21 +169,29 @@ export default function Page() {
                                             data.id,
                                             data.Forum[0].id,
                                           ),
-                                      ),
+                                      );
+                                      document.body.style.pointerEvents = "";
+                                    },
                                   }
                                 : {
                                     label: "Make public",
-                                    onClick: () => toggleDialog(data.id),
+                                    onClick: () => {
+                                      toggleDialog(data.id);
+                                      document.body.style.pointerEvents = "";
+                                    },
                                   },
                               {
                                 label: "Delete",
                                 className: "text-red-600",
-                                onClick: () =>
+                                onClick: () => {
+                                  document.body.style.pointerEvents = "";
                                   showAlert(
                                     "Are you sure?",
                                     "Deleting this document is permanent and cannot be reversed. Are you sure you want to proceed?",
                                     () => console.log("halo"),
-                                  ),
+                                  );
+                                  // document.body.style.pointerEvents = "";
+                                },
                               },
                             ]}
                           />
@@ -285,16 +293,16 @@ export default function Page() {
                   queryClient={queryClient}
                 />
               </Card>
-
-              <Alert
-                title={alertTitle}
-                description={alertDescription}
-                open={isAlertOpen}
-                onOpenChange={(open) => setIsAlertOpen(open)}
-                onSubmit={onSubmitAction}
-              />
             </div>
           ))}
+
+          <Alert
+            title={alertTitle}
+            description={alertDescription}
+            open={isAlertOpen}
+            onOpenChange={(open) => setIsAlertOpen(open)}
+            onSubmit={onSubmitAction}
+          />
         </div>
       ) : (
         <Empty
