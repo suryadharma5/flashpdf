@@ -2,17 +2,31 @@
 
 import { Empty } from "@/components/dashboard/empty";
 import ErrorPage from "@/components/dashboard/error";
+import { Alert } from "@/components/dashboard/library/alert-dialog";
 import { LoadingPage } from "@/components/dashboard/loading";
-import { PopoverStudyMenu } from "@/components/dashboard/save/popover-menu";
+import { Dropdown } from "@/components/dashboard/material/dropdown-library";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/lib/axios";
+import { categoryColors } from "@/lib/util/category";
 import EmptyImage from "@/public/Chill-Time.svg";
 import { useQuery } from "@tanstack/react-query";
-import { MoreHorizontal, Search } from "lucide-react";
+import {
+  CheckCircle,
+  ChevronsUp,
+  CircleAlert,
+  Search,
+  TrashIcon,
+} from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
+
+type HistoryProps = {
+  id: string;
+  type: string;
+};
 
 type Document = {
   title: string;
@@ -22,11 +36,10 @@ type Document = {
   _count: {
     questions: number;
   };
-  History: [
-    {
-      id: string;
-    },
-  ];
+  History: HistoryProps[];
+  Category: {
+    name: string;
+  };
 };
 
 type DocumentProps = {
@@ -36,6 +49,9 @@ type DocumentProps = {
 
 export default function SavedDocumentsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertDescription, setAlertDescription] = useState("");
 
   const {
     data: documents,
@@ -58,6 +74,15 @@ export default function SavedDocumentsPage() {
         .toLowerCase()
         .includes(searchTerm.toLowerCase()),
   );
+
+  const isPostTestComplete = (histories: HistoryProps[]) =>
+    histories.some((history) => history.type.toLowerCase() === "posttest");
+
+  const showAlert = (title: string, description: string) => {
+    setIsAlertOpen(true);
+    setAlertTitle(title);
+    setAlertDescription(description);
+  };
 
   if (isPending) {
     return <LoadingPage />;
@@ -96,41 +121,132 @@ export default function SavedDocumentsPage() {
                   >
                     <CardContent className="p-6">
                       <div className="mb-3 flex items-start justify-between">
-                        <div>
-                          <h2 className="mb-1 text-xl font-semibold text-gray-900">
-                            {doc.document.title.replace(
-                              doc.document.title.charAt(0),
-                              doc.document.title.charAt(0).toUpperCase(),
-                            )}
-                          </h2>
-                          <p className="mb-2 text-sm text-gray-500">
-                            by {doc.document.user.username}
+                        <div className="w-full">
+                          <CardTitle>
+                            <div className="mb-2 flex w-full items-center justify-between">
+                              <Badge
+                                className={`border-2 border-${categoryColors[doc.document.Category.name]}`}
+                                variant={"outline"}
+                              >
+                                {doc.document.Category.name.replace(
+                                  doc.document.Category.name.charAt(0),
+                                  doc.document.Category.name
+                                    .charAt(0)
+                                    .toUpperCase(),
+                                )}
+                              </Badge>
+                              <Dropdown
+                                items={[
+                                  {
+                                    label: "Delete",
+                                    className: "text-red-700",
+                                    onClick: () => {
+                                      showAlert(
+                                        "Are you sure?",
+                                        "Deleting this document is permanent and cannot be reversed. Are you sure you want to proceed?",
+                                      );
+                                      document.body.style.pointerEvents = "";
+                                    },
+                                    icon: <TrashIcon />,
+                                  },
+                                ]}
+                              />
+                            </div>
+                            <h2 className="mb-1 text-xl font-semibold text-gray-900">
+                              {doc.document.title.replace(
+                                doc.document.title.charAt(0),
+                                doc.document.title.charAt(0).toUpperCase(),
+                              )}
+                            </h2>
+                          </CardTitle>
+                          <p className="mb-2 flex items-center justify-between text-sm text-gray-500">
+                            <span>by {doc.document.user.username}</span>
+                            <span>
+                              {doc.document._count.questions} question
+                              {doc.document._count.questions !== 1 ? "s" : ""}
+                            </span>
                           </p>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-gray-400 hover:text-gray-600"
+                      </div>
+                      <div className="flex items-center justify-between"></div>
+                      {doc.document.History.length <= 0 ? (
+                        <div className="mb-2 flex rounded-md bg-yellow-100 px-3 py-1 text-yellow-800">
+                          <CircleAlert className="mr-2 h-4 w-4" />
+                          <p className="text-xs">
+                            Complete pretest to unlock flashcards!
+                          </p>
+                        </div>
+                      ) : isPostTestComplete(doc.document.History) ? (
+                        <div className="mb-2 flex w-full rounded-md bg-green-100 px-3 py-1 text-green-800">
+                          <CheckCircle className="mr-2 h-4 w-4" />
+                          <p className="text-xs">Post-test completed!</p>
+                        </div>
+                      ) : (
+                        <div className="mb-2 flex w-full rounded-md bg-blue-100 px-3 py-1 text-blue-800">
+                          <ChevronsUp className="mr-2 h-4 w-4" />
+                          <p className="text-xs">
+                            Boost your skills with post-test!
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="mt-4 flex w-full flex-col gap-2">
+                        <Link
+                          className="w-full"
+                          href={`/dashboard/material/library/document/${doc.documentId}/flashcard`}
                         >
-                          <MoreHorizontal className="h-5 w-5" />
-                        </Button>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Badge className="font-medium">category</Badge>
-                        <span className="text-sm text-gray-500">
-                          {doc.document._count.questions} question
-                          {doc.document._count.questions !== 1 ? "s" : ""}
-                        </span>
-                      </div>
-                      <div className="mt-4">
-                        <PopoverStudyMenu
-                          documentId={doc.documentId}
-                          isPretest={doc.document.History.length <= 0}
-                        />
+                          <Button
+                            size="sm"
+                            className="w-full"
+                            disabled={doc.document.History.length <= 0}
+                          >
+                            View Flashcards
+                          </Button>
+                        </Link>
+
+                        {doc.document.History.length > 0 ? (
+                          <Link
+                            href={`/dashboard/material/library/document/${doc.documentId}/posttest`}
+                            className="w-full"
+                          >
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-full"
+                            >
+                              {isPostTestComplete(doc.document.History)
+                                ? "Retake Post-test"
+                                : "Take Post-test"}
+                            </Button>
+                          </Link>
+                        ) : (
+                          <Link
+                            href={`/dashboard/material/library/document/${doc.documentId}/pretest`}
+                            className="w-full"
+                          >
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-full"
+                            >
+                              Take Pre-test
+                            </Button>
+                          </Link>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
                 ))}
+
+                <Alert
+                  title={alertTitle}
+                  description={alertDescription}
+                  open={isAlertOpen}
+                  onOpenChange={(open) => setIsAlertOpen(open)}
+                  onSubmit={() => {
+                    // Delete document
+                  }}
+                />
               </div>
             ) : (
               <Empty
