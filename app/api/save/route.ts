@@ -95,3 +95,57 @@ export async function GET(req: NextRequest) {
     },
   );
 }
+
+export async function DELETE(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const documentId = searchParams.get("documentId");
+
+  const session = await auth();
+  const userId = session?.user.id;
+
+  if (!documentId) {
+    return NextResponse.json(
+      {
+        message: "Document is required",
+        status: 400,
+      },
+      {
+        status: 400,
+      },
+    );
+  }
+
+  const { data, status } = await deleteSavedDocument(userId, documentId);
+
+  if (data === null && status === 404) {
+    return NextResponse.json(
+      {
+        message: "Document not found",
+        status: 404,
+      },
+      {
+        status: 404,
+      },
+    );
+  } else if (data === null && status === 500) {
+    return NextResponse.json(
+      {
+        message: "Internal server error",
+        status: 500,
+      },
+      {
+        status: 500,
+      },
+    );
+  }
+
+  return NextResponse.json(
+    {
+      message: "OK",
+      status: 200,
+    },
+    {
+      status: 200,
+    },
+  );
+}

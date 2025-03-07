@@ -54,8 +54,6 @@ export async function getSavedDocument(userId: string, documentId: string) {
     },
   });
 
-  console.log({ savedDocument });
-
   if (!savedDocument) {
     return null;
   }
@@ -79,7 +77,7 @@ export async function saveDocument(userId: string, documentId: string) {
 }
 
 export async function deleteSavedDocument(userId: string, documentId: string) {
-  const savedDocument = await prismaClient.savedDocument.deleteMany({
+  const savedDocument = await prismaClient.savedDocument.findFirst({
     where: {
       userId,
       documentId,
@@ -87,8 +85,19 @@ export async function deleteSavedDocument(userId: string, documentId: string) {
   });
 
   if (!savedDocument) {
-    return null;
+    return { status: 404, data: null };
   }
 
-  return savedDocument;
+  const deletedDocument = await prismaClient.savedDocument.deleteMany({
+    where: {
+      userId,
+      documentId,
+    },
+  });
+
+  if (!deletedDocument) {
+    return { status: 500, data: null };
+  }
+
+  return { status: 200, data: deletedDocument };
 }
