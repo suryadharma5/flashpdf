@@ -141,3 +141,33 @@ export const updateDocumentStatus = async (
     };
   }
 };
+
+export const deleteDocument = async (documentId: string, userId: string) => {
+  const document = await getDocumentQuestion(documentId);
+
+  if (!document) {
+    return {
+      status: 404,
+      data: null,
+    };
+  }
+
+  const deletedDocument = await prismaClient.document.delete({
+    where: {
+      id: documentId,
+      userId,
+    },
+  });
+
+  if (!deletedDocument) {
+    return {
+      status: 500,
+      data: null,
+    };
+  }
+
+  return {
+    status: 200,
+    data: deletedDocument,
+  };
+};

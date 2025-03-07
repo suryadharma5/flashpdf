@@ -3,6 +3,7 @@ import { prismaClient } from "@/lib/db";
 import { loadDocumentIntoPineCone } from "@/lib/pinecone";
 import {
   createDocumentQuestion,
+  deleteDocument,
   getAllDocuments,
   getDocumentQuestion,
 } from "@/lib/repository/material/questionRepository";
@@ -155,4 +156,58 @@ export async function GET(req: NextRequest) {
       },
     );
   }
+}
+
+export async function DELETE(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const documentId = searchParams.get("documentId");
+
+  if (!documentId) {
+    return NextResponse.json(
+      {
+        message: "Document id is required",
+        status: 400,
+      },
+      {
+        status: 400,
+      },
+    );
+  }
+
+  const session = await auth();
+  const userId = session?.user.id;
+
+  const { status, data } = await deleteDocument(documentId, userId);
+
+  if (data === null && status === 404) {
+    return NextResponse.json(
+      {
+        message: "Document not found",
+        status: 404,
+      },
+      {
+        status: 404,
+      },
+    );
+  } else if (data === null && status === 500) {
+    return NextResponse.json(
+      {
+        message: "Internal server error",
+        status: 500,
+      },
+      {
+        status: 500,
+      },
+    );
+  }
+
+  return NextResponse.json(
+    {
+      message: "OK",
+      status: 200,
+    },
+    {
+      status: 200,
+    },
+  );
 }
