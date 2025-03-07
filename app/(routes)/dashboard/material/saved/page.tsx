@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/lib/axios";
 import { categoryColors } from "@/lib/util/category";
 import EmptyImage from "@/public/Chill-Time.svg";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle,
   ChevronsUp,
@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
 type HistoryProps = {
   id: string;
@@ -52,6 +53,11 @@ export default function SavedDocumentsPage() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState("");
   const [alertDescription, setAlertDescription] = useState("");
+  const [onSubmitAction, setOnSubmitAction] = useState<() => void>(
+    () => () => {},
+  );
+
+  const queryClient = useQueryClient();
 
   const {
     data: documents,
@@ -65,7 +71,27 @@ export default function SavedDocumentsPage() {
     },
   });
 
-  console.log({ documents });
+  const deleteSavedDocumentMutation = useMutation({
+    mutationFn: async (documentId: string) => {
+      const res = await axiosInstance.delete(
+        `/api/save?documentId=${documentId}`,
+      );
+
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success("Document removed!", {
+        duration: 3000,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["fetchSavedDocuments"] });
+
+      console.log("Success");
+    },
+    onError: (e) => {
+      console.log(e.message);
+    },
+  });
 
   const filteredDocuments = documents?.filter(
     (doc) =>
@@ -78,10 +104,15 @@ export default function SavedDocumentsPage() {
   const isPostTestComplete = (histories: HistoryProps[]) =>
     histories.some((history) => history.type.toLowerCase() === "posttest");
 
-  const showAlert = (title: string, description: string) => {
+  const showAlert = (
+    title: string,
+    description: string,
+    onSubmit: () => void,
+  ) => {
     setIsAlertOpen(true);
     setAlertTitle(title);
     setAlertDescription(description);
+    setOnSubmitAction(() => onSubmit);
   };
 
   if (isPending) {
@@ -144,6 +175,11 @@ export default function SavedDocumentsPage() {
                                       showAlert(
                                         "Are you sure?",
                                         "Deleting this document is permanent and cannot be reversed. Are you sure you want to proceed?",
+                                        () => {
+                                          deleteSavedDocumentMutation.mutate(
+                                            doc.documentId,
+                                          );
+                                        },
                                       );
                                       document.body.style.pointerEvents = "";
                                     },
@@ -243,9 +279,7 @@ export default function SavedDocumentsPage() {
                   description={alertDescription}
                   open={isAlertOpen}
                   onOpenChange={(open) => setIsAlertOpen(open)}
-                  onSubmit={() => {
-                    // Delete document
-                  }}
+                  onSubmit={onSubmitAction}
                 />
               </div>
             ) : (
