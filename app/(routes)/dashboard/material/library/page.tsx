@@ -45,15 +45,6 @@ type DocumentProps = {
   };
 };
 
-const categoryColors: Record<string, string> = {
-  science: "green-400",
-  "social study": "zinc-400",
-  programming: "yellow-400",
-  language: "rose-200",
-  math: "purple-400",
-  others: "indigo-400",
-};
-
 export default function Page() {
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -144,7 +135,7 @@ export default function Page() {
                 <CardHeader>
                   <div className="flex w-full">
                     <div className="w-full p-0">
-                      <CardTitle className="">
+                      <CardTitle>
                         <div className="mb-2 flex w-full items-center justify-between">
                           <Badge
                             className={`border-2 border-${categoryColors[data.Category.name]}`}
@@ -231,7 +222,7 @@ export default function Page() {
                     <div className="mb-2 flex rounded-md bg-yellow-100 px-3 py-1 text-yellow-800">
                       <CircleAlert className="mr-2 h-4 w-4" />
                       <p className="text-xs">
-                        Complete the pretest to unlock full flashcard features.
+                        Complete the pretest to unlock flashcards.
                       </p>
                     </div>
                   ) : isPostTestComplete(data.History) ? (
