@@ -83,6 +83,11 @@ export const getAllDocuments = async () => {
           id: true,
         },
       },
+      Category: {
+        select: {
+          name: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",

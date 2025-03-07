@@ -18,9 +18,15 @@ export async function getSavedDocumentsByUserId(userId: string) {
           History: {
             select: {
               id: true,
+              type: true,
             },
             where: {
               userId,
+            },
+          },
+          Category: {
+            select: {
+              name: true,
             },
           },
           _count: {
