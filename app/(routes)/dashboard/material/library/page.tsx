@@ -18,6 +18,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
 import { TDeleteForumSchema } from "@/lib/types/forum";
+import { categoryColors } from "@/lib/util/category";
 import EmptyImage from "@/public/Chill-Time.svg";
 import { Forum, Question } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
