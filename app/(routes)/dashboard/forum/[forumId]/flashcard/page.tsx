@@ -15,6 +15,7 @@ import { Bookmark, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 
 type ForumPreviewProps = {
   forumId: string;
@@ -94,10 +95,15 @@ export default function ForumPreview() {
         },
       );
 
-      return { previousData };
+      return { previousData, documentId };
     },
-    onSuccess: (data) => {
-      console.log(data);
+    onSuccess: (_data, _, context) => {
+      toast.success(
+        context.previousData != null ? "Document removed" : "Document saved",
+        {
+          duration: 3000,
+        },
+      );
     },
     onError: (error) => {
       console.error(error);
