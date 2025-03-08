@@ -7,6 +7,7 @@ import {
   getAllDocuments,
   getDocumentQuestion,
 } from "@/lib/repository/material/questionRepository";
+import { deleteHistory } from "@/lib/repository/material/testRepository";
 import { questionFormSchema, TDocumentSchema } from "@/lib/types/question-form";
 import { createQuestion } from "@/lib/util/openai-helper";
 import { NextRequest, NextResponse } from "next/server";
@@ -190,6 +191,33 @@ export async function DELETE(req: NextRequest) {
       },
     );
   } else if (data === null && status === 500) {
+    return NextResponse.json(
+      {
+        message: "Internal server error",
+        status: 500,
+      },
+      {
+        status: 500,
+      },
+    );
+  }
+
+  const { data: dataHistory, status: statusHistory } = await deleteHistory(
+    userId,
+    documentId,
+  );
+
+  if (dataHistory === null && statusHistory === 404) {
+    return NextResponse.json(
+      {
+        message: "Document not found",
+        status: 404,
+      },
+      {
+        status: 404,
+      },
+    );
+  } else if (dataHistory === null && statusHistory === 500) {
     return NextResponse.json(
       {
         message: "Internal server error",
