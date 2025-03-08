@@ -7,6 +7,7 @@ type FilterSearchProps = {
   setSearchTerm: (value: string) => void;
   selectedCategory: string | null;
   onCategoryChange: (category: string | null) => void;
+  placeHolder?: string;
 };
 
 const categories = [
@@ -23,14 +24,15 @@ export const FilterSearch = ({
   setSearchTerm,
   selectedCategory,
   onCategoryChange,
+  placeHolder,
 }: FilterSearchProps) => {
   return (
     <div className="mb-8 w-full space-y-4">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
         <Input
           type="text"
-          placeholder="Search saved materials..."
+          placeholder={placeHolder ? placeHolder : "Search saved materials..."}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="border-gray-200 bg-white py-3 pl-10 text-xs"

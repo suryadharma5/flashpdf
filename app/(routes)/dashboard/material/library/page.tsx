@@ -165,6 +165,7 @@ export default function Page() {
             setSearchTerm={setSearchTerm}
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
+            placeHolder="Search documents..."
           />
           <div className="w-full">
             {filteredCategoryDocuments &&
