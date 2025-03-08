@@ -48,6 +48,15 @@ export const getAllForum = async (userId: string, tx?: PrismaTransaction) => {
           id: true,
         },
       },
+      document: {
+        select: {
+          Category: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
     },
   });
 
