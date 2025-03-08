@@ -4,8 +4,8 @@ import { Empty } from "@/components/dashboard/empty";
 import ErrorPage from "@/components/dashboard/error";
 import { FilterSearch } from "@/components/dashboard/filtersearch";
 import { Alert } from "@/components/dashboard/library/alert-dialog";
-import { LoadingPage } from "@/components/dashboard/loading";
 import { Dropdown } from "@/components/dashboard/material/dropdown-library";
+import { SkeletonCard } from "@/components/dashboard/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
@@ -116,10 +116,6 @@ export default function SavedDocumentsPage() {
     setOnSubmitAction(() => onSubmit);
   };
 
-  if (isPending) {
-    return <LoadingPage />;
-  }
-
   if (isError) {
     return <ErrorPage />;
   }
@@ -130,7 +126,24 @@ export default function SavedDocumentsPage() {
         Saved Flashcards
       </h1>
 
-      {documents && documents.length > 0 ? (
+      {isPending ? (
+        <>
+          <FilterSearch
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+          />
+
+          <div
+            className={`grid w-full md:grid-cols-2 lg:grid-cols-3 ${isMobile ? "gap-4" : "gap-6"}`}
+          >
+            {[...Array(3)].map((_, index) => (
+              <SkeletonCard key={index} />
+            ))}
+          </div>
+        </>
+      ) : documents && documents.length > 0 ? (
         <>
           <FilterSearch
             searchTerm={searchTerm}

@@ -5,8 +5,8 @@ import ErrorPage from "@/components/dashboard/error";
 import { FilterSearch } from "@/components/dashboard/filtersearch";
 import { Alert } from "@/components/dashboard/library/alert-dialog";
 import { ShareDialog } from "@/components/dashboard/library/share-dialog";
-import { LoadingPage } from "@/components/dashboard/loading";
 import { Dropdown } from "@/components/dashboard/material/dropdown-library";
+import { SkeletonCard } from "@/components/dashboard/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -147,10 +147,6 @@ export default function Page() {
     setOpenDialogId((prevId) => (prevId === id ? null : id));
   };
 
-  if (isPending) {
-    return <LoadingPage />;
-  }
-
   if (isError) {
     return <ErrorPage />;
   }
@@ -158,7 +154,24 @@ export default function Page() {
   return (
     <div className="container mx-auto max-w-7xl p-4 sm:p-6">
       <h1 className="mb-8 w-full text-start text-3xl font-bold">Library</h1>
-      {documents.length > 0 ? (
+      {isPending ? (
+        <>
+          <FilterSearch
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            placeHolder="Search documents..."
+          />
+          <div
+            className={`grid w-full md:grid-cols-2 lg:grid-cols-3 ${isMobile ? "gap-4" : "gap-6"}`}
+          >
+            {[...Array(3)].map((_, index) => (
+              <SkeletonCard key={index} />
+            ))}
+          </div>
+        </>
+      ) : documents.length > 0 ? (
         <>
           <FilterSearch
             searchTerm={searchTerm}
