@@ -2,24 +2,19 @@
 
 import { Empty } from "@/components/dashboard/empty";
 import ErrorPage from "@/components/dashboard/error";
+import { FilterSearch } from "@/components/dashboard/filtersearch";
 import { Alert } from "@/components/dashboard/library/alert-dialog";
 import { LoadingPage } from "@/components/dashboard/loading";
 import { Dropdown } from "@/components/dashboard/material/dropdown-library";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
 import { categoryColors } from "@/lib/util/category";
 import EmptyImage from "@/public/Chill-Time.svg";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  CheckCircle,
-  ChevronsUp,
-  CircleAlert,
-  Search,
-  TrashIcon,
-} from "lucide-react";
+import { CheckCircle, ChevronsUp, CircleAlert, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -53,11 +48,13 @@ export default function SavedDocumentsPage() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState("");
   const [alertDescription, setAlertDescription] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [onSubmitAction, setOnSubmitAction] = useState<() => void>(
     () => () => {},
   );
 
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
 
   const {
     data: documents,
@@ -101,6 +98,10 @@ export default function SavedDocumentsPage() {
         .includes(searchTerm.toLowerCase()),
   );
 
+  const filteredCategoryDocuments = filteredDocuments?.filter((doc) =>
+    selectedCategory ? doc.document.Category.name === selectedCategory : true,
+  );
+
   const isPostTestComplete = (histories: HistoryProps[]) =>
     histories.some((history) => history.type.toLowerCase() === "posttest");
 
@@ -131,21 +132,20 @@ export default function SavedDocumentsPage() {
 
       {documents && documents.length > 0 ? (
         <>
-          <div className="relative mb-8 w-full">
-            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
-            <Input
-              type="text"
-              placeholder="Search saved materials..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="border-gray-200 bg-white py-3 pl-10 text-lg"
-            />
-          </div>
+          <FilterSearch
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+          />
 
           <div className="w-full">
-            {filteredDocuments && filteredDocuments.length > 0 ? (
-              <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {filteredDocuments.map((doc) => (
+            {filteredCategoryDocuments &&
+            filteredCategoryDocuments.length > 0 ? (
+              <div
+                className={`grid w-full md:grid-cols-2 lg:grid-cols-3 ${isMobile ? "gap-4" : "gap-6"}`}
+              >
+                {filteredCategoryDocuments.map((doc) => (
                   <Card
                     key={doc.documentId}
                     className="transition-shadow hover:shadow-md"
@@ -174,7 +174,7 @@ export default function SavedDocumentsPage() {
                                     onClick: () => {
                                       showAlert(
                                         "Are you sure?",
-                                        "Deleting this document is permanent and cannot be reversed. Are you sure you want to proceed?",
+                                        "Deleting this document is permanent and will also delete all associated test history. Are you sure you want to proceed?",
                                         () => {
                                           deleteSavedDocumentMutation.mutate(
                                             doc.documentId,
