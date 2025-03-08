@@ -45,6 +45,11 @@ export type ForumProps = {
       id: string;
     },
   ];
+  document: {
+    Category: {
+      name: string;
+    };
+  };
 };
 
 type CommentProps = {
