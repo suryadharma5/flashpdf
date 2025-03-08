@@ -136,3 +136,29 @@ export const getUserAnswerHistories = async (
 
   return userAnswersHistory;
 };
+
+export const deleteHistory = async (userId: string, documentId: string) => {
+  const userHistory = await prismaClient.history.findFirst({
+    where: {
+      userId,
+      documentId,
+    },
+  });
+
+  if (!userHistory) {
+    return { status: 404, data: null };
+  }
+
+  const deletedHistory = await prismaClient.history.deleteMany({
+    where: {
+      userId,
+      documentId,
+    },
+  });
+
+  if (!deletedHistory) {
+    return { status: 500, data: null };
+  }
+
+  return { status: 200, data: deletedHistory };
+};
