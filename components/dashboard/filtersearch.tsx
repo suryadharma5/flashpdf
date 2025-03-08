@@ -33,7 +33,7 @@ export const FilterSearch = ({
           placeholder="Search saved materials..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="border-gray-200 bg-white py-3 pl-10 text-lg"
+          className="border-gray-200 bg-white py-3 pl-10 text-xs"
         />
       </div>
 
@@ -57,7 +57,7 @@ export const FilterSearch = ({
               )
             }
           >
-            {category}
+            <p className="text-xs">{category}</p>
           </Button>
         ))}
       </div>
