@@ -30,6 +30,16 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       if (session.user && token.sub) {
         session.user.id = token.sub;
         session.user.username = token.username;
+
+        const user = await getUserById(token.sub);
+
+        if (user) {
+          session.user = {
+            ...session.user,
+            name: user.username,
+            image: user.image,
+          };
+        }
       }
       return session;
     },
