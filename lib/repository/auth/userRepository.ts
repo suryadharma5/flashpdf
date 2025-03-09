@@ -9,6 +9,14 @@ export const getUserById = async (userId: string, tx?: PrismaTransaction) => {
     where: {
       id: userId,
     },
+    select: {
+      id: true,
+      image: true,
+      username: true,
+      emailVerified: true,
+      email: true,
+      name: true,
+    },
   });
 
   if (!user) {
@@ -108,7 +116,35 @@ export const updateUserUsername = async (
     data: {
       username: username,
     },
+    select: {
+      id: true,
+      username: true,
+    },
   });
+
+  return updatedUser;
+};
+
+export const updateUserProfileImage = async (
+  userId: string,
+  imageUrl: string,
+) => {
+  const updatedUser = await prismaClient.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      image: imageUrl,
+    },
+    select: {
+      id: true,
+      image: true,
+    },
+  });
+
+  if (!updatedUser) {
+    return null;
+  }
 
   return updatedUser;
 };
