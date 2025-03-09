@@ -17,10 +17,9 @@ import { commentSchema, TCommentSchema } from "@/lib/types/forum";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { ClipLoader } from "react-spinners";
 import { toast } from "sonner";
 
 export type ForumProps = {
@@ -321,7 +320,7 @@ export default function Comment({
             }
           >
             {commentMutation.isPending ? (
-              <ClipLoader color="white" size={15} />
+              <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
               "Post"
             )}

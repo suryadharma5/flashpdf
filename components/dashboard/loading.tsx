@@ -1,6 +1,6 @@
 import LoadingImage from "@/public/loading-img.svg";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import { ClipLoader } from "react-spinners";
 
 type LoadingPageProps = {
   text?: string;
@@ -17,7 +17,7 @@ export const LoadingPage = ({ text }: LoadingPageProps) => {
         className="mb-5"
       />
       {text != undefined ? <p>{text}</p> : <p>Loading...</p>}
-      <ClipLoader />
+      <Loader2 className="h-8 w-8 animate-spin" />
     </div>
   );
 };
