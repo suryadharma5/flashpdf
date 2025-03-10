@@ -13,12 +13,16 @@ import {
 } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
+import { categoryColors } from "@/lib/util/category";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 type Document = {
   title: string;
+  Category: {
+    name: string;
+  };
 };
 
 type TestHistoryProps = {
@@ -66,6 +70,8 @@ export default function HistoryPage() {
     return <ErrorPage />;
   }
 
+  console.log({ testHistory });
+
   return (
     <div className="container mx-auto max-w-7xl p-4 sm:p-6">
       <h1 className="mb-8 w-full text-start text-3xl font-bold">
@@ -89,15 +95,24 @@ export default function HistoryPage() {
                 className="flex flex-col transition-all duration-300 hover:shadow-lg"
               >
                 <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xl font-semibold text-gray-900">
                       {tests[0].document.title.charAt(0).toUpperCase() +
                         tests[0].document.title.slice(1).toLowerCase()}
                     </CardTitle>
-                    <Badge variant={"default"}>
-                      {tests.length} attempt{tests.length > 1 ? "s" : ""}
+                    <Badge
+                      className={`border-2 border-${categoryColors[tests[0].document.Category.name]} w-fit`}
+                      variant={"outline"}
+                    >
+                      {tests[0].document.Category.name.replace(
+                        tests[0].document.Category.name.charAt(0),
+                        tests[0].document.Category.name.charAt(0).toUpperCase(),
+                      )}
                     </Badge>
                   </div>
+                  <Badge variant={"default"} className="w-fit">
+                    {tests.length} attempt{tests.length > 1 ? "s" : ""}
+                  </Badge>
                 </CardHeader>
                 <CardContent className="flex-grow">
                   <div className="text-3xl font-bold">

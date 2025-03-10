@@ -94,7 +94,20 @@ export const getUserHistoriesByDocumentId = async (
       ],
     },
     include: {
-      document: true,
+      document: {
+        select: {
+          id: true,
+          createdAt: true,
+          title: true,
+          updatedAt: true,
+          userId: true,
+          Category: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
@@ -124,6 +137,11 @@ export const getUserAnswerHistories = async (
       document: {
         select: {
           title: true,
+          Category: {
+            select: {
+              name: true,
+            },
+          },
         },
       },
       AnswerHistory: false,

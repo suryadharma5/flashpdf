@@ -13,12 +13,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
+import { categoryColors } from "@/lib/util/category";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Award, BarChart, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+
+type DocumentProps = {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  userId: string;
+  Category: {
+    name: string;
+  };
+};
 
 type TestHistoryProps = {
   id: string;
@@ -26,7 +39,7 @@ type TestHistoryProps = {
   type: string;
   documentId: string;
   createdAt: string;
-  document: Document;
+  document: DocumentProps;
 };
 
 type ParamsProps = {
@@ -35,6 +48,7 @@ type ParamsProps = {
 
 export default function HistoryDetailPage() {
   const params: ParamsProps = useParams();
+  const isMobile = useIsMobile();
 
   const { data, isError, isPending } = useQuery({
     queryKey: ["fetchHistory", params.id],
@@ -45,6 +59,8 @@ export default function HistoryDetailPage() {
       return res.data.data as TestHistoryProps[];
     },
   });
+
+  console.log({ data });
 
   const calculateAverageGrade = (tests: TestHistoryProps[]): string => {
     const totalGrade = tests.reduce((sum, test) => sum + test.grade, 0);
@@ -82,18 +98,31 @@ export default function HistoryDetailPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-6xl p-4 sm:p-6">
-      <div className="mb-6 flex items-center gap-4">
-        <Link href="/dashboard/history">
-          <Button variant="ghost" size={"icon"}>
-            <ChevronLeft className="h-7 w-7" />
-          </Button>
-        </Link>
-        <h1 className="text-3xl font-bold">
-          {data[0].document.title.charAt(0).toUpperCase() +
-            data[0].document.title.slice(1).toLowerCase()}{" "}
-          summary
-        </h1>
+    <div className="container mx-auto max-w-7xl p-4 sm:p-6">
+      <div
+        className={`mb-6 ${isMobile ? "flex-col" : "flex"} items-center gap-3`}
+      >
+        <div className="flex gap-4">
+          <Link href="/dashboard/history">
+            <Button variant="ghost" size={"icon"}>
+              <ChevronLeft className="h-7 w-7" />
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-bold">
+            {data[0].document.title.charAt(0).toUpperCase() +
+              data[0].document.title.slice(1).toLowerCase()}{" "}
+            summary
+          </h1>
+        </div>
+        <Badge
+          className={`border-2 border-${categoryColors[data[0].document.Category.name]} ${isMobile ? "ml-12" : ""} h-fit`}
+          variant={"outline"}
+        >
+          {data[0].document.Category.name.replace(
+            data[0].document.Category.name.charAt(0),
+            data[0].document.Category.name.charAt(0).toUpperCase(),
+          )}
+        </Badge>
       </div>
 
       <div className="mb-6 grid gap-4 px-5 lg:grid-cols-3">
