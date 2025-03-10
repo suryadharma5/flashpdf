@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
 import { categoryColors } from "@/lib/util/category";
 import EmptyImage from "@/public/Chill-Time.svg";
@@ -29,6 +30,7 @@ export default function ForumPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
 
   const {
     data: posts,
@@ -150,7 +152,9 @@ export default function ForumPage() {
                     <div className="space-y-6">
                       {filteredCategoryPosts.map((post) => (
                         <Card key={post.id} className="w-full">
-                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                          <CardHeader
+                            className={`flex ${isMobile ? "flex-col space-y-2" : "flex-row items-center space-y-0"} justify-between pb-2`}
+                          >
                             <div className="flex items-center space-x-2">
                               <div className="flex items-center space-x-2">
                                 <Avatar className="h-8 w-8 rounded-full">
@@ -179,7 +183,7 @@ export default function ForumPage() {
                               </small>
                             </div>
                             <Badge
-                              className={`border-2 border-${categoryColors[post.document.Category.name]}`}
+                              className={`border-2 border-${categoryColors[post.document.Category.name]} w-fit`}
                               variant={"outline"}
                             >
                               {post.document.Category.name.replace(
