@@ -136,8 +136,8 @@ export default function HomePage() {
             {isDocumentPending ? (
               <p>Loading...</p>
             ) : (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {documents?.slice(0, 4).map((doc) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {documents?.slice(0, 3).map((doc) => (
                   <Card key={doc.id}>
                     <CardHeader>
                       <CardTitle className="text-lg">{doc.title}</CardTitle>
@@ -219,10 +219,10 @@ export default function HomePage() {
             {isForumPending ? (
               <p>Loading...</p>
             ) : (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {posts
                   ?.sort((a, b) => b.totalLike - a.totalLike)
-                  .slice(0, 4)
+                  .slice(0, 3)
                   .map((post) => (
                     <Card key={post.id}>
                       <CardHeader>
@@ -241,10 +241,11 @@ export default function HomePage() {
                           <Heart className="mr-1 h-4 w-4 text-red-500" />
                           <span>{post.totalLike}</span>
                         </div>
-                        <Button variant="outline">
-                          <BookmarkPlus className="mr-2 h-4 w-4" />
-                          Save Flashcard
+                          <Link href={`/dashboard/forum/${post.documentId}/flashcard`}>
+                        <Button>
+                          View Flashcards
                         </Button>
+                          </Link>
                       </CardFooter>
                     </Card>
                   ))}
