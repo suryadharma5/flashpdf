@@ -262,37 +262,44 @@ export default function ProgressPage() {
     <div className="container mx-auto max-w-7xl p-4 sm:p-6">
       <h1 className="mb-6 text-3xl font-bold">User Statistic</h1>
 
-      <div className="grid gap-6 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
-          <CardHeader>
-            <CardTitle>Total Flashcards Created</CardTitle>
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-200 p-4">
+            <CardTitle className="flex items-center text-xl font-semibold text-gray-800">
+              <p className="w-full text-center">Total Created Flashcards</p>
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{totalFlashcards}</div>
+          <CardContent className="py-2">
+            <div className="w-full text-center text-lg font-semibold">
+              {totalFlashcards} Flashcard
+            </div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader>
-            <CardTitle>Most Used Deck</CardTitle>
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-200 p-4">
+            <CardTitle className="flex items-center text-xl font-semibold text-gray-800">
+              <p className="w-full text-center">Most Used Deck</p>
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-xl font-bold">{mostUsedFlashcardDeck}</div>
+          <CardContent className="py-2">
+            <div className="w-full text-center text-lg font-semibold">
+              {mostUsedFlashcardDeck.replace(
+                mostUsedFlashcardDeck.charAt(0),
+                mostUsedFlashcardDeck.charAt(0).toUpperCase(),
+              )}
+            </div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader>
-            <CardTitle>Highest Score</CardTitle>
+          <CardHeader className="bg-gradient-to-r from-green-50 to-green-200 p-4">
+            <CardTitle className="flex items-center text-xl font-semibold text-gray-800">
+              <p className="w-full text-center">Average Grade</p>
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{highestScore}%</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Average Grade</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{averageGrade}%</div>
+          <CardContent className="py-2">
+            <div className="w-full text-center text-lg font-semibold">
+              {averageGrade}%
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -323,7 +330,7 @@ export default function ProgressPage() {
       <div className="mt-6 grid gap-6 sm:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Most Recent Test Score
             </CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -336,7 +343,7 @@ export default function ProgressPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Test Improvement Rate
             </CardTitle>
             <GraduationCap className="h-4 w-4 text-muted-foreground" />
@@ -438,7 +445,9 @@ export default function ProgressPage() {
       <div className="mt-6 grid gap-6 sm:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Best Subject</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Best Subject
+            </CardTitle>
             <Trophy className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
@@ -448,7 +457,7 @@ export default function ProgressPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Weakest Subject
             </CardTitle>
             <TrendingDown className="h-4 w-4 text-red-500" />
@@ -460,7 +469,7 @@ export default function ProgressPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Study Time
             </CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
@@ -472,7 +481,7 @@ export default function ProgressPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Streak Counter
             </CardTitle>
             <Flame className="h-4 w-4 text-muted-foreground" />
