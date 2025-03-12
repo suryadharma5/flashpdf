@@ -6,6 +6,7 @@ import {
   deleteDocument,
   getAllDocuments,
   getDocumentQuestion,
+  getFlashcardsData,
 } from "@/lib/repository/material/questionRepository";
 import { deleteHistory } from "@/lib/repository/material/testRepository";
 import { questionFormSchema, TDocumentSchema } from "@/lib/types/question-form";
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
   console.log({ document });
 
   // TODO: save to pinecone
-  const processedFile = await loadDocumentIntoPineCone(document);
+  const processedFile = await loadDocumentIntoPineCone(document, documentTitle);
 
   if (!processedFile) {
     return NextResponse.json(
@@ -64,19 +65,26 @@ export async function POST(req: NextRequest) {
 
   const session = await auth();
 
-  const { questions, usage } = await createQuestion(combinedText, numQuestions);
+  const { generatedMaterial, usage } = await createQuestion(
+    combinedText,
+    numQuestions,
+  );
 
   console.log("Question creation usage:", usage);
 
   const docData: TDocumentSchema = {
     userId: session?.user.id,
     title: documentTitle,
-    questions: questions.questions.map((q) => ({
+    questions: generatedMaterial.questions.map((q) => ({
       question: q.question,
       correctAnswer: q.correctAnswer,
       options: q.options.map((option) => ({
         text: option,
       })),
+    })),
+    flashcards: generatedMaterial.flashcards.map((f) => ({
+      keyPoint: f.keyPoint,
+      explanation: f.explanation,
     })),
     namespace: namespace,
     category: category,
@@ -116,8 +124,9 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const documentId = searchParams.get("documentId");
+  const type = searchParams.get("type");
 
-  if (documentId) {
+  if (documentId && type === "question") {
     const documents = await getDocumentQuestion(documentId ?? "");
 
     if (!documents) {
@@ -137,6 +146,31 @@ export async function GET(req: NextRequest) {
         status: 200,
         messsage: "OK",
         data: documents,
+      },
+      {
+        status: 200,
+      },
+    );
+  } else if (documentId && type === "flashcard") {
+    const flashcarsdData = await getFlashcardsData(documentId ?? "");
+
+    if (!flashcarsdData) {
+      return NextResponse.json(
+        {
+          status: 404,
+          message: "not found",
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        status: 200,
+        messsage: "OK",
+        data: flashcarsdData,
       },
       {
         status: 200,
