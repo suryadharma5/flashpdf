@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { QuestionProps } from "@/hooks/useQuestion";
+import { FlashCardDataProps } from "@/hooks/useFlashcard";
 
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -9,7 +9,7 @@ type FlashcardProps = {
   isFlipped: boolean;
   isMobile: boolean;
   currentCardIndex: number;
-  questions: QuestionProps[];
+  questions: FlashCardDataProps[];
   flipCard: () => void;
   prevCard: () => void;
   nextCard: () => void;
@@ -48,19 +48,19 @@ export const Flashcard = ({
                 <p
                   className={`${isMobile ? "text-xl" : "text-2xl"} font-semibold text-gray-800`}
                 >
-                  {currentCard.question}
+                  {currentCard.keyPoint}
                 </p>
                 <p
-                  className={`mt-4 ${isMobile ? "text-sm" : "text-lg"} text-gray-500`}
+                  className={`mt-4 ${isMobile ? "text-sm" : "text-base"} text-gray-500`}
                 >
-                  Click to see answer
+                  click to see explanation
                 </p>
               </div>
               <div className="absolute inset-0 flex w-full flex-col justify-center rounded-lg border border-green-200 bg-green-100/25 p-8 text-center shadow-lg [backface-visibility:hidden] [transform:rotateY(180deg)]">
                 <p
                   className={`${isMobile ? "text-xl" : "text-2xl"} font-semibold text-gray-800`}
                 >
-                  {currentCard.correctAnswer}
+                  {currentCard.explanation}
                 </p>
               </div>
             </motion.div>
