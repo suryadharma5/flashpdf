@@ -12,7 +12,7 @@ export const useQuestions = (documentId: string) => {
     queryKey: ["fetchQuestion", documentId],
     queryFn: async () => {
       const res = await axiosInstance.get(
-        `/api/material?documentId=${documentId}`,
+        `/api/material?documentId=${documentId}&type=question`,
       );
       return res.data;
     },
