@@ -25,6 +25,12 @@ export const createDocumentQuestion = async (
           },
         })),
       },
+      flashcards: {
+        create: request.flashcards.map((flashcard) => ({
+          keyPoint: flashcard.keyPoint,
+          explanation: flashcard.explanation,
+        })),
+      },
       namespace: request.namespace,
       categoryId: request.category,
     },
@@ -61,6 +67,33 @@ export const getDocumentQuestion = async (documentId: string) => {
   }
 
   return documents;
+};
+
+export const getFlashcardsData = async (documentId: string) => {
+  const flashcardsData = await prismaClient.document.findUnique({
+    where: {
+      id: documentId!,
+    },
+    include: {
+      flashcards: {
+        select: {
+          keyPoint: true,
+          explanation: true,
+        },
+      },
+      user: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  if (!flashcardsData) {
+    return null;
+  }
+
+  return flashcardsData;
 };
 
 export const getAllDocuments = async () => {

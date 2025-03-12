@@ -57,6 +57,11 @@ const questionSchema = z
     },
   );
 
+const flashcardSchema = z.object({
+  keyPoint: z.string().min(1, "Key point must be filled"),
+  explanation: z.string().min(1, "Explanation must be filled"),
+});
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 const documentSchema = z.object({
   userId: z.string().min(1, "User id is required"),
@@ -64,6 +69,9 @@ const documentSchema = z.object({
   questions: z
     .array(questionSchema)
     .min(1, "Dokumen harus memiliki minimal 1 pertanyaan"),
+  flashcards: z
+    .array(flashcardSchema)
+    .min(1, "Document must have at least 1 flashcard"),
   namespace: z.string().min(1, "Namespace is required"),
   category: z.string().min(1, "Category is required"),
 });
