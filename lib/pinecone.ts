@@ -54,7 +54,10 @@ async function embedDocument(doc: Document) {
   }
 }
 
-export async function loadDocumentIntoPineCone(file: File | null) {
+export async function loadDocumentIntoPineCone(
+  file: File | null,
+  title: string,
+) {
   console.log("Loading document into PineCone");
 
   if (!file) {
@@ -85,10 +88,9 @@ export async function loadDocumentIntoPineCone(file: File | null) {
 
   console.log("Inserting vectors into PineCone");
 
-  console.log({ vectors });
-
   const uuid = randomUUID();
-  const namespace = pineconeIndex.namespace(uuid);
+  const namespaceId = `${title}-${uuid}`;
+  const namespace = pineconeIndex.namespace(namespaceId);
 
   await namespace.upsert(vectors);
 
@@ -127,7 +129,7 @@ export async function getContext(query: string, namespace: string) {
   });
 
   const qualifiedMatches = matches.filter(
-    (match) => match.score && match.score > 0.5,
+    (match) => match.score && match.score > 0.4,
   );
 
   const docs = qualifiedMatches.map(
