@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useQuestions } from "@/hooks/useQuestion";
+import { useFlashcard } from "@/hooks/useFlashcard";
 import { axiosInstance } from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -28,7 +28,8 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
 
   const isMobile = useIsMobile();
 
-  const { questions, isError, isLoading, error, namespace } = useQuestions(id);
+  const { flashcardsData, isError, isLoading, error, namespace } =
+    useFlashcard(id);
 
   const {
     data,
@@ -68,16 +69,17 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
   const flipCard = () => setIsFlipped(!isFlipped);
 
   const nextCard = useCallback(() => {
-    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % questions.length);
+    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcardsData.length);
     setIsFlipped(false);
-  }, [questions]);
+  }, [flashcardsData]);
 
   const prevCard = useCallback(() => {
     setCurrentCardIndex(
-      (prevIndex) => (prevIndex - 1 + questions.length) % questions.length,
+      (prevIndex) =>
+        (prevIndex - 1 + flashcardsData.length) % flashcardsData.length,
     );
     setIsFlipped(false);
-  }, [questions]);
+  }, [flashcardsData]);
 
   if (isLoading || chatRetrieveLoading) {
     return <LoadingPage />;
@@ -139,7 +141,7 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
             flipCard={flipCard}
             nextCard={nextCard}
             prevCard={prevCard}
-            questions={questions}
+            questions={flashcardsData}
           />
         </TabsContent>
 

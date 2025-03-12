@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useQuestions } from "@/hooks/useQuestion";
+import { useFlashcard } from "@/hooks/useFlashcard";
 import { axiosInstance } from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -35,20 +35,27 @@ export default function ForumPreview() {
   const user = useCurrentUser();
 
   const isMobile = useIsMobile();
-  const { questions, isLoading, isError, documentTitle, documentId, userId } =
-    useQuestions(params.forumId);
+  const {
+    flashcardsData,
+    isLoading,
+    isError,
+    documentTitle,
+    documentId,
+    userId,
+  } = useFlashcard(params.forumId);
 
   const nextCard = useCallback(() => {
-    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % questions.length);
+    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcardsData.length);
     setIsFlipped(false);
-  }, [questions]);
+  }, [flashcardsData]);
 
   const prevCard = useCallback(() => {
     setCurrentCardIndex(
-      (prevIndex) => (prevIndex - 1 + questions.length) % questions.length,
+      (prevIndex) =>
+        (prevIndex - 1 + flashcardsData.length) % flashcardsData.length,
     );
     setIsFlipped(false);
-  }, [questions]);
+  }, [flashcardsData]);
 
   const flipCard = () => setIsFlipped(!isFlipped);
 
@@ -173,7 +180,7 @@ export default function ForumPreview() {
         flipCard={flipCard}
         nextCard={nextCard}
         prevCard={prevCard}
-        questions={questions}
+        questions={flashcardsData}
       />
     </div>
   );
