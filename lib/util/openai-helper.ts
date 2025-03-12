@@ -11,15 +11,20 @@ import { z } from "zod";
 export const createQuestion = async (text: string, numOfQuestions: string) => {
   console.log(`Generating ${numOfQuestions} questions...`);
 
-  const { object: questions, usage } = await generateObject({
+  const { object: generatedMaterial, usage } = await generateObject({
     model: openai("gpt-4o-mini"),
     maxTokens: 700,
     temperature: 0.6,
     prompt: `
-        Create 1 multiple-choice questions based on the following text. Use the format:
-        - Question
-        - Options (A, B, C, D)
-        - Correct Answer
+        Based on the following text::
+        1. create 1 multiple-choice questions with format:
+           - Question
+           - Options (without A, B, C, D prefixes, just provide the answer choices directly)
+           - Correct Answer
+        
+        2. Additionally, extract 2 key learning points as flashcards with:
+          - A key point or concept from the text
+          - A concise explanation of that key point
         ---
         ${text}
     `,
@@ -38,10 +43,18 @@ export const createQuestion = async (text: string, numOfQuestions: string) => {
             ),
         }),
       ),
+      flashcards: z.array(
+        z.object({
+          keyPoint: z.string().describe("Konsep kunci atau poin penting"),
+          explanation: z
+            .string()
+            .describe("Penjelasan singkat dari konsep tersebut"),
+        }),
+      ),
     }),
   });
 
-  return { questions, usage };
+  return { generatedMaterial, usage };
 };
 
 export const getEmbeddings = async (text: string) => {
