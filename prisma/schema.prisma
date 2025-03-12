@@ -74,13 +74,14 @@ model Account {
 
 // question generation
 model Document {
-  id         String     @id @default(cuid())
+  id         String      @id @default(cuid())
   title      String
   questions  Question[]
+  flashcards Flashcard[]
   userId     String
   categoryId String
   namespace  String
-  isPublic   Boolean    @default(false)
+  isPublic   Boolean     @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -134,6 +135,20 @@ model Option {
   question Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@map("options")
+}
+
+// Tambahkan model baru untuk flashcard
+model Flashcard {
+  id          String   @id @default(cuid())
+  keyPoint    String
+  explanation String
+  documentId  String
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("flashcards")
 }
 
 enum TestType {
@@ -212,6 +227,7 @@ model ForumLike {
   userId    String
   forumId   String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   forum Forum @relation(fields: [forumId], references: [id], onDelete: Cascade)
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
