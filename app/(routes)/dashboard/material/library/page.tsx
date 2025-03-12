@@ -153,7 +153,9 @@ export default function Page() {
 
   return (
     <div className="container mx-auto max-w-7xl p-4 sm:p-6">
-      <h1 className="mb-8 w-full text-start text-3xl font-bold">Library</h1>
+      <h1 className="mb-8 w-full text-start text-3xl font-bold">
+        My Flashcards
+      </h1>
       {isPending ? (
         <>
           <FilterSearch

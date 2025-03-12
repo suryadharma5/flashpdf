@@ -1,125 +1,215 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Tabs } from "@/components/ui/tabs-features";
+import { motion } from "framer-motion";
 import {
+  BarChart3,
   Brain,
-  ChartNoAxesColumn,
   FileText,
   MessagesSquare,
-  UserPen,
+  NotebookPen,
 } from "lucide-react";
 
-import { useEffect, useState } from "react";
-
-export default function Features() {
-  const [activeFeature, setActiveFeature] = useState(0);
-
+export default function FeatureSection() {
   const features = [
     {
       title: "Easy Document Upload",
-      subtitle:
-        "Simply drag and drop your PDF files or click to upload. Our system processes your documents quickly and securely.",
-      icon: <FileText color="white" size={30} />,
+      value: "upload",
+      content: (
+        <div className="relative h-fit w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-8 text-gray-800 shadow-sm">
+          <div className="flex flex-col items-start gap-8 md:flex-row">
+            <div className="flex-shrink-0 rounded-lg border border-gray-200 bg-gray-100 p-4">
+              <FileText size={30} />
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-medium md:text-2xl">
+                Easy Document Upload
+              </h3>
+              <p className="text-gray-600">
+                Simply drag and drop your PDF files or click to upload. Our
+                system processes your documents quickly and securely.
+              </p>
+              <Button className="rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
+                Try It Now
+              </Button>
+            </div>
+          </div>
+          <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
+            <img
+              src="/placeholder.svg?height=400&width=600"
+              alt="Document Upload Feature"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      ),
     },
     {
       title: "AI-Powered Flashcards",
-      subtitle:
-        "Our advanced AI analyzes your PDF content and generates intelligent flashcards based on your specific questions.",
-      icon: <Brain color="white" size={30} />,
+      value: "flashcards",
+      content: (
+        <div className="relative h-fit w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-8 text-gray-800 shadow-sm">
+          <div className="flex flex-col items-start gap-8 md:flex-row">
+            <div className="flex-shrink-0 rounded-lg border border-gray-200 bg-gray-100 p-4">
+              <Brain size={30} />
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-medium md:text-2xl">
+                AI-Powered Flashcards
+              </h3>
+              <p className="text-gray-600">
+                Our advanced AI analyzes your PDF content and generates
+                intelligent flashcards based on your specific questions.
+              </p>
+              <Button className="rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
+                Explore AI Features
+              </Button>
+            </div>
+          </div>
+          <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
+            <img
+              src="/placeholder.svg?height=400&width=600"
+              alt="AI-Powered Flashcards Feature"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      ),
     },
     {
-      title: "Personalized Learning",
-      subtitle:
-        "Tailor your flashcards by asking specific questions. Our AI adapts to your learning style and focuses on what you need to know.",
-      icon: <UserPen color="white" size={30} />,
+      title: "Review Test",
+      value: "review-test",
+      content: (
+        <div className="relative h-fit w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-8 text-gray-800 shadow-sm">
+          <div className="flex flex-col items-start gap-8 md:flex-row">
+            <div className="flex-shrink-0 rounded-lg border border-gray-200 bg-gray-100 p-4">
+              <NotebookPen size={30} />
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-medium md:text-2xl">Review Test</h3>
+              <p className="text-gray-600">
+                After completing a test, revisit your answers and compare them
+                with the correct ones. Enhance your learning by understanding
+                mistakes and improving retention.
+              </p>
+              <Button className="rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
+                Study Now
+              </Button>
+            </div>
+          </div>
+          <div className="relative mt-8 h-72 w-full overflow-hidden rounded-lg border border-gray-200">
+            <img
+              src="/placeholder.svg?height=400&width=600"
+              alt="Personalized Learning Feature"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      ),
     },
     {
       title: "Community Forum",
-      subtitle:
-        "Share your flashcards with other users, discuss study strategies, and collaborate on learning materials.",
-      icon: <MessagesSquare color="white" size={30} />,
+      value: "community",
+      content: (
+        <div className="relative h-fit w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-8 text-gray-800 shadow-sm">
+          <div className="flex flex-col items-start gap-8 md:flex-row">
+            <div className="flex-shrink-0 rounded-lg border border-gray-200 bg-gray-100 p-4">
+              <MessagesSquare size={30} />
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-medium md:text-2xl">
+                Community Forum
+              </h3>
+              <p className="text-gray-600">
+                Share your flashcards with other users, discuss study
+                strategies, and collaborate on learning materials.
+              </p>
+              <Button className="rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
+                Join Community
+              </Button>
+            </div>
+          </div>
+          <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
+            <img
+              src="/placeholder.svg?height=400&width=600"
+              alt="Community Forum Feature"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      ),
     },
     {
       title: "Progress Tracking",
-      subtitle:
-        "Monitor your learning journey with detailed progress reports and performance analytics for each test taken.",
-      icon: <ChartNoAxesColumn color="white" size={30} />,
+      value: "tracking",
+      content: (
+        <div className="relative h-fit w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-8 text-gray-800 shadow-sm">
+          <div className="flex flex-col items-start gap-8 md:flex-row">
+            <div className="flex-shrink-0 rounded-lg border border-gray-200 bg-gray-100 p-4">
+              <BarChart3 size={30} />
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-medium md:text-2xl">
+                Progress Tracking
+              </h3>
+              <p className="text-gray-600">
+                Monitor your learning journey with detailed progress reports and
+                performance analytics for each test taken.
+              </p>
+              <Button className="rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
+                View Analytics
+              </Button>
+            </div>
+          </div>
+          <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
+            <img
+              src="/placeholder.svg?height=400&width=600"
+              alt="Progress Tracking Feature"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      ),
     },
   ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveFeature((prev) => (prev + 1) % (features.length - 2));
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <div className="mt-16" id="features">
-      <h2 className="text-center text-3xl font-extrabold text-gray-900">
-        Features
-      </h2>
-      <div className="relative overflow-hidden">
-        <div className="mx-auto max-w-7xl">
-          {/* Carousel for medium size view */}
-          <div className="relative z-10 hidden bg-white pb-8 sm:pb-16 md:block md:pb-20 lg:pb-28 xl:pb-32">
-            <div className="mx-auto mt-10 max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-              <div className="flex overflow-hidden p-2">
-                <div
-                  className="flex transition-transform duration-500 ease-in-out"
-                  style={{
-                    transform: `translateX(-${activeFeature * (100 / 3)}%)`,
-                    width: `${(6 / 3) * 100}%`,
-                  }}
-                >
-                  {features.map((feature, index) => (
-                    <div key={index} className="w-1/3 flex-shrink-0 px-4">
-                      <div className="h-full rounded-lg bg-white p-6 shadow-md">
-                        <div className="flex h-full flex-col items-center text-center">
-                          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-md bg-black text-white">
-                            {feature.icon}
-                          </div>
-                          <h3 className="mb-2 text-xl font-semibold">
-                            {feature.title}
-                          </h3>
-                          <p className="hidden flex-grow text-gray-600 md:block">
-                            {feature.subtitle}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* End carousel view */}
+    <section
+      className="relative z-0 bg-white px-4 py-16 dark:bg-gray-900"
+      id="features"
+    >
+      <div className="mx-auto max-w-6xl">
+        <motion.div
+          initial={{ opacity: 0, x: 0 }}
+          whileInView={{ opacity: 1, x: 0, scale: 1.02 }}
+          transition={{
+            duration: 0.5,
+            ease: "easeOut",
+            delay: 0.2,
+          }}
+          viewport={{ once: true, amount: 0.5 }}
+          className="mb-16 text-center"
+        >
+          <h2 className="mb-4 text-3xl font-bold text-gray-900 dark:text-gray-100 md:text-4xl">
+            Powerful Features
+          </h2>
+          <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
+            Our platform offers everything you need to transform your study
+            materials into effective learning tools.
+          </p>
+        </motion.div>
 
-        {/* small size view */}
-        <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 md:hidden">
-          {features.map((feature, idx) => (
-            <div className="pt-6" key={idx}>
-              <div className="flow-root rounded-lg bg-gray-50 px-6 pb-8">
-                <div className="-mt-6">
-                  <div>
-                    <span className="inline-flex items-center justify-center rounded-md bg-black p-3 shadow-lg">
-                      {feature.icon}
-                    </span>
-                  </div>
-                  <h3 className="mt-8 text-lg font-medium tracking-tight text-gray-900">
-                    {feature.title}
-                  </h3>
-                  <p className="mt-5 text-base text-gray-500">
-                    {feature.subtitle}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className="relative flex h-[40rem] w-full flex-col items-start justify-start [perspective:1000px] md:h-[45rem]">
+          <Tabs
+            tabs={features}
+            containerClassName="justify-center mb-8"
+            activeTabClassName="bg-primary text-white"
+            tabClassName="font-medium text-sm md:text-base"
+            contentClassName="mt-12"
+          />
         </div>
-        {/* end small size view */}
       </div>
-    </div>
+    </section>
   );
 }
