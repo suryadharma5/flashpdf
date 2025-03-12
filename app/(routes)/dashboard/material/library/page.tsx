@@ -178,7 +178,7 @@ export default function Page() {
             setSearchTerm={setSearchTerm}
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
-            placeHolder="Search documents..."
+            placeHolder="Search flashcard..."
           />
           <div className="w-full">
             {filteredCategoryDocuments &&

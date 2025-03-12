@@ -55,19 +55,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         isActive: pathName.includes("/dashboard/material"),
         items: [
           {
-            title: "New Document",
+            title: "New Flashcard",
             icon: Plus,
             url: "/dashboard/material/create",
             isActive: pathName === "/dashboard/material/create",
           },
           {
-            title: "My Documents",
+            title: "My Flashcards",
             icon: Files,
             url: "/dashboard/material/library",
             isActive: pathName === "/dashboard/material/library",
           },
           {
-            title: "Saved Documents",
+            title: "Saved Flashcards",
             icon: BookmarkIcon,
             url: "/dashboard/material/saved",
             isActive: pathName === "/dashboard/material/saved",
