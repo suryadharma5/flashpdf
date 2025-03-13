@@ -48,6 +48,8 @@ export default function Test({ documentId }: PretestProps) {
   const user = useCurrentUser();
   const router = useRouter();
   const pathName = usePathname();
+  const { questions, isError, isLoading, error, isSuccess, documentTitle } =
+    useQuestions(documentId);
 
   const suffix = pathName.split("/").filter(Boolean).pop();
 
@@ -114,6 +116,10 @@ export default function Test({ documentId }: PretestProps) {
       userId: user.id,
     }));
 
+    const questionsHistory = questions.map((q) => ({
+      questionId: q.id,
+    }));
+
     const uploadHistoryData = {
       history: {
         grade: (score / questions.length) * 100,
@@ -122,11 +128,13 @@ export default function Test({ documentId }: PretestProps) {
         documentId: documentId,
       },
       answers: processedAnswers,
+      questionIds: questionsHistory,
     };
 
     submitAnswer.mutate({
       history: uploadHistoryData.history,
       answers: uploadHistoryData.answers,
+      questions: uploadHistoryData.questionIds,
     });
   };
 
@@ -143,11 +151,6 @@ export default function Test({ documentId }: PretestProps) {
       return newFlagged;
     });
   };
-
-  const { questions, isError, isLoading, error, isSuccess, documentTitle } =
-    useQuestions(documentId);
-
-  console.log(documentTitle);
 
   if (isError) {
     console.error(error);
@@ -170,6 +173,8 @@ export default function Test({ documentId }: PretestProps) {
   if (submitAnswer.isPending) {
     return <LoadingPage />;
   }
+
+  console.log({ questions });
 
   return (
     <div className="flex min-h-screen w-full flex-col items-start justify-center space-y-4 bg-background p-4 text-foreground md:flex-row md:space-x-4 md:space-y-0">
