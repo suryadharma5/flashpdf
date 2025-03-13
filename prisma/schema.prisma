@@ -119,7 +119,8 @@ model Question {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  document Document? @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  document        Document?         @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  QuestionHistory QuestionHistory[]
 
   @@map("questions")
 }
@@ -166,9 +167,10 @@ model History {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user          User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  document      Document?       @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  AnswerHistory AnswerHistory[]
+  user            User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document        Document?         @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  AnswerHistory   AnswerHistory[]
+  QuestionHistory QuestionHistory[]
 
   @@map("histories")
 }
@@ -186,6 +188,19 @@ model AnswerHistory {
   history History @relation(fields: [historyId], references: [id], onDelete: Cascade)
 
   @@map("answer_histories")
+}
+
+model QuestionHistory {
+  id         String @id @default(cuid())
+  historyId  String
+  questionId String
+
+  createdAt DateTime @default(now())
+
+  history  History  @relation(fields: [historyId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("questions_history")
 }
 
 model Chat {
