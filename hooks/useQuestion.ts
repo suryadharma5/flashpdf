@@ -2,6 +2,7 @@ import { axiosInstance } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 
 export type QuestionProps = {
+  id: string;
   question: string;
   options: string[];
   correctAnswer: string;
@@ -21,6 +22,7 @@ export const useQuestions = (documentId: string) => {
 
   const questions: QuestionProps[] =
     data?.data.questions.map((q: any) => ({
+      id: q.id,
       question: q.question,
       options: q.options.map((opt: any) => opt.text),
       correctAnswer: q.correctAnswer,
