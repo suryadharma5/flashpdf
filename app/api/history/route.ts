@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prismaClient } from "@/lib/db";
 import {
   createAnswerHistory,
+  createQuestionsHistory,
   createTestHistory,
   getUserAnswerHistories,
   getUserAnswerHistory,
@@ -30,6 +31,7 @@ export async function POST(req: NextRequest) {
 
   const historyData = validatedData.data.history;
   const answersData = validatedData.data.answers;
+  const questionsData = validatedData.data.questions;
 
   const result = await prismaClient.$transaction(async (tx) => {
     const history = await createTestHistory(historyData, tx);
@@ -54,6 +56,28 @@ export async function POST(req: NextRequest) {
     const userAnswers = await createAnswerHistory(answersWithHistoryId, tx);
 
     if (!userAnswers) {
+      return NextResponse.json(
+        {
+          status: 500,
+          message: "internal server error",
+        },
+        {
+          status: 500,
+        },
+      );
+    }
+
+    const questionsWithHistoryId = questionsData.map((q) => ({
+      ...q,
+      historyId: history.id,
+    }));
+
+    const questionsHistory = await createQuestionsHistory(
+      questionsWithHistoryId,
+      tx,
+    );
+
+    if (!questionsHistory) {
       return NextResponse.json(
         {
           status: 500,

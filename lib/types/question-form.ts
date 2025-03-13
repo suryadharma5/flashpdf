@@ -92,11 +92,18 @@ const answerHistorySchema = z.object({
   historyId: z.string().optional(),
 });
 
+const questionHistorySchema = z.object({
+  questionId: z.string().min(1),
+  historyId: z.string().optional(),
+});
+
 const answerHistoriesSchema = z.array(answerHistorySchema).min(1);
+const questionsHistorySchema = z.array(questionHistorySchema).min(1);
 
 export const uploadHistorySchema = z.object({
   history: historySchema,
   answers: answerHistoriesSchema,
+  questions: questionsHistorySchema,
 });
 
 export type TQuestionFormSchema = z.infer<typeof questionFormSchema>;
@@ -105,3 +112,4 @@ export type TUploadHistorySchema = z.infer<typeof uploadHistorySchema>;
 export type TTestTypeEnum = z.infer<typeof testTypeEnum>;
 export type THistorySchema = z.infer<typeof historySchema>;
 export type TAnswerHistoriesSchema = z.infer<typeof answerHistoriesSchema>;
+export type TQuestionsHistorySchema = z.infer<typeof questionsHistorySchema>;

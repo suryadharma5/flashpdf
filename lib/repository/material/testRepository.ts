@@ -3,6 +3,7 @@ import { PrismaTransaction } from "@/lib/repository/auth/tokenRepository";
 import {
   TAnswerHistoriesSchema,
   THistorySchema,
+  TQuestionsHistorySchema,
 } from "@/lib/types/question-form";
 
 export const createTestHistory = async (
@@ -41,6 +42,24 @@ export const createAnswerHistory = async (
   return answerHistory;
 };
 
+export const createQuestionsHistory = async (
+  request: TQuestionsHistorySchema,
+  tx?: PrismaTransaction,
+) => {
+  const prismaTx = tx || prismaClient;
+
+  const questionsHistoryData = request.map((question) => ({
+    questionId: question.questionId,
+    historyId: question.historyId!,
+  }));
+
+  const questionsHistory = await prismaTx.questionHistory.createMany({
+    data: questionsHistoryData,
+  });
+
+  return questionsHistory;
+};
+
 export const getUserAnswerHistory = async (
   documentId: string,
   historyId: string,
@@ -65,6 +84,20 @@ export const getUserAnswerHistory = async (
     },
     include: {
       AnswerHistory: true,
+      QuestionHistory: {
+        select: {
+          question: true,
+        },
+      },
+      document: {
+        select: {
+          questions: {
+            select: {
+              options: true,
+            },
+          },
+        },
+      },
     },
   });
 
