@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useQuestions } from "@/hooks/useQuestion";
+import { Alert } from "@/components/dashboard/library/alert-dialog";
 import { axiosInstance } from "@/lib/axios";
 import { TTestTypeEnum, TUploadHistorySchema } from "@/lib/types/question-form";
 import { useMutation } from "@tanstack/react-query";
@@ -52,6 +53,24 @@ export default function Test({ documentId }: PretestProps) {
     useQuestions(documentId);
 
   const suffix = pathName.split("/").filter(Boolean).pop();
+
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+    const [onSubmitAction, setOnSubmitAction] = useState<() => void>(
+      () => () => {},
+    );
+    const [alertTitle, setAlertTitle] = useState("");
+    const [alertDescription, setAlertDescription] = useState("");
+
+  const showAlert = (
+    title: string,
+    description: string,
+    onSubmit: () => void,
+  ) => {
+    setOnSubmitAction(() => onSubmit);
+    setIsAlertOpen(true);
+    setAlertTitle(title);
+    setAlertDescription(description);
+  };
 
   const handleAnswer = (answer: string) => {
     const newAnswers = [...userAnswers];
@@ -182,6 +201,7 @@ export default function Test({ documentId }: PretestProps) {
         <LoadingPage />
       ) : isSuccess && questions.length > 0 ? (
         <>
+        <div className="flex flex-col items-center space-y-4">
           <QuestionNavigator
             mockQuestions={questions}
             currentQuestion={currentQuestion}
@@ -189,6 +209,22 @@ export default function Test({ documentId }: PretestProps) {
             userAnswers={userAnswers}
             flaggedQuestions={flaggedQuestions}
           />
+
+          <Button
+            size="lg"
+            onClick={() =>
+              showAlert(
+                "Are you sure?",
+                "If you go back now, all your progress will be lost. Do you want to proceed?",
+                () => router.push("/dashboard/material/library")
+              )
+            }
+            className="mt-4"
+          >
+            <ChevronLeft className="h-5 w-5 mr-2" />
+            Back
+          </Button>
+        </div>
 
           <Card className="w-full max-w-4xl shadow-lg">
             <CardHeader className="rounded-t-md">
@@ -338,6 +374,13 @@ export default function Test({ documentId }: PretestProps) {
       ) : (
         <div></div>
       )}
+      <Alert
+        title={alertTitle}
+        description={alertDescription}
+        open={isAlertOpen}
+        onOpenChange={(open) => setIsAlertOpen(open)}
+        onSubmit={onSubmitAction}
+      />
     </div>
   );
 }
