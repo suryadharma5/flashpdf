@@ -94,7 +94,7 @@ export async function loadDocumentIntoPineCone(
 
   await namespace.upsert(vectors);
 
-  return { documents, uuid };
+  return { documents, namespaceId };
 }
 
 export async function getMatchesFromEmbeddings(
