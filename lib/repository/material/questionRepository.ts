@@ -134,6 +134,45 @@ export const getAllDocuments = async () => {
   return documents;
 };
 
+export const getDocumentsByLimit = async (limit: number) => {
+  const session = await auth();
+  const userId = session?.user.id;
+
+  const documents = await prismaClient.document.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      History: true,
+      questions: {
+        select: {
+          question: true,
+        },
+      },
+      Forum: {
+        select: {
+          id: true,
+        },
+      },
+      Category: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: limit,
+  });
+
+  if (!documents) {
+    return null;
+  }
+
+  return documents;
+};
+
 export const updateDocumentStatus = async (
   id: string,
   userId: string,

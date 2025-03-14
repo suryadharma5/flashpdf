@@ -67,6 +67,53 @@ export const getAllForum = async (userId: string, tx?: PrismaTransaction) => {
   return forums;
 };
 
+export const getForumsByLimit = async (userId: string, limit: number) => {
+  const forums = await prismaClient.forum.findMany({
+    orderBy: {
+      totalLike: "desc",
+    },
+    take: limit,
+    select: {
+      id: true,
+      createdAt: true,
+      title: true,
+      description: true,
+      documentId: true,
+      totalLike: true,
+      user: {
+        select: {
+          username: true,
+          image: true,
+        },
+      },
+      likes: {
+        where: { userId },
+        select: { id: true },
+      },
+      comments: {
+        select: {
+          id: true,
+        },
+      },
+      document: {
+        select: {
+          Category: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!forums) {
+    return null;
+  }
+
+  return forums;
+};
+
 export const findForumById = async (
   forumId: string,
   tx?: PrismaTransaction,
