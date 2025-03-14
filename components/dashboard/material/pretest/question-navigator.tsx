@@ -1,6 +1,12 @@
+"use client";
+
+import { Alert } from "@/components/dashboard/library/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 type QuestionProps = {
   question: string;
@@ -23,6 +29,26 @@ export const QuestionNavigator = ({
   setCurrentQuestion,
   flaggedQuestions,
 }: QuestionNavigatorProps) => {
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [onSubmitAction, setOnSubmitAction] = useState<() => void>(
+    () => () => {},
+  );
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertDescription, setAlertDescription] = useState("");
+
+  const router = useRouter();
+
+  const showAlert = (
+    title: string,
+    description: string,
+    onSubmit: () => void,
+  ) => {
+    setOnSubmitAction(() => onSubmit);
+    setIsAlertOpen(true);
+    setAlertTitle(title);
+    setAlertDescription(description);
+  };
+
   return (
     <Card className="mb-4 w-full shadow-lg md:mb-0 md:w-64">
       <CardHeader className="rounded-t-lg bg-primary text-primary-foreground">
@@ -53,7 +79,29 @@ export const QuestionNavigator = ({
             ))}
           </div>
         </ScrollArea>
+        <Button
+          size="lg"
+          onClick={() =>
+            showAlert(
+              "Are you sure?",
+              "If you go back now, all your progress will be lost. Do you want to proceed?",
+              () => router.back(),
+            )
+          }
+          className="mt-4 w-full"
+        >
+          <ChevronLeft className="mr-2 h-5 w-5" />
+          Back
+        </Button>
       </CardContent>
+
+      <Alert
+        title={alertTitle}
+        description={alertDescription}
+        open={isAlertOpen}
+        onOpenChange={(open) => setIsAlertOpen(open)}
+        onSubmit={onSubmitAction}
+      />
     </Card>
   );
 };

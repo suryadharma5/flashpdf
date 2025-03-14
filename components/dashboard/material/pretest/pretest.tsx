@@ -1,6 +1,5 @@
 "use client";
 
-import { Alert } from "@/components/dashboard/library/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -53,24 +52,6 @@ export default function Test({ documentId }: PretestProps) {
     useQuestions(documentId);
 
   const suffix = pathName.split("/").filter(Boolean).pop();
-
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [onSubmitAction, setOnSubmitAction] = useState<() => void>(
-    () => () => {},
-  );
-  const [alertTitle, setAlertTitle] = useState("");
-  const [alertDescription, setAlertDescription] = useState("");
-
-  const showAlert = (
-    title: string,
-    description: string,
-    onSubmit: () => void,
-  ) => {
-    setOnSubmitAction(() => onSubmit);
-    setIsAlertOpen(true);
-    setAlertTitle(title);
-    setAlertDescription(description);
-  };
 
   const handleAnswer = (answer: string) => {
     const newAnswers = [...userAnswers];
@@ -193,8 +174,6 @@ export default function Test({ documentId }: PretestProps) {
     return <LoadingPage />;
   }
 
-  console.log({ questions });
-
   return (
     <div className="flex min-h-screen w-full flex-col items-start justify-center space-y-4 bg-background p-4 text-foreground md:flex-row md:space-x-4 md:space-y-0">
       {isLoading ? (
@@ -209,21 +188,6 @@ export default function Test({ documentId }: PretestProps) {
               userAnswers={userAnswers}
               flaggedQuestions={flaggedQuestions}
             />
-
-            <Button
-              size="lg"
-              onClick={() =>
-                showAlert(
-                  "Are you sure?",
-                  "If you go back now, all your progress will be lost. Do you want to proceed?",
-                  () => router.push("/dashboard/material/library"),
-                )
-              }
-              className="mt-4"
-            >
-              <ChevronLeft className="mr-2 h-5 w-5" />
-              Back
-            </Button>
           </div>
 
           <Card className="w-full max-w-4xl shadow-lg">
@@ -374,13 +338,6 @@ export default function Test({ documentId }: PretestProps) {
       ) : (
         <div></div>
       )}
-      <Alert
-        title={alertTitle}
-        description={alertDescription}
-        open={isAlertOpen}
-        onOpenChange={(open) => setIsAlertOpen(open)}
-        onSubmit={onSubmitAction}
-      />
     </div>
   );
 }
