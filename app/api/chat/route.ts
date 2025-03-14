@@ -1,7 +1,10 @@
 import { auth } from "@/auth";
 import { getContext } from "@/lib/pinecone";
 import { getChats, saveChat } from "@/lib/repository/chat/chatRepository";
-import { getMostRecentUserMessage } from "@/lib/util/openai-helper";
+import {
+  getMostRecentUserMessage,
+  getPreviousQuestion,
+} from "@/lib/util/openai-helper";
 import { openai } from "@ai-sdk/openai";
 import {
   convertToCoreMessages,
@@ -41,8 +44,19 @@ export async function POST(req: NextRequest) {
 
   const session = await auth();
 
+  var enhancedQuery = "";
   const coreMessages = convertToCoreMessages(messages);
   const userMessage = getMostRecentUserMessage(coreMessages);
+  const previousQuestion = getPreviousQuestion(coreMessages);
+
+  const query = userMessage?.content.toString();
+  const lastQuestion = previousQuestion?.content.toString();
+
+  enhancedQuery = query ?? "";
+
+  if (lastQuestion) {
+    enhancedQuery = `${lastQuestion} ${query}`;
+  }
 
   if (!userMessage) {
     return NextResponse.json(
@@ -56,11 +70,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const context = await getContext(userMessage.content.toString(), namespace);
+  const context = await getContext(enhancedQuery, namespace);
 
   const prompt = SYSTEM_PROMPT.replace("{{context}}", context);
-
-  console.log({ prompt });
 
   return createDataStreamResponse({
     execute: async (dataStream) => {
@@ -72,10 +84,10 @@ export async function POST(req: NextRequest) {
       try {
         const result = streamText({
           model: openai("gpt-4o-mini"),
-          prompt: userMessage.content.toString(),
+          prompt: enhancedQuery,
           system: prompt,
           maxTokens: 1000,
-          temperature: 0.4,
+          temperature: 0.3,
           onFinish: async () => {
             const usage = await result.usage;
             console.log("Chat cost", usage);
