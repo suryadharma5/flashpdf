@@ -5,6 +5,7 @@ import {
   deleteForum,
   findForumById,
   getAllForum,
+  getForumsByLimit,
 } from "@/lib/repository/forum/forumRepository";
 import { updateDocumentStatus } from "@/lib/repository/material/questionRepository";
 import { forumSchema, TCreateForumSchema } from "@/lib/types/forum";
@@ -179,8 +180,32 @@ export async function DELETE(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const limit = searchParams.get("limit");
+
   const session = await auth();
+
+  if (limit) {
+    const forums = await getForumsByLimit(session?.user.id, parseInt(limit));
+    const data = forums !== null ? forums : [];
+
+    const formattedData = data.map((forum) => ({
+      ...forum,
+      isLiked: forum.likes.length > 0,
+    }));
+
+    return NextResponse.json(
+      {
+        status: 200,
+        data: formattedData,
+        message: "OK",
+      },
+      {
+        status: 200,
+      },
+    );
+  }
 
   const forums = await getAllForum(session?.user.id);
   const data = forums !== null ? forums : [];

@@ -6,6 +6,7 @@ import {
   deleteDocument,
   getAllDocuments,
   getDocumentQuestion,
+  getDocumentsByLimit,
   getFlashcardsData,
 } from "@/lib/repository/material/questionRepository";
 import { deleteHistory } from "@/lib/repository/material/testRepository";
@@ -57,7 +58,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { documents, uuid: namespace } = processedFile;
+  const { documents, namespaceId: namespace } = processedFile;
 
   const combinedText = documents
     .flatMap((doc) => doc.map((chunk) => chunk.pageContent))
@@ -125,6 +126,7 @@ export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const documentId = searchParams.get("documentId");
   const type = searchParams.get("type");
+  const limit = searchParams.get("limit");
 
   if (documentId && type === "question") {
     const documents = await getDocumentQuestion(documentId ?? "");
@@ -177,6 +179,22 @@ export async function GET(req: NextRequest) {
       },
     );
   } else {
+    if (limit) {
+      const documents = await getDocumentsByLimit(parseInt(limit));
+      const data = documents != null ? documents : [];
+
+      return NextResponse.json(
+        {
+          status: 200,
+          messsage: "OK",
+          data: data,
+        },
+        {
+          status: 200,
+        },
+      );
+    }
+
     const documents = await getAllDocuments();
     const data = documents != null ? documents : [];
 
