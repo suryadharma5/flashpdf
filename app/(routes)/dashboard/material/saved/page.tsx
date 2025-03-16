@@ -5,6 +5,7 @@ import ErrorPage from "@/components/dashboard/error";
 import { FilterSearch } from "@/components/dashboard/filtersearch";
 import { Alert } from "@/components/dashboard/library/alert-dialog";
 import { Dropdown } from "@/components/dashboard/material/dropdown-library";
+import { PaginationNavigator } from "@/components/dashboard/pagination";
 import { SkeletonCard } from "@/components/dashboard/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,8 @@ type HistoryProps = {
   type: string;
 };
 
-type Document = {
+type DocumentProps = {
+  id: string;
   title: string;
   user: {
     username: string;
@@ -38,9 +40,16 @@ type Document = {
   };
 };
 
-type DocumentProps = {
-  documentId: string;
-  document: Document;
+type SavedDocument = {
+  document: DocumentProps;
+};
+
+type PaginatedSavedDocumentProps = {
+  documents: SavedDocument[];
+  totalEntries: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
 };
 
 export default function SavedDocumentsPage() {
@@ -52,21 +61,22 @@ export default function SavedDocumentsPage() {
   const [onSubmitAction, setOnSubmitAction] = useState<() => void>(
     () => () => {},
   );
+  const [currentPage, setCurrentPage] = useState(1);
 
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
-  const {
-    data: documents,
-    isError,
-    isPending,
-  } = useQuery({
-    queryKey: ["fetchSavedDocuments"],
+  const { data, isError, isLoading, isFetching } = useQuery({
+    queryKey: ["fetchSavedDocuments", currentPage],
     queryFn: async () => {
-      const res = await axiosInstance.get("/api/save");
-      return res.data.data as DocumentProps[];
+      const res = await axiosInstance.get(
+        `/api/save?limit=6&page=${currentPage}`,
+      );
+      return res.data.data as PaginatedSavedDocumentProps;
     },
   });
+
+  const documents = data?.documents || [];
 
   const deleteSavedDocumentMutation = useMutation({
     mutationFn: async (documentId: string) => {
@@ -92,8 +102,8 @@ export default function SavedDocumentsPage() {
 
   const filteredDocuments = documents?.filter(
     (doc) =>
-      doc.document.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.document.user.username
+      doc.document.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doc.document.user?.username
         .toLowerCase()
         .includes(searchTerm.toLowerCase()),
   );
@@ -116,6 +126,25 @@ export default function SavedDocumentsPage() {
     setOnSubmitAction(() => onSubmit);
   };
 
+  const handleNextPage = () => {
+    setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => prev - 1);
+  };
+
+  const handleSkip = (destination: "start" | "end") => {
+    switch (destination) {
+      case "start":
+        setCurrentPage(1);
+        break;
+      case "end":
+        setCurrentPage(data?.totalPages ?? 1);
+        break;
+    }
+  };
+
   if (isError) {
     return <ErrorPage />;
   }
@@ -126,7 +155,7 @@ export default function SavedDocumentsPage() {
         Saved Flashcards
       </h1>
 
-      {isPending ? (
+      {isLoading || isFetching ? (
         <>
           <FilterSearch
             searchTerm={searchTerm}
@@ -160,7 +189,7 @@ export default function SavedDocumentsPage() {
               >
                 {filteredCategoryDocuments.map((doc) => (
                   <Card
-                    key={doc.documentId}
+                    key={doc.document.id}
                     className="transition-shadow hover:shadow-md"
                   >
                     <CardContent className="p-6">
@@ -190,7 +219,7 @@ export default function SavedDocumentsPage() {
                                         "Deleting this document is permanent and will also delete all associated test history. Are you sure you want to proceed?",
                                         () => {
                                           deleteSavedDocumentMutation.mutate(
-                                            doc.documentId,
+                                            doc.document.id,
                                           );
                                         },
                                       );
@@ -242,7 +271,7 @@ export default function SavedDocumentsPage() {
                       <div className="mt-4 flex w-full flex-col gap-2">
                         <Link
                           className="w-full"
-                          href={`/dashboard/material/library/document/${doc.documentId}/flashcard`}
+                          href={`/dashboard/material/library/document/${doc.document.id}/flashcard`}
                         >
                           <Button
                             size="sm"
@@ -255,7 +284,7 @@ export default function SavedDocumentsPage() {
 
                         {doc.document.History.length > 0 ? (
                           <Link
-                            href={`/dashboard/material/library/document/${doc.documentId}/posttest`}
+                            href={`/dashboard/material/library/document/${doc.document.id}/posttest`}
                             className="w-full"
                           >
                             <Button
@@ -270,7 +299,7 @@ export default function SavedDocumentsPage() {
                           </Link>
                         ) : (
                           <Link
-                            href={`/dashboard/material/library/document/${doc.documentId}/pretest`}
+                            href={`/dashboard/material/library/document/${doc.document.id}/pretest`}
                             className="w-full"
                           >
                             <Button
@@ -302,6 +331,19 @@ export default function SavedDocumentsPage() {
                 isActionButtonNeeded={false}
               />
             )}
+
+            <div className="mt-6">
+              <PaginationNavigator
+                currPage={currentPage}
+                totalPage={data?.totalPages ?? 0}
+                hasNext={data?.hasNext ?? false}
+                hasPrev={data?.hasPrev ?? false}
+                clickNext={handleNextPage}
+                clickPrevious={handlePreviousPage}
+                skipToStart={() => handleSkip("start")}
+                skipToEnd={() => handleSkip("end")}
+              />
+            </div>
           </div>
         </>
       ) : (
