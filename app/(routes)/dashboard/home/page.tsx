@@ -16,6 +16,10 @@ import { BookOpen, Clock, Clock9, Flame, Heart } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
+type UserProps = {
+  currentStreak: number;
+};
+
 type HistoryProps = {
   type: string;
 };
@@ -94,6 +98,18 @@ export default function HomePage() {
     },
   });
 
+  const {
+    data: userData,
+    isError: isUserError,
+    isPending: isUserPending,
+  } = useQuery({
+    queryKey: ["fetchUser"],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/api/profile");
+      return res.data.data as UserProps;
+    },
+  });
+
   const isPostTestComplete = (histories: HistoryProps[]) =>
     histories.some((history) => history.type.toLowerCase() === "posttest");
 
@@ -107,23 +123,6 @@ export default function HomePage() {
   return (
     <main className="flex-1 overflow-y-auto overflow-x-hidden">
       <div className="mx-auto px-4 py-8 xl:max-w-5xl">
-        {/* <h2 className="mb-2 text-center text-3xl font-bold text-gray-900 dark:text-gray-100 md:text-4xl">
-          Welcome back, {username}!
-        </h2>
-        <p className="mb-4 text-center text-lg text-gray-600 dark:text-gray-300">
-          What would you like to learn today?
-        </p>
-
-        <Link href="/dashboard/material/create">
-          <Button
-            variant="outline"
-            className="mb-12 w-full border-gray-300 py-6 text-gray-600 hover:bg-gray-100 hover:text-black"
-          >
-            <Plus className="mr-2 h-5 w-5" />
-            Generate Flashcard
-          </Button>
-        </Link> */}
-
         <div className="space-y-10">
           <div className="mx-auto">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -195,8 +194,10 @@ export default function HomePage() {
                       <Flame className="h-5 w-5 text-amber-600" />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Day Streak</p>
-                      <p className="text-xl font-semibold">30</p>
+                      <p className="text-sm text-gray-500">Current Streak</p>
+                      <p className="text-xl font-semibold">
+                        {isUserPending ? 0 : userData?.currentStreak}
+                      </p>
                     </div>
                   </div>
                 </div>

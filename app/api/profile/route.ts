@@ -150,3 +150,33 @@ export async function PATCH(req: NextRequest) {
     },
   );
 }
+
+export async function GET() {
+  const session = await auth();
+  const userId = session?.user.id;
+
+  const user = await getUserById(userId);
+
+  if (!user) {
+    return NextResponse.json(
+      {
+        message: "not found",
+        status: 404,
+      },
+      {
+        status: 404,
+      },
+    );
+  }
+
+  return NextResponse.json(
+    {
+      message: "OK",
+      data: user,
+      status: 200,
+    },
+    {
+      status: 200,
+    },
+  );
+}

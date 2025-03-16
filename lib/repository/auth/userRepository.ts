@@ -16,6 +16,10 @@ export const getUserById = async (userId: string, tx?: PrismaTransaction) => {
       emailVerified: true,
       email: true,
       name: true,
+      currentStreak: true,
+      longestStreak: true,
+      lastActivityDate: true,
+      streakUpdatedAt: true,
     },
   });
 
@@ -147,4 +151,56 @@ export const updateUserProfileImage = async (
   }
 
   return updatedUser;
+};
+
+export const updateUserStreak = async (userId: string) => {
+  // Ambil data user dari database
+  const user = await getUserById(userId);
+
+  if (!user) {
+    return null;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Reset ke awal hari
+
+  if (!user.lastActivityDate) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        currentStreak: 1,
+        longestStreak: 1,
+        lastActivityDate: today,
+        streakUpdatedAt: new Date(),
+      },
+    });
+    return;
+  }
+
+  const lastActivity = new Date(user.lastActivityDate);
+  lastActivity.setHours(0, 0, 0, 0);
+
+  const timeDiff = today.getTime() - lastActivity.getTime();
+  const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+
+  let newStreak = user.currentStreak;
+
+  if (dayDiff === 0) {
+    return;
+  } else if (dayDiff === 1) {
+    newStreak = user.currentStreak + 1;
+  } else {
+    newStreak = 0;
+  }
+
+  // Update user di database
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      currentStreak: newStreak,
+      longestStreak: Math.max(newStreak, user.longestStreak),
+      lastActivityDate: today,
+      streakUpdatedAt: new Date(),
+    },
+  });
 };
