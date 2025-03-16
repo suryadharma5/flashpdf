@@ -52,7 +52,7 @@ export async function getPaginatedSavedDocumentsByUserId(
   offset: number,
 ) {
   const savedDocuments = await prismaClient.savedDocument.findMany({
-    skip: offset + 1,
+    skip: offset,
     take: limit,
     where: {
       userId,
