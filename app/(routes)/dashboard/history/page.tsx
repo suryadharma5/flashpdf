@@ -1,5 +1,6 @@
 "use client";
 
+import { Empty } from "@/components/dashboard/empty";
 import ErrorPage from "@/components/dashboard/error";
 import { SkeletonCard } from "@/components/dashboard/skeleton-card";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
 import { categoryColors } from "@/lib/util/category";
+import EmptyImage from "@/public/Chill-Time.svg";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -87,53 +89,67 @@ export default function HistoryPage() {
           ))}
         </div>
       ) : (
-        <div className="mb-6 grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {groupedTests?.map(([id, tests]) => {
-            return (
-              <Card
-                key={id}
-                className="flex flex-col transition-all duration-300 hover:shadow-lg"
-              >
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl font-semibold text-gray-900">
-                      {tests[0].document.title.charAt(0).toUpperCase() +
-                        tests[0].document.title.slice(1).toLowerCase()}
-                    </CardTitle>
-                    <Badge
-                      className={`border-2 border-${categoryColors[tests[0].document.Category.name]} w-fit`}
-                      variant={"outline"}
-                    >
-                      {tests[0].document.Category.name.replace(
-                        tests[0].document.Category.name.charAt(0),
-                        tests[0].document.Category.name.charAt(0).toUpperCase(),
-                      )}
-                    </Badge>
-                  </div>
-                  <Badge variant={"default"} className="w-fit">
-                    {tests.length} attempt{tests.length > 1 ? "s" : ""}
-                  </Badge>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <div className="text-3xl font-bold">
-                    {calculateAverageGrade(tests)}%
-                  </div>
-                  <p className="text-sm text-muted-foreground">Average grade</p>
-                </CardContent>
-                <CardFooter>
-                  <Link
-                    href={`/dashboard/history/document/${tests[0].documentId}/details`}
-                    className="w-full"
+        <>
+          {groupedTests && groupedTests.length > 0 ? (
+            <div className="mb-6 grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {groupedTests?.map(([id, tests]) => {
+                return (
+                  <Card
+                    key={id}
+                    className="flex flex-col transition-all duration-300 hover:shadow-lg"
                   >
-                    <Button variant="outline" className="w-full">
-                      View Details <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            );
-          })}
-        </div>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-xl font-semibold text-gray-900">
+                          {tests[0].document.title.charAt(0).toUpperCase() +
+                            tests[0].document.title.slice(1).toLowerCase()}
+                        </CardTitle>
+                        <Badge
+                          className={`border-2 border-${categoryColors[tests[0].document.Category.name]} w-fit`}
+                          variant={"outline"}
+                        >
+                          {tests[0].document.Category.name.replace(
+                            tests[0].document.Category.name.charAt(0),
+                            tests[0].document.Category.name
+                              .charAt(0)
+                              .toUpperCase(),
+                          )}
+                        </Badge>
+                      </div>
+                      <Badge variant={"default"} className="w-fit">
+                        {tests.length} attempt{tests.length > 1 ? "s" : ""}
+                      </Badge>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                      <div className="text-3xl font-bold">
+                        {calculateAverageGrade(tests)}%
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Average grade
+                      </p>
+                    </CardContent>
+                    <CardFooter>
+                      <Link
+                        href={`/dashboard/history/document/${tests[0].documentId}/details`}
+                        className="w-full"
+                      >
+                        <Button variant="outline" className="w-full">
+                          View Details <ChevronRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            <Empty
+              image={EmptyImage}
+              isActionButtonNeeded={false}
+              description="No Test History Yet"
+            />
+          )}
+        </>
       )}
     </div>
   );
