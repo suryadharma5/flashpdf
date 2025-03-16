@@ -46,6 +46,61 @@ export async function getSavedDocumentsByUserId(userId: string) {
   return savedDocuments;
 }
 
+export async function getPaginatedSavedDocumentsByUserId(
+  userId: string,
+  limit: number,
+  offset: number,
+) {
+  const savedDocuments = await prismaClient.savedDocument.findMany({
+    skip: offset + 1,
+    take: limit,
+    where: {
+      userId,
+    },
+    select: {
+      document: {
+        select: {
+          id: true,
+          title: true,
+          user: {
+            select: {
+              username: true,
+            },
+          },
+          History: {
+            select: {
+              id: true,
+              type: true,
+            },
+            where: {
+              userId,
+            },
+          },
+          Category: {
+            select: {
+              name: true,
+            },
+          },
+          _count: {
+            select: {
+              questions: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (!savedDocuments) {
+    return null;
+  }
+
+  return savedDocuments;
+}
+
 export async function getSavedDocument(userId: string, documentId: string) {
   const savedDocument = await prismaClient.savedDocument.findFirst({
     where: {
@@ -101,3 +156,16 @@ export async function deleteSavedDocument(userId: string, documentId: string) {
 
   return { status: 200, data: deletedDocument };
 }
+
+export const getSavedDocumentTotalEntries = async (userId: string) => {
+  const savedDocuments = await prismaClient.savedDocument.aggregate({
+    _count: {
+      id: true,
+    },
+    where: {
+      userId,
+    },
+  });
+
+  return savedDocuments;
+};
