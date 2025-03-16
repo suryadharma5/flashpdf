@@ -2,25 +2,34 @@
 
 import ErrorPage from "@/components/dashboard/error";
 import { LoadingPage } from "@/components/dashboard/loading";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import RadarChartComponent from "@/components/dashboard/progress/radar-chart";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { axiosInstance } from "@/lib/axios";
 import { Forum, Question } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Clock,
-  Flame,
-  GraduationCap,
-  TrendingDown,
-  TrendingUp,
-  Trophy,
-} from "lucide-react";
-import { useMemo } from "react";
+import { format } from "date-fns";
+import { TrendingDown, Trophy } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
   Bar,
   BarChart,
-  CartesianGrid,
   Cell,
   Pie,
   PieChart,
@@ -60,7 +69,14 @@ type DocumentProps = {
   };
 };
 
+type TestScoreOvertimeProps = {
+  grade: number;
+  createdAt: string;
+};
+
 export default function ProgressPage() {
+  const [selectedOption, setSelectedOption] = useState("option1");
+
   const {
     data: testHistory,
     isError,
@@ -85,7 +101,21 @@ export default function ProgressPage() {
     },
   });
 
-  console.log(documents);
+  const {
+    data: testScoreById,
+    isError: isTestScoreError,
+    isPending: isTestScorePending,
+    refetch,
+  } = useQuery({
+    queryKey: ["fetchTestScore", selectedOption],
+    queryFn: async () => {
+      const res = await axiosInstance.get(
+        `/api/progress?documentId=${selectedOption}`,
+      );
+      return res.data.data as TestScoreOvertimeProps[];
+    },
+    enabled: !!documents,
+  });
 
   const totalFlashcards = documents?.length ?? 0;
 
@@ -103,35 +133,12 @@ export default function ProgressPage() {
     return (sum / testHistory.length).toFixed(1);
   }, [testHistory]);
 
-  const calculateAverageGrade = (tests: TestHistoryProps[]): string => {
-    const totalGrade = tests.reduce((sum, test) => sum + test.grade, 0);
-    return (totalGrade / tests.length).toFixed(1);
-  };
-
-  const totalTests = testHistory?.length;
-
   const pretestCount = testHistory?.filter(
     (test) => test.type.toLowerCase() === "pretest",
   ).length;
   const posttestCount = testHistory?.filter(
     (test) => test.type.toLowerCase() === "posttest",
   ).length;
-
-  const highestScore = testHistory?.length
-    ? Math.max(...testHistory.map((test) => test.grade))
-    : 0;
-
-  const mostRecentTestScore = testHistory?.length
-    ? testHistory[testHistory.length - 1].grade
-    : "N/A";
-
-  const testImprovementRate = useMemo(() => {
-    if (!testHistory || testHistory.length < 2) return "N/A";
-    const firstTest = testHistory[0]?.grade ?? 0;
-    const lastTest = testHistory[testHistory.length - 1]?.grade ?? 0;
-    console.log(firstTest, lastTest);
-    return `${(((lastTest - firstTest) / firstTest) * 100).toFixed(1)}%`;
-  }, [testHistory]);
 
   const mostUsedFlashcardDeck = useMemo(() => {
     if (!testHistory || testHistory.length === 0) return "None";
@@ -149,43 +156,20 @@ export default function ProgressPage() {
     );
   }, [testHistory]);
 
-  const totalStudyTime = (totalFlashcards * 10).toFixed(1); // Assuming each test takes ~10 minutes
-
-  const streakCounter = useMemo(() => {
-    if (!testHistory || testHistory.length === 0) return 0;
-
-    const dates = testHistory.map((test) =>
-      new Date(test.createdAt).toDateString(),
-    );
-    const uniqueDates = [...new Set(dates)].sort();
-
-    let streak = 1;
-    for (let i = 1; i < uniqueDates.length; i++) {
-      const prevDate = new Date(uniqueDates[i - 1]);
-      const currDate = new Date(uniqueDates[i]);
-
-      if (
-        (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24) ===
-        1
-      ) {
-        streak++;
-      } else {
-        break;
-      }
-    }
-
-    return streak;
-  }, [testHistory]);
-
-  // 📊 Data for Test Scores Over Time (Line Chart)
   const testScoresData = useMemo(() => {
+    console.log({ testScoreById });
     return (
-      testHistory?.map((test) => ({
-        date: new Date(test.createdAt).toLocaleDateString(),
+      testScoreById?.map((test) => ({
+        date: format(new Date(test.createdAt), "MMMM, dd yyyy"),
         score: test.grade,
       })) || []
     );
-  }, [testHistory]);
+  }, [testScoreById]);
+
+  const onOptionChange = (value: string) => {
+    setSelectedOption(value);
+    refetch();
+  };
 
   // 🥧 Data for Flashcard Usage Breakdown (Pie Chart)
   const flashcardData = [
@@ -194,13 +178,11 @@ export default function ProgressPage() {
   ];
   const COLORS = ["#0088FE", "#FF8042"];
 
-  // 📊 Data for Test Type Distribution (Bar Chart)
   const testTypeData = [
     { name: "Pre-Test", count: pretestCount },
     { name: "Post-Test", count: posttestCount },
   ];
 
-  // 📊 Data for Most Used Flashcard Decks (Bar Chart)
   const flashcardDecksData = useMemo(() => {
     if (!testHistory) return [];
 
@@ -218,7 +200,6 @@ export default function ProgressPage() {
     }));
   }, [testHistory]);
 
-  // 🆕 Compute Best & Weakest Subject
   const { bestSubject, weakestSubject } = useMemo(() => {
     if (!testHistory || testHistory.length === 0)
       return { bestSubject: "N/A", weakestSubject: "N/A" };
@@ -231,7 +212,6 @@ export default function ProgressPage() {
       subjectScores[title].push(test.grade);
     });
 
-    // Calculate average score for each subject
     const subjectAverages = Object.keys(subjectScores).map((title) => ({
       title,
       avgScore:
@@ -250,11 +230,17 @@ export default function ProgressPage() {
     return { bestSubject: best.title, weakestSubject: weakest.title };
   }, [testHistory]);
 
-  if (isPending) {
+  useEffect(() => {
+    if (documents && documents.length > 0) {
+      setSelectedOption(documents[0].id);
+    }
+  }, [documents]);
+
+  if (isPending || isDocumentPending) {
     return <LoadingPage />;
   }
 
-  if (isError) {
+  if (isError || isDocumentError || isTestScoreError) {
     return <ErrorPage />;
   }
 
@@ -263,26 +249,27 @@ export default function ProgressPage() {
       <h1 className="mb-6 text-3xl font-bold">User Statistic</h1>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-200 p-4">
-            <CardTitle className="flex items-center text-xl font-semibold text-gray-800">
+        <Card className="shadow-sm transition-shadow hover:shadow-md">
+          <CardHeader className="bg-blue-100 p-3">
+            <CardTitle className="flex items-center text-base font-medium text-gray-700">
               <p className="w-full text-center">Total Created Flashcards</p>
             </CardTitle>
           </CardHeader>
-          <CardContent className="py-2">
-            <div className="w-full text-center text-lg font-semibold">
-              {totalFlashcards} Flashcard
+          <CardContent className="p-4">
+            <div className="w-full text-center text-2xl font-semibold text-gray-800">
+              {totalFlashcards}{" "}
+              {totalFlashcards > 1 ? "Flashcards" : "Flashcard"}
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-200 p-4">
-            <CardTitle className="flex items-center text-xl font-semibold text-gray-800">
+        <Card className="shadow-sm transition-shadow hover:shadow-md">
+          <CardHeader className="bg-purple-100 p-3">
+            <CardTitle className="flex items-center text-base font-medium text-gray-700">
               <p className="w-full text-center">Most Used Deck</p>
             </CardTitle>
           </CardHeader>
-          <CardContent className="py-2">
-            <div className="w-full text-center text-lg font-semibold">
+          <CardContent className="p-4">
+            <div className="w-full text-center text-2xl font-semibold text-gray-800">
               {mostUsedFlashcardDeck.replace(
                 mostUsedFlashcardDeck.charAt(0),
                 mostUsedFlashcardDeck.charAt(0).toUpperCase(),
@@ -290,14 +277,14 @@ export default function ProgressPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="bg-gradient-to-r from-green-50 to-green-200 p-4">
-            <CardTitle className="flex items-center text-xl font-semibold text-gray-800">
+        <Card className="shadow-sm transition-shadow hover:shadow-md">
+          <CardHeader className="bg-green-100 p-3">
+            <CardTitle className="flex items-center text-base font-medium text-gray-700">
               <p className="w-full text-center">Average Grade</p>
             </CardTitle>
           </CardHeader>
-          <CardContent className="py-2">
-            <div className="w-full text-center text-lg font-semibold">
+          <CardContent className="p-4">
+            <div className="w-full text-center text-2xl font-semibold text-gray-800">
               {averageGrade}%
             </div>
           </CardContent>
@@ -306,58 +293,85 @@ export default function ProgressPage() {
 
       <div className="mt-6 grid gap-6 sm:grid-cols-1 lg:grid-cols-1">
         <Card>
-          <CardHeader>
-            <CardTitle>Test Scores Over Time</CardTitle>
+          <CardHeader className="relative flex flex-row items-center justify-center">
+            <div className="items-center justify-center text-center">
+              <CardTitle className="text-xl font-medium text-gray-800">
+                Test Scores Over Time
+              </CardTitle>
+              <CardDescription className="text-gray-500">
+                Performance tracking across document
+              </CardDescription>
+            </div>
+            <div className="absolute right-6">
+              <Select value={selectedOption} onValueChange={onOptionChange}>
+                <SelectTrigger className="w-40">
+                  <SelectValue>
+                    {documents.find((doc) => doc.id === selectedOption)?.title}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="hover:cursor-pointer">
+                  {documents.map((doc) => (
+                    <SelectItem
+                      key={doc.id}
+                      value={doc.id}
+                      className="hover:cursor-pointer"
+                    >
+                      {doc.title.replace(
+                        doc.title.charAt(0),
+                        doc.title.charAt(0).toUpperCase(),
+                      )}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </CardHeader>
+
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <AreaChart data={testScoresData}>
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Area
-                  type="monotone"
-                  dataKey="score"
-                  stroke="#4F46E5"
-                  fill="#C7D2FE"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            {isTestScorePending ? (
+              <div className="w-full">
+                <Skeleton className="h-60 w-full" />
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={250}>
+                <AreaChart data={testScoresData}>
+                  <XAxis dataKey="date" tick={false} />
+                  <YAxis
+                    domain={[0, 100]}
+                    ticks={[0, 25, 50, 75, 100]}
+                    tickFormatter={(value) => (value % 50 === 0 ? value : "")}
+                  />
+                  <Tooltip />
+                  <Area
+                    type="monotone"
+                    dataKey="score"
+                    stroke="#4F46E5"
+                    fill="#C7D2FE"
+                    dot={{
+                      fill: "var(--color-desktop)",
+                    }}
+                    activeDot={{
+                      r: 6,
+                    }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
       </div>
 
       <div className="mt-6 grid gap-6 sm:grid-cols-2">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Most Recent Test Score
+        <Card className="pb-0">
+          <CardHeader className="items-center">
+            <CardTitle className="text-xl font-medium text-gray-800">
+              Flashcard Visibility Summary
             </CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            <BarChart className="h-4 w-4 text-muted-foreground" />
+            <CardDescription className="text-gray-500">
+              Distribution of private and public flashcards
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mostRecentTestScore}%</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Test Improvement Rate
-            </CardTitle>
-            <GraduationCap className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{testImprovementRate}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Flashcard Usage</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="-mt-3 pb-0">
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
@@ -371,46 +385,46 @@ export default function ProgressPage() {
                   label
                 >
                   {flashcardData.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
+                    <Cell key={`cell-${index}`} fill={COLORS[index]} />
                   ))}
                 </Pie>
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
+          <div className="flex flex-col items-center">
+            <CardFooter className="mt-auto">
+              <div className="flex w-full justify-center gap-6">
+                {flashcardData.map((entry, index) => (
+                  <div key={entry.name} className="flex items-center gap-2">
+                    <div
+                      className="h-3 w-3 rounded-sm"
+                      style={{ backgroundColor: COLORS[index] }}
+                    />
+                    <span className="text-sm text-gray-600">{entry.name}</span>
+                  </div>
+                ))}
+              </div>
+            </CardFooter>
+          </div>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Test Type Breakdown</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart layout="vertical" data={testTypeData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis dataKey="name" type="category" />
-                <Tooltip />
-                <Bar dataKey="count" fill="#FF6384" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        <RadarChartComponent />
 
         <Card>
-          <CardHeader>
-            <CardTitle>Most Tested Flashcard</CardTitle>
+          <CardHeader className="items-center">
+            <CardTitle className="text-xl font-medium text-gray-800">
+              Top Tests Taken
+            </CardTitle>
+            <CardDescription>Your most frequently taken tests</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={flashcardDecksData}>
                 <XAxis dataKey="name" />
-                <YAxis />
+                <YAxis allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="count">
+                <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                   {flashcardDecksData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
@@ -426,18 +440,23 @@ export default function ProgressPage() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg font-medium">
-              Total Tests Taken
+          <CardHeader className="items-center">
+            <CardTitle className="text-xl font-medium text-gray-800">
+              Test Type Breakdown
             </CardTitle>
-            <GraduationCap className="h-4 w-4 text-muted-foreground" />
+            <CardDescription>
+              Your Pre-Test and Post-Test Activity
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalTests}</div>
-            <p className="text-lg text-muted-foreground">
-              Pre-test{(pretestCount ?? 0) > 1 ? "s" : ""}: {pretestCount} |
-              Post-test{(posttestCount ?? 0) > 1 ? "s" : ""}: {posttestCount}
-            </p>
+            <ResponsiveContainer width="100%" height={250} className="p-2">
+              <BarChart layout="vertical" data={testTypeData}>
+                <XAxis type="number" allowDecimals={false} />
+                <YAxis dataKey="name" type="category" />
+                <Tooltip />
+                <Bar dataKey="count" fill="#6ACDDF" radius={[0, 7, 7, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
@@ -464,30 +483,6 @@ export default function ProgressPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{weakestSubject}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total Study Time
-            </CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalStudyTime} mins</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Streak Counter
-            </CardTitle>
-            <Flame className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{streakCounter} days</div>
           </CardContent>
         </Card>
       </div>

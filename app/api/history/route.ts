@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { prismaClient } from "@/lib/db";
+import { updateUserStreak } from "@/lib/repository/auth/userRepository";
 import {
   createAnswerHistory,
   createQuestionsHistory,
@@ -88,6 +89,11 @@ export async function POST(req: NextRequest) {
         },
       );
     }
+
+    const session = await auth();
+    const userId = session?.user.id;
+
+    await updateUserStreak(userId);
 
     return history;
   });
