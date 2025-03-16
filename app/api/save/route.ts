@@ -2,8 +2,10 @@ import { auth } from "@/auth";
 import { deleteHistory } from "@/lib/repository/material/testRepository";
 import {
   deleteSavedDocument,
+  getPaginatedSavedDocumentsByUserId,
   getSavedDocument,
   getSavedDocumentsByUserId,
+  getSavedDocumentTotalEntries,
   saveDocument,
 } from "@/lib/repository/save/saveRepository";
 import { NextRequest, NextResponse } from "next/server";
@@ -73,6 +75,8 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const documentId = searchParams.get("documentId");
+  const limit = searchParams.get("limit");
+  const page = searchParams.get("page");
 
   const session = await auth();
   const userId = session?.user.id;
@@ -81,9 +85,54 @@ export async function GET(req: NextRequest) {
 
   if (documentId) {
     data = await getSavedDocument(userId, documentId);
-  } else {
-    data = await getSavedDocumentsByUserId(userId);
+
+    return NextResponse.json(
+      {
+        status: 200,
+        data: data,
+        message: "OK",
+      },
+      {
+        status: 200,
+      },
+    );
+  } else if (limit && page) {
+    const currPage = parseInt(page) - 1 || 0;
+    const currLimit = parseInt(limit) || 6;
+    const offset = currPage * currLimit;
+
+    const entries = await getSavedDocumentTotalEntries(userId);
+
+    const totalEntries = entries._count.id;
+    const totalPages = Math.ceil(totalEntries / currLimit);
+    const hasNext = currPage + 1 < totalPages;
+    const hasPrev = currPage > 0;
+
+    const savedDocuments = await getPaginatedSavedDocumentsByUserId(
+      userId,
+      currLimit,
+      offset,
+    );
+
+    return NextResponse.json(
+      {
+        message: "OK",
+        data: {
+          documents: savedDocuments,
+          totalEntries,
+          totalPages,
+          hasNext,
+          hasPrev,
+        },
+        status: 200,
+      },
+      {
+        status: 200,
+      },
+    );
   }
+
+  data = await getSavedDocumentsByUserId(userId);
 
   return NextResponse.json(
     {
