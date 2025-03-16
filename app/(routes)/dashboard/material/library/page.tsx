@@ -21,6 +21,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
 import { TDeleteForumSchema } from "@/lib/types/forum";
 import { categoryColors } from "@/lib/util/category";
+import { cn } from "@/lib/utils";
 import EmptyImage from "@/public/Chill-Time.svg";
 import { Forum, Question } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -214,7 +215,7 @@ export default function Page() {
             onCategoryChange={setSelectedCategory}
             placeHolder="Search flashcard..."
           />
-          <div className="w-full">
+          <div className="relative min-h-[65vh] w-full">
             {filteredCategoryDocuments &&
             filteredCategoryDocuments.length > 0 ? (
               <div
@@ -402,7 +403,14 @@ export default function Page() {
               />
             )}
 
-            <div className="mt-6">
+            <div
+              className={cn(
+                "mt-6",
+                filteredCategoryDocuments.length < 4 && !isMobile
+                  ? "absolute bottom-0 right-0"
+                  : "",
+              )}
+            >
               <PaginationNavigator
                 currPage={currentPage}
                 totalPage={data?.totalPages ?? 0}

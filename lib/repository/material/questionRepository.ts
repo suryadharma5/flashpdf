@@ -148,8 +148,10 @@ export const getPaginatedDocuments = async (
   limit: number,
   offset: number,
 ) => {
+  const skip = offset >= 6 ? offset + 1 : offset;
+
   const documents = await prismaClient.document.findMany({
-    skip: offset + 1,
+    skip: skip,
     take: limit,
     where: {
       userId: userId,
