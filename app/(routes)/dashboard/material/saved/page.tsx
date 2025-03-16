@@ -13,6 +13,7 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
 import { categoryColors } from "@/lib/util/category";
+import { cn } from "@/lib/utils";
 import EmptyImage from "@/public/Chill-Time.svg";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle, ChevronsUp, CircleAlert, TrashIcon } from "lucide-react";
@@ -181,7 +182,7 @@ export default function SavedDocumentsPage() {
             onCategoryChange={setSelectedCategory}
           />
 
-          <div className="w-full">
+          <div className="relative min-h-[65vh] w-full">
             {filteredCategoryDocuments &&
             filteredCategoryDocuments.length > 0 ? (
               <div
@@ -332,7 +333,14 @@ export default function SavedDocumentsPage() {
               />
             )}
 
-            <div className="mt-6">
+            <div
+              className={cn(
+                "mt-6",
+                filteredCategoryDocuments.length < 4 && !isMobile
+                  ? "absolute bottom-0 right-0"
+                  : "",
+              )}
+            >
               <PaginationNavigator
                 currPage={currentPage}
                 totalPage={data?.totalPages ?? 0}
