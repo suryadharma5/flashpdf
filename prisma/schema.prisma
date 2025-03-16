@@ -25,6 +25,11 @@ model User {
   image         String?
   accounts      Account[]
 
+  currentStreak    Int       @default(0)
+  longestStreak    Int       @default(0)
+  lastActivityDate DateTime?
+  streakUpdatedAt  DateTime?
+
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   Document      Document[]
