@@ -6,6 +6,7 @@ import { FilterSearch } from "@/components/dashboard/filtersearch";
 import { Alert } from "@/components/dashboard/library/alert-dialog";
 import { ShareDialog } from "@/components/dashboard/library/share-dialog";
 import { Dropdown } from "@/components/dashboard/material/dropdown-library";
+import { PaginationNavigator } from "@/components/dashboard/pagination";
 import { SkeletonCard } from "@/components/dashboard/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,14 @@ type DocumentProps = {
   };
 };
 
+type PaginatedDocumentProps = {
+  documents: DocumentProps[];
+  totalEntries: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+};
+
 export default function Page() {
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -56,21 +65,24 @@ export default function Page() {
   );
   const [alertTitle, setAlertTitle] = useState("");
   const [alertDescription, setAlertDescription] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
-  const {
-    data: documents,
-    isError,
-    isPending,
-  } = useQuery({
-    queryKey: ["fetchDocument"],
-    queryFn: async () => {
-      const res = await axiosInstance.get("/api/material");
-      return res.data.data as DocumentProps[];
-    },
+  const fetchDocument = async (pageNum: number) => {
+    const res = await axiosInstance.get(
+      `/api/material?limit=6&page=${pageNum}`,
+    );
+    return res.data.data as PaginatedDocumentProps;
+  };
+
+  const { data, isLoading, isError, error, isFetching } = useQuery({
+    queryKey: ["documents", currentPage],
+    queryFn: () => fetchDocument(currentPage),
   });
+
+  const documents = data?.documents ?? [];
 
   const deleteForumMutation = useMutation({
     mutationFn: async (data: TDeleteForumSchema) => {
@@ -131,6 +143,25 @@ export default function Page() {
     selectedCategory ? doc.Category.name === selectedCategory : true,
   );
 
+  const handleNextPage = () => {
+    setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => prev - 1);
+  };
+
+  const handleSkip = (destination: "start" | "end") => {
+    switch (destination) {
+      case "start":
+        setCurrentPage(1);
+        break;
+      case "end":
+        setCurrentPage(data?.totalPages ?? 1);
+        break;
+    }
+  };
+
   const handleDelete = (documentId: string, forumId: string) => {
     const data = {
       documentId,
@@ -148,6 +179,7 @@ export default function Page() {
   };
 
   if (isError) {
+    console.error(error);
     return <ErrorPage />;
   }
 
@@ -156,7 +188,7 @@ export default function Page() {
       <h1 className="mb-8 w-full text-start text-3xl font-bold">
         My Flashcards
       </h1>
-      {isPending ? (
+      {isLoading || isFetching ? (
         <>
           <FilterSearch
             searchTerm={searchTerm}
@@ -197,7 +229,7 @@ export default function Page() {
                             <CardTitle>
                               <div className="mb-2 flex w-full items-center justify-between">
                                 <Badge
-                                  className={`border-2 border-${categoryColors[data.Category.name]}`}
+                                  className={`border-2 ${categoryColors[data.Category.name]}`}
                                   variant={"outline"}
                                 >
                                   {data.Category.name.replace(
@@ -369,6 +401,19 @@ export default function Page() {
                 isActionButtonNeeded={false}
               />
             )}
+
+            <div className="mt-6">
+              <PaginationNavigator
+                currPage={currentPage}
+                totalPage={data?.totalPages ?? 0}
+                hasNext={data?.hasNext ?? false}
+                hasPrev={data?.hasPrev ?? false}
+                clickNext={handleNextPage}
+                clickPrevious={handlePreviousPage}
+                skipToStart={() => handleSkip("start")}
+                skipToEnd={() => handleSkip("end")}
+              />
+            </div>
 
             <Alert
               title={alertTitle}
