@@ -7,7 +7,9 @@ import {
   getAllDocuments,
   getDocumentQuestion,
   getDocumentsByLimit,
+  getDocumentTotalEntries,
   getFlashcardsData,
+  getPaginatedDocuments,
 } from "@/lib/repository/material/questionRepository";
 import { deleteHistory } from "@/lib/repository/material/testRepository";
 import { questionFormSchema, TDocumentSchema } from "@/lib/types/question-form";
@@ -127,6 +129,10 @@ export async function GET(req: NextRequest) {
   const documentId = searchParams.get("documentId");
   const type = searchParams.get("type");
   const limit = searchParams.get("limit");
+  const page = searchParams.get("page");
+
+  const session = await auth();
+  const userId = session?.user.id;
 
   if (documentId && type === "question") {
     const documents = await getDocumentQuestion(documentId ?? "");
@@ -178,24 +184,52 @@ export async function GET(req: NextRequest) {
         status: 200,
       },
     );
+  } else if (limit && page) {
+    const currPage = parseInt(page) - 1 || 0;
+    const currLimit = parseInt(limit) || 6;
+    const offset = currPage * currLimit;
+
+    const entries = await getDocumentTotalEntries(userId);
+    const totalEntries = entries._count.id;
+    const totalPages = Math.ceil(totalEntries / currLimit);
+    const hasNext = currPage + 1 < totalPages;
+    const hasPrev = currPage > 0;
+
+    const documents = await getPaginatedDocuments(userId, currLimit, offset);
+    const data = documents != null ? documents : [];
+
+    return NextResponse.json(
+      {
+        message: "OK",
+        data: {
+          documents: data,
+          totalEntries,
+          totalPages,
+          hasNext,
+          hasPrev,
+        },
+        status: 200,
+      },
+      {
+        status: 200,
+      },
+    );
+  } else if (limit) {
+    const documents = await getDocumentsByLimit(parseInt(limit), userId);
+    const data = documents != null ? documents : [];
+
+    return NextResponse.json(
+      {
+        status: 200,
+        messsage: "OK",
+        data: data,
+      },
+      {
+        status: 200,
+      },
+    );
   } else {
-    if (limit) {
-      const documents = await getDocumentsByLimit(parseInt(limit));
-      const data = documents != null ? documents : [];
-
-      return NextResponse.json(
-        {
-          status: 200,
-          messsage: "OK",
-          data: data,
-        },
-        {
-          status: 200,
-        },
-      );
-    }
-
-    const documents = await getAllDocuments();
+    const documents = await getAllDocuments(userId);
     const data = documents != null ? documents : [];
 
     return NextResponse.json(

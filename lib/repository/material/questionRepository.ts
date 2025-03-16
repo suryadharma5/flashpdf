@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import { prismaClient } from "@/lib/db";
 import { PrismaTransaction } from "@/lib/repository/auth/tokenRepository";
 import { TDocumentSchema } from "@/lib/types/question-form";
@@ -96,10 +95,7 @@ export const getFlashcardsData = async (documentId: string) => {
   return flashcardsData;
 };
 
-export const getAllDocuments = async () => {
-  const session = await auth();
-  const userId = session?.user.id;
-
+export const getAllDocuments = async (userId: string) => {
   const documents = await prismaClient.document.findMany({
     where: {
       userId: userId,
@@ -134,10 +130,61 @@ export const getAllDocuments = async () => {
   return documents;
 };
 
-export const getDocumentsByLimit = async (limit: number) => {
-  const session = await auth();
-  const userId = session?.user.id;
+export const getDocumentTotalEntries = async (userId: string) => {
+  const totalCount = await prismaClient.document.aggregate({
+    _count: {
+      id: true,
+    },
+    where: {
+      userId: userId,
+    },
+  });
 
+  return totalCount;
+};
+
+export const getPaginatedDocuments = async (
+  userId: string,
+  limit: number,
+  offset: number,
+) => {
+  const documents = await prismaClient.document.findMany({
+    skip: offset + 1,
+    take: limit,
+    where: {
+      userId: userId,
+    },
+    include: {
+      History: true,
+      questions: {
+        select: {
+          question: true,
+        },
+      },
+      Forum: {
+        select: {
+          id: true,
+        },
+      },
+      Category: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (!documents) {
+    return null;
+  }
+
+  return documents;
+};
+
+export const getDocumentsByLimit = async (limit: number, userId: string) => {
   const documents = await prismaClient.document.findMany({
     where: {
       userId: userId,
