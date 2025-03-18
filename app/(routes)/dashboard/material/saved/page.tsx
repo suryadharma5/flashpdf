@@ -18,7 +18,7 @@ import EmptyImage from "@/public/Chill-Time.svg";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle, ChevronsUp, CircleAlert, TrashIcon } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 type HistoryProps = {
@@ -54,7 +54,6 @@ type PaginatedSavedDocumentProps = {
 };
 
 export default function SavedDocumentsPage() {
-  const [searchTerm, setSearchTerm] = useState("");
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState("");
   const [alertDescription, setAlertDescription] = useState("");
@@ -63,18 +62,28 @@ export default function SavedDocumentsPage() {
     () => () => {},
   );
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
 
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
+  const fetchSavedDocument = async (pageNum: number) => {
+    let url = `/api/save?limit=6&page=${currentPage}`;
+
+    if (debouncedSearchQuery && debouncedSearchQuery.trim()) {
+      url = url.concat(`&query=${debouncedSearchQuery}`);
+    }
+
+    const res = await axiosInstance.get(url);
+
+    return res.data.data as PaginatedSavedDocumentProps;
+  };
+
   const { data, isError, isLoading, isFetching } = useQuery({
-    queryKey: ["fetchSavedDocuments", currentPage],
-    queryFn: async () => {
-      const res = await axiosInstance.get(
-        `/api/save?limit=6&page=${currentPage}`,
-      );
-      return res.data.data as PaginatedSavedDocumentProps;
-    },
+    queryKey: ["fetchSavedDocuments", currentPage, debouncedSearchQuery],
+    queryFn: () => fetchSavedDocument(currentPage),
+    enabled: debouncedSearchQuery === "" || debouncedSearchQuery.length >= 3,
   });
 
   const documents = data?.documents || [];
@@ -100,18 +109,6 @@ export default function SavedDocumentsPage() {
       console.log(e.message);
     },
   });
-
-  const filteredDocuments = documents?.filter(
-    (doc) =>
-      doc.document.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.document.user?.username
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()),
-  );
-
-  const filteredCategoryDocuments = filteredDocuments?.filter((doc) =>
-    selectedCategory ? doc.document.Category.name === selectedCategory : true,
-  );
 
   const isPostTestComplete = (histories: HistoryProps[]) =>
     histories.some((history) => history.type.toLowerCase() === "posttest");
@@ -146,6 +143,20 @@ export default function SavedDocumentsPage() {
     }
   };
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (searchQuery.length >= 3 || searchQuery === "") {
+        setDebouncedSearchQuery(searchQuery);
+
+        if (currentPage !== 1) setCurrentPage(1);
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery, currentPage]);
+
   if (isError) {
     return <ErrorPage />;
   }
@@ -156,39 +167,30 @@ export default function SavedDocumentsPage() {
         Saved Flashcards
       </h1>
 
-      {isLoading || isFetching ? (
-        <>
-          <FilterSearch
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-          />
+      <FilterSearch
+        searchTerm={searchQuery}
+        setSearchTerm={setSearchQuery}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+        placeHolder="Input at least 3 letters to search saved documents"
+      />
 
-          <div
-            className={`grid w-full md:grid-cols-2 lg:grid-cols-3 ${isMobile ? "gap-4" : "gap-6"}`}
-          >
-            {[...Array(3)].map((_, index) => (
-              <SkeletonCard key={index} />
-            ))}
-          </div>
-        </>
+      {isLoading || isFetching ? (
+        <div
+          className={`grid w-full md:grid-cols-2 lg:grid-cols-3 ${isMobile ? "gap-4" : "gap-6"}`}
+        >
+          {[...Array(3)].map((_, index) => (
+            <SkeletonCard key={index} />
+          ))}
+        </div>
       ) : documents && documents.length > 0 ? (
         <>
-          <FilterSearch
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-          />
-
           <div className="relative min-h-[65vh] w-full">
-            {filteredCategoryDocuments &&
-            filteredCategoryDocuments.length > 0 ? (
+            {documents && documents.length > 0 ? (
               <div
                 className={`grid w-full md:grid-cols-2 lg:grid-cols-3 ${isMobile ? "gap-4" : "gap-6"}`}
               >
-                {filteredCategoryDocuments.map((doc) => (
+                {documents.map((doc) => (
                   <Card
                     key={doc.document.id}
                     className="transition-shadow hover:shadow-md"
@@ -336,7 +338,7 @@ export default function SavedDocumentsPage() {
             <div
               className={cn(
                 "mt-6",
-                filteredCategoryDocuments.length < 4 && !isMobile
+                documents.length < 4 && !isMobile
                   ? "absolute bottom-0 right-0"
                   : "",
               )}

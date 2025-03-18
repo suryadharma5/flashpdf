@@ -50,13 +50,11 @@ export async function getPaginatedSavedDocumentsByUserId(
   userId: string,
   limit: number,
   offset: number,
+  query?: string,
 ) {
-  const savedDocuments = await prismaClient.savedDocument.findMany({
+  const baseQuery = {
     skip: offset,
     take: limit,
-    where: {
-      userId,
-    },
     select: {
       document: {
         select: {
@@ -92,6 +90,24 @@ export async function getPaginatedSavedDocumentsByUserId(
     orderBy: {
       createdAt: "desc",
     },
+  } as const;
+
+  const savedDocuments = await prismaClient.savedDocument.findMany({
+    ...baseQuery,
+    where:
+      query && query.trim() !== ""
+        ? {
+            userId,
+            document: {
+              title: {
+                contains: query,
+                mode: "insensitive" as const, // Type assertion untuk mode
+              },
+            },
+          }
+        : {
+            userId,
+          },
   });
 
   if (!savedDocuments) {
@@ -157,15 +173,31 @@ export async function deleteSavedDocument(userId: string, documentId: string) {
   return { status: 200, data: deletedDocument };
 }
 
-export const getSavedDocumentTotalEntries = async (userId: string) => {
-  const savedDocuments = await prismaClient.savedDocument.aggregate({
+export const getSavedDocumentTotalEntries = async (
+  userId: string,
+  query?: string,
+) => {
+  const whereCondition =
+    query && query.trim() !== ""
+      ? {
+          userId: userId,
+          document: {
+            title: {
+              contains: query,
+              mode: "insensitive" as const,
+            },
+          },
+        }
+      : {
+          userId: userId,
+        };
+
+  const totalSavedDocuments = await prismaClient.savedDocument.aggregate({
     _count: {
       id: true,
     },
-    where: {
-      userId,
-    },
+    where: whereCondition,
   });
 
-  return savedDocuments;
+  return totalSavedDocuments;
 };
