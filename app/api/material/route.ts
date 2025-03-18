@@ -130,6 +130,7 @@ export async function GET(req: NextRequest) {
   const type = searchParams.get("type");
   const limit = searchParams.get("limit");
   const page = searchParams.get("page");
+  const query = searchParams.get("query");
 
   const session = await auth();
   const userId = session?.user.id;
@@ -189,13 +190,18 @@ export async function GET(req: NextRequest) {
     const currLimit = parseInt(limit) || 6;
     const offset = currPage * currLimit;
 
-    const entries = await getDocumentTotalEntries(userId);
+    const entries = query
+      ? await getDocumentTotalEntries(userId, query)
+      : await getDocumentTotalEntries(userId);
+
     const totalEntries = entries._count.id;
     const totalPages = Math.ceil(totalEntries / currLimit);
     const hasNext = currPage + 1 < totalPages;
     const hasPrev = currPage > 0;
 
-    const documents = await getPaginatedDocuments(userId, currLimit, offset);
+    const documents = query
+      ? await getPaginatedDocuments(userId, currLimit, offset, query)
+      : await getPaginatedDocuments(userId, currLimit, offset);
     const data = documents != null ? documents : [];
 
     return NextResponse.json(

@@ -28,7 +28,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
 import { CheckCircle, ChevronsUp, CircleAlert, Clock9 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 type HistoryProps = {
@@ -59,7 +59,6 @@ type PaginatedDocumentProps = {
 export default function Page() {
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [onSubmitAction, setOnSubmitAction] = useState<() => void>(
     () => () => {},
@@ -67,20 +66,28 @@ export default function Page() {
   const [alertTitle, setAlertTitle] = useState("");
   const [alertDescription, setAlertDescription] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
 
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
   const fetchDocument = async (pageNum: number) => {
-    const res = await axiosInstance.get(
-      `/api/material?limit=6&page=${pageNum}`,
-    );
+    let url = `/api/material?limit=6&page=${pageNum}`;
+
+    if (debouncedSearchQuery && debouncedSearchQuery.trim()) {
+      url = url.concat(`&query=${debouncedSearchQuery}`);
+    }
+
+    const res = await axiosInstance.get(url);
+
     return res.data.data as PaginatedDocumentProps;
   };
 
   const { data, isLoading, isError, error, isFetching } = useQuery({
-    queryKey: ["documents", currentPage],
+    queryKey: ["documents", currentPage, debouncedSearchQuery],
     queryFn: () => fetchDocument(currentPage),
+    enabled: debouncedSearchQuery === "" || debouncedSearchQuery.length >= 3,
   });
 
   const documents = data?.documents ?? [];
@@ -136,14 +143,6 @@ export default function Page() {
     setAlertDescription(description);
   };
 
-  const filteredDocuments = documents?.filter((doc) =>
-    doc.title.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
-
-  const filteredCategoryDocuments = filteredDocuments?.filter((doc) =>
-    selectedCategory ? doc.Category.name === selectedCategory : true,
-  );
-
   const handleNextPage = () => {
     setCurrentPage((prev) => prev + 1);
   };
@@ -179,6 +178,20 @@ export default function Page() {
     setOpenDialogId((prevId) => (prevId === id ? null : id));
   };
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (searchQuery.length >= 3 || searchQuery === "") {
+        setDebouncedSearchQuery(searchQuery);
+
+        if (currentPage !== 1) setCurrentPage(1);
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery, currentPage]);
+
   if (isError) {
     console.error(error);
     return <ErrorPage />;
@@ -189,15 +202,15 @@ export default function Page() {
       <h1 className="mb-8 w-full text-start text-3xl font-bold">
         My Flashcards
       </h1>
+      <FilterSearch
+        searchTerm={searchQuery}
+        setSearchTerm={setSearchQuery}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+        placeHolder="Input at least 3 letters to search documents"
+      />
       {isLoading || isFetching ? (
         <>
-          <FilterSearch
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            placeHolder="Search documents..."
-          />
           <div
             className={`grid w-full md:grid-cols-2 lg:grid-cols-3 ${isMobile ? "gap-4" : "gap-6"}`}
           >
@@ -206,22 +219,14 @@ export default function Page() {
             ))}
           </div>
         </>
-      ) : documents.length > 0 ? (
+      ) : documents ? (
         <>
-          <FilterSearch
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            placeHolder="Search flashcard..."
-          />
           <div className="relative min-h-[65vh] w-full">
-            {filteredCategoryDocuments &&
-            filteredCategoryDocuments.length > 0 ? (
+            {documents && documents.length > 0 ? (
               <div
                 className={`grid w-full md:grid-cols-2 lg:grid-cols-3 ${isMobile ? "gap-4" : "gap-6"}`}
               >
-                {filteredCategoryDocuments.map((data) => (
+                {documents.map((data) => (
                   <div key={data.id}>
                     <Card className="flex w-full flex-col transition-all duration-300 hover:shadow-lg">
                       <CardHeader>
@@ -280,7 +285,6 @@ export default function Page() {
                                             );
                                           },
                                         );
-                                        // document.body.style.pointerEvents = "";
                                       },
                                     },
                                   ]}
@@ -406,7 +410,7 @@ export default function Page() {
             <div
               className={cn(
                 "mt-6",
-                filteredCategoryDocuments.length < 4 && !isMobile
+                documents.length < 4 && !isMobile
                   ? "absolute bottom-0 right-0"
                   : "",
               )}

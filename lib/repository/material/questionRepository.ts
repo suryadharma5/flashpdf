@@ -130,14 +130,28 @@ export const getAllDocuments = async (userId: string) => {
   return documents;
 };
 
-export const getDocumentTotalEntries = async (userId: string) => {
+export const getDocumentTotalEntries = async (
+  userId: string,
+  query?: string,
+) => {
+  const whereCondition =
+    query && query.trim() !== ""
+      ? {
+          userId: userId,
+          title: {
+            contains: query,
+            mode: "insensitive" as const,
+          },
+        }
+      : {
+          userId: userId,
+        };
+
   const totalCount = await prismaClient.document.aggregate({
     _count: {
       id: true,
     },
-    where: {
-      userId: userId,
-    },
+    where: whereCondition,
   });
 
   return totalCount;
@@ -147,13 +161,11 @@ export const getPaginatedDocuments = async (
   userId: string,
   limit: number,
   offset: number,
+  query?: string,
 ) => {
-  const documents = await prismaClient.document.findMany({
+  const baseQuery = {
     skip: offset,
     take: limit,
-    where: {
-      userId: userId,
-    },
     include: {
       History: true,
       questions: {
@@ -175,6 +187,23 @@ export const getPaginatedDocuments = async (
     orderBy: {
       createdAt: "desc",
     },
+  } as const;
+
+  // Buat where condition berdasarkan query
+  const documents = await prismaClient.document.findMany({
+    ...baseQuery,
+    where:
+      query && query.trim() !== ""
+        ? {
+            userId,
+            title: {
+              contains: query,
+              mode: "insensitive" as const, // Type assertion untuk mode
+            },
+          }
+        : {
+            userId,
+          },
   });
 
   if (!documents) {
