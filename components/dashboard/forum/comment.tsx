@@ -1,5 +1,6 @@
 "use client";
 
+import { InfiniteQueryDataProps } from "@/app/(routes)/dashboard/forum/page";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -64,9 +65,11 @@ type CommentProps = {
 export default function Comment({
   forumId,
   queryClient,
+  searchQuery,
 }: {
   forumId: string;
   queryClient: QueryClient;
+  searchQuery: string;
 }) {
   const currentUser = useCurrentUser();
 
@@ -107,7 +110,9 @@ export default function Comment({
     },
     onMutate: async ({ comment, forumId }) => {
       await queryClient.cancelQueries({ queryKey: ["comments", forumId] });
-      await queryClient.cancelQueries({ queryKey: ["fetchForum"] });
+      await queryClient.cancelQueries({
+        queryKey: ["fetchForum", searchQuery],
+      });
 
       const previousComments = queryClient.getQueryData([
         "comments",
@@ -116,7 +121,8 @@ export default function Comment({
 
       const previousForums = queryClient.getQueryData([
         "fetchForum",
-      ]) as ForumProps[];
+        searchQuery,
+      ]) as InfiniteQueryDataProps;
 
       queryClient.setQueryData(
         ["comments", forumId],
@@ -135,20 +141,27 @@ export default function Comment({
       );
 
       queryClient.setQueryData(
-        ["fetchForum"],
-        (oldForums: ForumProps[] | undefined) => {
-          if (!oldForums) return [];
-          return oldForums.map((forum) =>
-            forum.id === forumId
-              ? {
-                  ...forum,
-                  comments: [
-                    ...forum.comments,
-                    { id: Math.random().toString(9) },
-                  ], // Tambah dummy ID untuk sementara
-                }
-              : forum,
-          );
+        ["fetchForum", searchQuery],
+        (oldData: InfiniteQueryDataProps | undefined) => {
+          if (!oldData || !oldData.pages) return { pageParams: [], pages: [] };
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              forums: page.forums.map((forum) =>
+                forum.id === forumId
+                  ? {
+                      ...forum,
+                      comments: [
+                        ...forum.comments,
+                        { id: Math.random().toString(9) }, // Tambah dummy ID
+                      ],
+                    }
+                  : forum,
+              ),
+            })),
+          };
         },
       );
 
@@ -168,7 +181,10 @@ export default function Comment({
       }
 
       if (context?.previousForums) {
-        queryClient.setQueryData(["fetchForum"], context.previousForums);
+        queryClient.setQueryData(
+          ["fetchForum", searchQuery],
+          context.previousForums,
+        );
       }
     },
   });
