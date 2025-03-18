@@ -6,6 +6,8 @@ import {
   findForumById,
   getAllForum,
   getForumsByLimit,
+  getPaginatedForums,
+  getTotalForumEntries,
 } from "@/lib/repository/forum/forumRepository";
 import { updateDocumentStatus } from "@/lib/repository/material/questionRepository";
 import { forumSchema, TCreateForumSchema } from "@/lib/types/forum";
@@ -183,10 +185,53 @@ export async function DELETE(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const limit = searchParams.get("limit");
+  const page = searchParams.get("page");
+  const query = searchParams.get("query");
 
   const session = await auth();
 
-  if (limit) {
+  if (limit && page) {
+    const currPage = parseInt(page) - 1 || 0;
+    const currLimit = parseInt(limit) || 6;
+    const offset = currPage * currLimit;
+
+    const entries = query
+      ? await getTotalForumEntries(query)
+      : await getTotalForumEntries();
+
+    const totalEntries = entries._count.id;
+    const totalPages = Math.ceil(totalEntries / currLimit);
+    const hasNext = currPage + 1 < totalPages;
+    const hasPrev = currPage > 0;
+
+    const forums = query
+      ? await getPaginatedForums(session?.user.id, currLimit, offset, query)
+      : await getPaginatedForums(session?.user.id, currLimit, offset);
+
+    const data = forums != null ? forums : [];
+
+    const formattedData = data.map((forum) => ({
+      ...forum,
+      isLiked: forum.likes.length > 0,
+    }));
+
+    return NextResponse.json(
+      {
+        status: 200,
+        data: {
+          forums: formattedData,
+          totalEntries: totalEntries,
+          totalPages: totalPages,
+          hasNext: hasNext,
+          hasPrev: hasPrev,
+        },
+        message: "OK",
+      },
+      {
+        status: 200,
+      },
+    );
+  } else if (limit) {
     const forums = await getForumsByLimit(session?.user.id, parseInt(limit));
     const data = forums !== null ? forums : [];
 

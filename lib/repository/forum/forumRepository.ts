@@ -114,6 +114,135 @@ export const getForumsByLimit = async (userId: string, limit: number) => {
   return forums;
 };
 
+export const getTotalForumEntries = async (query?: string) => {
+  var totalCount;
+
+  if (query) {
+    totalCount = await prismaClient.forum.aggregate({
+      _count: {
+        id: true,
+      },
+      where: {
+        title: {
+          contains: query,
+          mode: "insensitive",
+        },
+      },
+    });
+  } else {
+    totalCount = await prismaClient.forum.aggregate({
+      _count: {
+        id: true,
+      },
+    });
+  }
+
+  return totalCount;
+};
+
+export const getPaginatedForums = async (
+  userId: string,
+  limit: number,
+  offset: number,
+  query?: string,
+) => {
+  let forums;
+
+  if (query) {
+    forums = await prismaClient.forum.findMany({
+      skip: offset,
+      take: limit,
+      orderBy: {
+        totalLike: "desc",
+      },
+      where: {
+        title: {
+          contains: query,
+          mode: "insensitive",
+        },
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        title: true,
+        description: true,
+        documentId: true,
+        totalLike: true,
+        user: {
+          select: {
+            username: true,
+            image: true,
+          },
+        },
+        likes: {
+          where: { userId },
+          select: { id: true },
+        },
+        comments: {
+          select: {
+            id: true,
+          },
+        },
+        document: {
+          select: {
+            Category: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  } else {
+    forums = await prismaClient.forum.findMany({
+      skip: offset,
+      take: limit,
+      orderBy: {
+        totalLike: "desc",
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        title: true,
+        description: true,
+        documentId: true,
+        totalLike: true,
+        user: {
+          select: {
+            username: true,
+            image: true,
+          },
+        },
+        likes: {
+          where: { userId },
+          select: { id: true },
+        },
+        comments: {
+          select: {
+            id: true,
+          },
+        },
+        document: {
+          select: {
+            Category: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  if (!forums) {
+    return null;
+  }
+
+  return forums;
+};
+
 export const findForumById = async (
   forumId: string,
   tx?: PrismaTransaction,
