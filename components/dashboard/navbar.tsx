@@ -94,22 +94,6 @@ export const Navbar = () => {
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb className={isMobile ? "hidden" : ""}>
           <BreadcrumbList className="flex flex-wrap items-center gap-1.5">
-            {/* Home link */}
-            <BreadcrumbItem>
-              <BreadcrumbLink
-                href="/"
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push("/");
-                }}
-              >
-                home
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            {pathArray.length > 0 && (
-              <BreadcrumbSeparator className="hidden md:block" />
-            )}
-
             {pathArray.map((segment, index) => {
               const isId = /^[a-zA-Z0-9_-]{10,}$/.test(segment);
               const displayText = isId ? "detail" : segment;

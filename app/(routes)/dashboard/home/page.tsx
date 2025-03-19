@@ -189,7 +189,10 @@ export default function HomePage() {
                             variant={"default"}
                             className={`mb-1 w-fit border-2 ${categoryColors[doc.Category!.name] || "border-green-400"}`}
                           >
-                            {doc?.Category?.name || "Uncategorized"}
+                            {doc?.Category?.name.replace(
+                              doc?.Category?.name.charAt(0),
+                              doc?.Category?.name.charAt(0).toUpperCase(),
+                            ) || "Uncategorized"}
                           </Badge>
                           <CardTitle className="text-lg">{doc.title}</CardTitle>
                           <div className="mt-2 flex items-center gap-1 text-muted-foreground">
@@ -286,7 +289,12 @@ export default function HomePage() {
                             variant={"default"}
                             className={`mb-1 w-fit ${categoryColors[post.document.Category?.name ?? "science"]}`}
                           >
-                            {post.document?.Category?.name || "Uncategorized"}
+                            {post.document?.Category?.name.replace(
+                              post.document.Category?.name.charAt(0),
+                              post.document.Category?.name
+                                .charAt(0)
+                                .toUpperCase(),
+                            ) || "Uncategorized"}
                           </Badge>
                           <CardTitle className="text-lg">
                             {post.title}
