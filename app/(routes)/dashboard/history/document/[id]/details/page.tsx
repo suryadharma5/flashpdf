@@ -115,8 +115,8 @@ export default function HistoryDetailPage() {
           </h1>
         </div>
         <Badge
-          className={`border-2 border-${categoryColors[data[0].document.Category.name]} ${isMobile ? "ml-12" : ""} h-fit`}
-          variant={"outline"}
+          className={`${categoryColors[data[0].document.Category.name]} ${isMobile ? "ml-12" : ""} h-fit`}
+          variant={"default"}
         >
           {data[0].document.Category.name.replace(
             data[0].document.Category.name.charAt(0),

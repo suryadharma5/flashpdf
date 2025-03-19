@@ -215,8 +215,8 @@ export default function SavedDocumentsPage() {
                           <CardTitle>
                             <div className="mb-2 flex w-full items-center justify-between">
                               <Badge
-                                className={`border-2 border-${categoryColors[doc.document.Category.name]}`}
-                                variant={"outline"}
+                                className={`${categoryColors[doc.document.Category.name]}`}
+                                variant={"default"}
                               >
                                 {doc.document.Category.name.replace(
                                   doc.document.Category.name.charAt(0),

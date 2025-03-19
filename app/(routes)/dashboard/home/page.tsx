@@ -186,8 +186,8 @@ export default function HomePage() {
                       <Card key={doc.id}>
                         <CardHeader>
                           <Badge
-                            variant={"outline"}
-                            className={`mb-1 w-fit border-2 border-${categoryColors[doc.Category?.name ?? "science"]}`}
+                            variant={"default"}
+                            className={`mb-1 w-fit border-2 ${categoryColors[doc.Category!.name] || "border-green-400"}`}
                           >
                             {doc?.Category?.name || "Uncategorized"}
                           </Badge>
@@ -283,8 +283,8 @@ export default function HomePage() {
                       <Card key={post.id}>
                         <CardHeader>
                           <Badge
-                            variant={"outline"}
-                            className={`mb-1 w-fit border-2 border-${categoryColors[post.document.Category?.name ?? "science"]}`}
+                            variant={"default"}
+                            className={`mb-1 w-fit ${categoryColors[post.document.Category?.name ?? "science"]}`}
                           >
                             {post.document?.Category?.name || "Uncategorized"}
                           </Badge>

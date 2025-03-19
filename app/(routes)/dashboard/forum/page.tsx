@@ -295,8 +295,8 @@ export default function ForumPage() {
                             </small>
                           </div>
                           <Badge
-                            className={`border-2 border-${categoryColors[post.document.Category.name]} w-fit`}
-                            variant={"outline"}
+                            className={`${categoryColors[post.document.Category.name]} w-fit`}
+                            variant={"default"}
                           >
                             {post.document.Category.name.replace(
                               post.document.Category.name.charAt(0),

@@ -105,8 +105,8 @@ export default function HistoryPage() {
                             tests[0].document.title.slice(1).toLowerCase()}
                         </CardTitle>
                         <Badge
-                          className={`border-2 border-${categoryColors[tests[0].document.Category.name]} w-fit`}
-                          variant={"outline"}
+                          className={`${categoryColors[tests[0].document.Category.name]} w-fit`}
+                          variant={"default"}
                         >
                           {tests[0].document.Category.name.replace(
                             tests[0].document.Category.name.charAt(0),
