@@ -1,5 +1,6 @@
 "use client";
 
+import { ForumProps } from "@/components/dashboard/forum/comment";
 import { SkeletonCard } from "@/components/dashboard/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,11 +15,6 @@ import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
 import { BookOpen, Clock, Clock9, Flame, Heart } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-
-type UserProps = {
-  currentStreak: number;
-};
 
 type HistoryProps = {
   type: string;
@@ -37,39 +33,7 @@ type DocumentProps = {
   };
 };
 
-type ForumProps = {
-  id: string;
-  title: string;
-  description: string;
-  documentId: string;
-  user: {
-    username: string;
-    image: string;
-  };
-  createdAt: string;
-  totalLike: number;
-  likes: [
-    {
-      id: string;
-    },
-  ];
-  isLiked: boolean;
-  comments: [
-    {
-      id: string;
-    },
-  ];
-  document: {
-    Category: {
-      name: string;
-    };
-  };
-};
-
 export default function HomePage() {
-  const [darkMode, setDarkMode] = useState(false);
-  const toggleDarkMode = () => setDarkMode(!darkMode);
-
   const user = useCurrentUser();
   const username = user.username ? user.username : user.name;
   const isMobile = useIsMobile();
@@ -95,18 +59,6 @@ export default function HomePage() {
     queryFn: async () => {
       const res = await axiosInstance.get("/api/material?limit=3");
       return res.data.data as DocumentProps[];
-    },
-  });
-
-  const {
-    data: userData,
-    isError: isUserError,
-    isPending: isUserPending,
-  } = useQuery({
-    queryKey: ["fetchUser"],
-    queryFn: async () => {
-      const res = await axiosInstance.get("/api/profile");
-      return res.data.data as UserProps;
     },
   });
 
@@ -195,9 +147,7 @@ export default function HomePage() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Current Streak</p>
-                      <p className="text-xl font-semibold">
-                        {isUserPending ? 0 : userData?.currentStreak}
-                      </p>
+                      <p className="text-xl font-semibold">{user.streak}</p>
                     </div>
                   </div>
                 </div>
