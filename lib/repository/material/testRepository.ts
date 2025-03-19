@@ -196,20 +196,18 @@ export const deleteHistory = async (userId: string, documentId: string) => {
     },
   });
 
-  if (!userHistory) {
-    return { status: 404, data: null };
+  if (userHistory) {
+    const deletedHistory = await prismaClient.history.deleteMany({
+      where: {
+        userId,
+        documentId,
+      },
+    });
+
+    if (!deletedHistory) {
+      return { status: 500, data: null };
+    }
   }
 
-  const deletedHistory = await prismaClient.history.deleteMany({
-    where: {
-      userId,
-      documentId,
-    },
-  });
-
-  if (!deletedHistory) {
-    return { status: 500, data: null };
-  }
-
-  return { status: 200, data: deletedHistory };
+  return { status: 200 };
 };
