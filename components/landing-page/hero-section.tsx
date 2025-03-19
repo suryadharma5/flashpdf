@@ -29,7 +29,10 @@ export default function HeroSection() {
       className="-mt-10 mb-2 flex h-[80vh] items-center justify-center px-0"
     >
       <div className="text-center">
-        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
+        <h1
+          className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl"
+          id="hero"
+        >
           <span className="block">Transform Your Documents into</span>
           <span className="block text-black">Intelligent Flashcards</span>
         </h1>

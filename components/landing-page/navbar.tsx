@@ -20,10 +20,9 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const section = document.getElementById("features");
-
+      const section = document.getElementById("hero");
       if (section) {
-        if (window.scrollY > section.offsetTop - 150) {
+        if (window.scrollY > section.offsetTop - 10) {
           setIsScrolled(true);
         } else {
           setIsScrolled(false);
@@ -37,7 +36,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed left-0 right-0 top-0 z-20 ${isScrolled ? "bg-white/30 shadow-sm backdrop-blur-md" : "bg-transparent"}`}
+      className={`fixed left-0 right-0 top-0 z-20 ${isScrolled ? "bg-white/30 shadow-sm backdrop-blur-md" : "bg-transparent"} transition-all duration-300`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
