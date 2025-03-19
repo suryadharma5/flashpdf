@@ -204,3 +204,30 @@ export const updateUserStreak = async (userId: string) => {
     },
   });
 };
+
+export const resetStreakIfInactive = async (userId: string) => {
+  const user = await getUserById(userId);
+  if (!user) return null;
+
+  if (!user.lastActivityDate) return user; // Jika belum ada aktivitas, tidak perlu reset
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set ke awal hari
+
+  const lastActivity = new Date(user.lastActivityDate);
+  lastActivity.setHours(0, 0, 0, 0);
+
+  const dayDiff = Math.floor(
+    (today.getTime() - lastActivity.getTime()) / (1000 * 3600 * 24),
+  );
+
+  if (dayDiff > 1) {
+    // Jika lebih dari 1 hari, reset streak ke 0
+    return await prisma.user.update({
+      where: { id: userId },
+      data: { currentStreak: 0 },
+    });
+  }
+
+  return user;
+};
