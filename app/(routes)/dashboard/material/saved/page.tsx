@@ -75,13 +75,22 @@ export default function SavedDocumentsPage() {
       url = url.concat(`&query=${debouncedSearchQuery}`);
     }
 
+    if (selectedCategory) {
+      url = url.concat(`&category=${selectedCategory}`);
+    }
+
     const res = await axiosInstance.get(url);
 
     return res.data.data as PaginatedSavedDocumentProps;
   };
 
   const { data, isError, isLoading, isFetching } = useQuery({
-    queryKey: ["fetchSavedDocuments", currentPage, debouncedSearchQuery],
+    queryKey: [
+      "fetchSavedDocuments",
+      currentPage,
+      debouncedSearchQuery,
+      selectedCategory,
+    ],
     queryFn: () => fetchSavedDocument(currentPage),
     enabled: debouncedSearchQuery === "" || debouncedSearchQuery.length >= 3,
   });
@@ -101,9 +110,14 @@ export default function SavedDocumentsPage() {
         duration: 3000,
       });
 
-      queryClient.invalidateQueries({ queryKey: ["fetchSavedDocuments"] });
-
-      console.log("Success");
+      queryClient.invalidateQueries({
+        queryKey: [
+          "fetchSavedDocuments",
+          currentPage,
+          debouncedSearchQuery,
+          selectedCategory,
+        ],
+      });
     },
     onError: (e) => {
       console.log(e.message);

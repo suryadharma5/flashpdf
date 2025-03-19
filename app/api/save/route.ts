@@ -78,6 +78,7 @@ export async function GET(req: NextRequest) {
   const limit = searchParams.get("limit");
   const page = searchParams.get("page");
   const query = searchParams.get("query");
+  const category = searchParams.get("category");
 
   const session = await auth();
   const userId = session?.user.id;
@@ -102,23 +103,24 @@ export async function GET(req: NextRequest) {
     const currLimit = parseInt(limit) || 6;
     const offset = currPage * currLimit;
 
-    const entries = query
-      ? await getSavedDocumentTotalEntries(userId, query)
-      : await getSavedDocumentTotalEntries(userId);
+    const entries = await getSavedDocumentTotalEntries(
+      userId,
+      query ?? "",
+      category ?? "",
+    );
 
     const totalEntries = entries._count.id;
     const totalPages = Math.ceil(totalEntries / currLimit);
     const hasNext = currPage + 1 < totalPages;
     const hasPrev = currPage > 0;
 
-    const savedDocuments = query
-      ? await getPaginatedSavedDocumentsByUserId(
-          userId,
-          currLimit,
-          offset,
-          query,
-        )
-      : await getPaginatedSavedDocumentsByUserId(userId, currLimit, offset);
+    const savedDocuments = await getPaginatedSavedDocumentsByUserId(
+      userId,
+      currLimit,
+      offset,
+      query ?? "",
+      category ?? "",
+    );
 
     return NextResponse.json(
       {

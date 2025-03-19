@@ -51,6 +51,7 @@ export async function getPaginatedSavedDocumentsByUserId(
   limit: number,
   offset: number,
   query?: string,
+  category?: string,
 ) {
   const baseQuery = {
     skip: offset,
@@ -92,22 +93,30 @@ export async function getPaginatedSavedDocumentsByUserId(
     },
   } as const;
 
+  const whereCondition: any = {
+    userId: userId,
+  };
+
+  if (query && query.trim() !== "") {
+    whereCondition.document = {
+      title: {
+        contains: query,
+        mode: "insensitive" as const,
+      },
+    };
+  }
+
+  if (category && category.trim() !== "") {
+    whereCondition.document = {
+      Category: {
+        name: category,
+      },
+    };
+  }
+
   const savedDocuments = await prismaClient.savedDocument.findMany({
     ...baseQuery,
-    where:
-      query && query.trim() !== ""
-        ? {
-            userId,
-            document: {
-              title: {
-                contains: query,
-                mode: "insensitive" as const, // Type assertion untuk mode
-              },
-            },
-          }
-        : {
-            userId,
-          },
+    where: whereCondition,
   });
 
   if (!savedDocuments) {
@@ -176,21 +185,28 @@ export async function deleteSavedDocument(userId: string, documentId: string) {
 export const getSavedDocumentTotalEntries = async (
   userId: string,
   query?: string,
+  category?: string,
 ) => {
-  const whereCondition =
-    query && query.trim() !== ""
-      ? {
-          userId: userId,
-          document: {
-            title: {
-              contains: query,
-              mode: "insensitive" as const,
-            },
-          },
-        }
-      : {
-          userId: userId,
-        };
+  const whereCondition: any = {
+    userId: userId,
+  };
+
+  if (query && query.trim() !== "") {
+    whereCondition.document = {
+      title: {
+        contains: query,
+        mode: "insensitive" as const,
+      },
+    };
+  }
+
+  if (category && category.trim() !== "") {
+    whereCondition.document = {
+      Category: {
+        name: category,
+      },
+    };
+  }
 
   const totalSavedDocuments = await prismaClient.savedDocument.aggregate({
     _count: {
