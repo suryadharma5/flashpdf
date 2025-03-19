@@ -79,13 +79,22 @@ export default function Page() {
       url = url.concat(`&query=${debouncedSearchQuery}`);
     }
 
+    if (selectedCategory) {
+      url = url.concat(`&category=${selectedCategory}`);
+    }
+
     const res = await axiosInstance.get(url);
 
     return res.data.data as PaginatedDocumentProps;
   };
 
   const { data, isLoading, isError, error, isFetching } = useQuery({
-    queryKey: ["documents", currentPage, debouncedSearchQuery],
+    queryKey: [
+      "documents",
+      currentPage,
+      debouncedSearchQuery,
+      selectedCategory,
+    ],
     queryFn: () => fetchDocument(currentPage),
     enabled: debouncedSearchQuery === "" || debouncedSearchQuery.length >= 3,
   });
@@ -101,11 +110,20 @@ export default function Page() {
       return res.data;
     },
     onSuccess: () => {
-      toast.success("Flashcard set removed!", {
+      toast.success("Flashcard is now private", {
         duration: 3000,
       });
 
-      queryClient.invalidateQueries({ queryKey: ["fetchDocument"] });
+      setCurrentPage(1);
+
+      queryClient.invalidateQueries({
+        queryKey: [
+          "documents",
+          currentPage,
+          debouncedSearchQuery,
+          selectedCategory,
+        ],
+      });
     },
     onError: (e) => {
       console.log(e.message);
@@ -125,7 +143,14 @@ export default function Page() {
         duration: 3000,
       });
 
-      queryClient.invalidateQueries({ queryKey: ["fetchDocument"] });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "documents",
+          currentPage,
+          debouncedSearchQuery,
+          selectedCategory,
+        ],
+      });
     },
     onError: (e) => {
       console.log(e.message);
