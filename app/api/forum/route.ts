@@ -187,6 +187,7 @@ export async function GET(req: NextRequest) {
   const limit = searchParams.get("limit");
   const page = searchParams.get("page");
   const query = searchParams.get("query");
+  const category = searchParams.get("category");
 
   const session = await auth();
 
@@ -195,18 +196,20 @@ export async function GET(req: NextRequest) {
     const currLimit = parseInt(limit) || 6;
     const offset = currPage * currLimit;
 
-    const entries = query
-      ? await getTotalForumEntries(query)
-      : await getTotalForumEntries();
+    const entries = await getTotalForumEntries(query ?? "", category ?? "");
 
     const totalEntries = entries._count.id;
     const totalPages = Math.ceil(totalEntries / currLimit);
     const hasNext = currPage + 1 < totalPages;
     const hasPrev = currPage > 0;
 
-    const forums = query
-      ? await getPaginatedForums(session?.user.id, currLimit, offset, query)
-      : await getPaginatedForums(session?.user.id, currLimit, offset);
+    const forums = await getPaginatedForums(
+      session?.user.id,
+      currLimit,
+      offset,
+      query ?? "",
+      category ?? "",
+    );
 
     const data = forums != null ? forums : [];
 

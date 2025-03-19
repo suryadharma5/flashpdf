@@ -59,6 +59,10 @@ export default function ForumPage() {
       url = url.concat(`&query=${debouncedSearchQuery}`);
     }
 
+    if (selectedCategory) {
+      url = url.concat(`&category=${selectedCategory}`);
+    }
+
     const res = await axiosInstance.get(url);
 
     return res.data.data as PaginatedForumProps;
@@ -66,7 +70,7 @@ export default function ForumPage() {
 
   const { data, isError, isPending, isFetching, fetchNextPage } =
     useInfiniteQuery({
-      queryKey: ["fetchForum", debouncedSearchQuery],
+      queryKey: ["fetchForum", debouncedSearchQuery, selectedCategory],
       queryFn: fetchForums,
       getNextPageParam: (lastPage, pages) => {
         if (lastPage.hasNext) {
@@ -99,7 +103,7 @@ export default function ForumPage() {
     },
     onMutate: async (forumId) => {
       await queryClient.cancelQueries({
-        queryKey: ["fetchForum", debouncedSearchQuery],
+        queryKey: ["fetchForum", debouncedSearchQuery, selectedCategory],
       });
 
       const previousData = queryClient.getQueryData<InfiniteQueryDataProps>([
@@ -358,6 +362,7 @@ export default function ForumPage() {
                           queryClient={queryClient}
                           key={post.id}
                           searchQuery={debouncedSearchQuery}
+                          selectedCategory={selectedCategory}
                         />
                       </Card>
                     ))}

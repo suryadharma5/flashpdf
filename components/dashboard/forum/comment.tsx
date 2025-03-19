@@ -66,10 +66,12 @@ export default function Comment({
   forumId,
   queryClient,
   searchQuery,
+  selectedCategory,
 }: {
   forumId: string;
   queryClient: QueryClient;
   searchQuery: string;
+  selectedCategory: string | null;
 }) {
   const currentUser = useCurrentUser();
 
@@ -111,7 +113,7 @@ export default function Comment({
     onMutate: async ({ comment, forumId }) => {
       await queryClient.cancelQueries({ queryKey: ["comments", forumId] });
       await queryClient.cancelQueries({
-        queryKey: ["fetchForum", searchQuery],
+        queryKey: ["fetchForum", searchQuery, selectedCategory],
       });
 
       const previousComments = queryClient.getQueryData([
@@ -122,6 +124,7 @@ export default function Comment({
       const previousForums = queryClient.getQueryData([
         "fetchForum",
         searchQuery,
+        selectedCategory,
       ]) as InfiniteQueryDataProps;
 
       queryClient.setQueryData(
@@ -141,7 +144,7 @@ export default function Comment({
       );
 
       queryClient.setQueryData(
-        ["fetchForum", searchQuery],
+        ["fetchForum", searchQuery, selectedCategory],
         (oldData: InfiniteQueryDataProps | undefined) => {
           if (!oldData || !oldData.pages) return { pageParams: [], pages: [] };
 
@@ -182,7 +185,7 @@ export default function Comment({
 
       if (context?.previousForums) {
         queryClient.setQueryData(
-          ["fetchForum", searchQuery],
+          ["fetchForum", searchQuery, selectedCategory],
           context.previousForums,
         );
       }

@@ -114,28 +114,33 @@ export const getForumsByLimit = async (userId: string, limit: number) => {
   return forums;
 };
 
-export const getTotalForumEntries = async (query?: string) => {
-  var totalCount;
+export const getTotalForumEntries = async (
+  query?: string,
+  category?: string,
+) => {
+  const whereCondition: any = {};
 
-  if (query) {
-    totalCount = await prismaClient.forum.aggregate({
-      _count: {
-        id: true,
-      },
-      where: {
-        title: {
-          contains: query,
-          mode: "insensitive",
-        },
-      },
-    });
-  } else {
-    totalCount = await prismaClient.forum.aggregate({
-      _count: {
-        id: true,
-      },
-    });
+  if (query && query.trim() !== "") {
+    whereCondition.title = {
+      contains: query,
+      mode: "insensitive" as const,
+    };
   }
+
+  if (category && category.trim() !== "") {
+    whereCondition.document = {
+      Category: {
+        name: category,
+      },
+    };
+  }
+
+  const totalCount = await prismaClient.forum.aggregate({
+    _count: {
+      id: true,
+    },
+    where: whereCondition,
+  });
 
   return totalCount;
 };
@@ -145,96 +150,65 @@ export const getPaginatedForums = async (
   limit: number,
   offset: number,
   query?: string,
+  category?: string,
 ) => {
-  let forums;
+  const whereCondition: any = {};
 
-  if (query) {
-    forums = await prismaClient.forum.findMany({
-      skip: offset,
-      take: limit,
-      orderBy: {
-        totalLike: "desc",
-      },
-      where: {
-        title: {
-          contains: query,
-          mode: "insensitive",
-        },
-      },
-      select: {
-        id: true,
-        createdAt: true,
-        title: true,
-        description: true,
-        documentId: true,
-        totalLike: true,
-        user: {
-          select: {
-            username: true,
-            image: true,
-          },
-        },
-        likes: {
-          where: { userId },
-          select: { id: true },
-        },
-        comments: {
-          select: {
-            id: true,
-          },
-        },
-        document: {
-          select: {
-            Category: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-      },
-    });
-  } else {
-    forums = await prismaClient.forum.findMany({
-      skip: offset,
-      take: limit,
-      orderBy: {
-        totalLike: "desc",
-      },
-      select: {
-        id: true,
-        createdAt: true,
-        title: true,
-        description: true,
-        documentId: true,
-        totalLike: true,
-        user: {
-          select: {
-            username: true,
-            image: true,
-          },
-        },
-        likes: {
-          where: { userId },
-          select: { id: true },
-        },
-        comments: {
-          select: {
-            id: true,
-          },
-        },
-        document: {
-          select: {
-            Category: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-      },
-    });
+  if (query && query.trim() !== "") {
+    whereCondition.title = {
+      contains: query,
+      mode: "insensitive" as const,
+    };
   }
+
+  if (category && category.trim() !== "") {
+    whereCondition.document = {
+      Category: {
+        name: category,
+      },
+    };
+  }
+
+  const forums = await prismaClient.forum.findMany({
+    skip: offset,
+    take: limit,
+    orderBy: {
+      totalLike: "desc",
+    },
+    where: whereCondition,
+    select: {
+      id: true,
+      createdAt: true,
+      title: true,
+      description: true,
+      documentId: true,
+      totalLike: true,
+      user: {
+        select: {
+          username: true,
+          image: true,
+        },
+      },
+      likes: {
+        where: { userId },
+        select: { id: true },
+      },
+      comments: {
+        select: {
+          id: true,
+        },
+      },
+      document: {
+        select: {
+          Category: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
 
   if (!forums) {
     return null;
