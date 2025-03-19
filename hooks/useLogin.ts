@@ -54,7 +54,9 @@ export const useLogin = (
           });
         }
       } else {
-        toast.success("Login Success!");
+        toast.success("Login Success!", {
+          duration: 3000,
+        });
         onSuccess();
       }
     },
