@@ -155,7 +155,7 @@ export default function SavedDocumentsPage() {
     return () => {
       clearTimeout(handler);
     };
-  }, [searchQuery, currentPage]);
+  }, [searchQuery]);
 
   if (isError) {
     return <ErrorPage />;

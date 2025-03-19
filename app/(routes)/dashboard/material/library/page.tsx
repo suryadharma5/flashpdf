@@ -190,7 +190,7 @@ export default function Page() {
     return () => {
       clearTimeout(handler);
     };
-  }, [searchQuery, currentPage]);
+  }, [searchQuery]);
 
   if (isError) {
     console.error(error);
