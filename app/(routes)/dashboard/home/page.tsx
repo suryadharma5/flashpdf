@@ -38,7 +38,11 @@ type DocumentProps = {
 
 export default function HomePage() {
   const user = useCurrentUser();
-  const username = user.username ? user.username : user.name;
+  const username = user?.username
+    ? user?.username
+    : user?.name
+      ? user?.name
+      : "Guest";
   const isMobile = useIsMobile();
 
   const {
