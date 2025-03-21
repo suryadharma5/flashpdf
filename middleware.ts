@@ -6,10 +6,35 @@ import {
   DEFAULT_LOGIN_REDIRECT,
   publicRoutes,
 } from "./route";
+import { NextRequest } from 'next/server';
+import createIntlMiddleware from 'next-intl/middleware';
+
+
+// Define supported locales
+const locales = ['en', 'id'];
+const defaultLocale = 'en';
+
+// Create the internationalization middleware
+const intlMiddleware = createIntlMiddleware({
+  locales,
+  defaultLocale,
+  localeDetection: true
+
+});
 
 const { auth } = NextAuth(authConfig);
 
+function setLocaleCookie(request: NextRequest): void {
+  const locale = request.headers.get('accept-language')?.split(',')[0]?.split('-')[0] || defaultLocale;
+  
+  if (locale && locales.includes(locale)) {
+    request.cookies.set('NEXT_LOCALE', locale);
+  }
+}
+
 export default auth((req) => {
+  setLocaleCookie(req);
+
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
 
@@ -22,7 +47,6 @@ export default auth((req) => {
   }
 
   if (isAuthRoute || isPublicRoute) {
-    console.log("isloggedIn: ", isLoggedIn);
     if (isLoggedIn) {
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
@@ -32,7 +56,6 @@ export default auth((req) => {
   if (!isLoggedIn && !isPublicRoute) {
     return Response.redirect(new URL("/sign-in", nextUrl));
   }
-
   return;
 });
 
@@ -41,5 +64,7 @@ export const config = {
   matcher: [
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     "/(api|trpc)(.*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:jpg|jpeg|gif|png|svg|ico)).*)"
+
   ],
 };

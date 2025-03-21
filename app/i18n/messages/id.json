@@ -1,0 +1,11 @@
+{
+    "common": {
+      "welcome": "Selamat Datang di FlashAI",
+      "home": "Home",
+      "about": "About"
+    },
+    "home": {
+      "title": "FlashAI - Your AI Assistant",
+      "description": "Analyze and work with your documents using AI"
+    }
+  }

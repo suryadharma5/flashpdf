@@ -14,12 +14,38 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import { GlobeIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export const Navbar = () => {
   const pathName = usePathname();
   const pathArray = pathName.split("/").filter(Boolean);
   const router = useRouter();
   const isMobile = useIsMobile();
+  
+  // Default to English
+  const [currentLocale, setCurrentLocale] = useState('en');
+  
+  useEffect(() => {
+    // Get locale from cookie on client-side
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(';').shift() || 'en';
+      return 'en';
+    };
+    
+    const cookieLocale = getCookie('NEXT_LOCALE');
+    if (cookieLocale) {
+      setCurrentLocale(cookieLocale);
+    }
+  }, []);
 
   const [validPaths, setValidPaths] = useState<Record<string, boolean>>({});
 
@@ -87,8 +113,26 @@ export const Navbar = () => {
     }
   };
 
+  // Function to handle language change with hard reload
+  const handleLanguageChange = (newLocale: string) => {
+    // Set cookie for the new locale
+    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
+    
+    // Update state to reflect the change immediately
+    setCurrentLocale(newLocale);
+    
+    // Hard reload the page to fully apply the new locale
+    window.location.href = window.location.pathname;
+  };
+
+  // Language display names
+  const languageNames: Record<string, string> = {
+    en: "English",
+    id: "Indonesia"
+  };
+
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+    <header className="flex h-16 shrink-0 items-center justify-between border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
       <div className="flex items-center gap-2 px-4">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />
@@ -125,6 +169,30 @@ export const Navbar = () => {
             })}
           </BreadcrumbList>
         </Breadcrumb>
+      </div>
+      
+      {/* Language Switcher */}
+      <div className="flex items-center px-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex items-center gap-1 rounded-md px-2 py-1 hover:bg-muted">
+            <GlobeIcon className="h-4 w-4" />
+            <span>{languageNames[currentLocale] || "English"}</span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem 
+              onClick={() => handleLanguageChange('en')}
+              className={currentLocale === 'en' ? 'bg-muted' : ''}
+            >
+              English
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => handleLanguageChange('id')}
+              className={currentLocale === 'id' ? 'bg-muted' : ''}
+            >
+              Indonesia
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );
