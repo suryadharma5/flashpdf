@@ -151,6 +151,7 @@ export const getPaginatedForums = async (
   offset: number,
   query?: string,
   category?: string,
+  sort?: string,
 ) => {
   const whereCondition: any = {};
 
@@ -169,12 +170,39 @@ export const getPaginatedForums = async (
     };
   }
 
+  let orderBy: any = {
+    totalLike: "desc",
+  };
+
+  if (sort) {
+    switch (sort) {
+      case "oldest":
+        orderBy = {
+          createdAt: "asc",
+        };
+        break;
+      case "latest":
+        orderBy = {
+          createdAt: "desc",
+        };
+        break;
+      case "like":
+        orderBy = {
+          totalLike: "desc",
+        };
+        break;
+      default:
+        orderBy = {
+          totalLike: "desc",
+        };
+        break;
+    }
+  }
+
   const forums = await prismaClient.forum.findMany({
     skip: offset,
     take: limit,
-    orderBy: {
-      totalLike: "desc",
-    },
+    orderBy: orderBy,
     where: whereCondition,
     select: {
       id: true,

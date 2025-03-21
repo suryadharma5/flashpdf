@@ -188,6 +188,7 @@ export async function GET(req: NextRequest) {
   const page = searchParams.get("page");
   const query = searchParams.get("query");
   const category = searchParams.get("category");
+  const sort = searchParams.get("sort");
 
   const session = await auth();
 
@@ -209,6 +210,7 @@ export async function GET(req: NextRequest) {
       offset,
       query ?? "",
       category ?? "",
+      sort ?? "like",
     );
 
     const data = forums != null ? forums : [];
