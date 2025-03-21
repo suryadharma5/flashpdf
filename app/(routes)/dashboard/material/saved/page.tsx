@@ -68,7 +68,7 @@ export default function SavedDocumentsPage() {
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
-  const fetchSavedDocument = async (pageNum: number) => {
+  const fetchSavedDocument = async () => {
     let url = `/api/save?limit=6&page=${currentPage}`;
 
     if (debouncedSearchQuery && debouncedSearchQuery.trim()) {
@@ -91,7 +91,7 @@ export default function SavedDocumentsPage() {
       debouncedSearchQuery,
       selectedCategory,
     ],
-    queryFn: () => fetchSavedDocument(currentPage),
+    queryFn: () => fetchSavedDocument(),
     enabled: debouncedSearchQuery === "" || debouncedSearchQuery.length >= 3,
   });
 

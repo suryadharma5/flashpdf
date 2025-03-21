@@ -35,14 +35,8 @@ export default function ForumPreview() {
   const user = useCurrentUser();
 
   const isMobile = useIsMobile();
-  const {
-    flashcardsData,
-    isLoading,
-    isError,
-    documentTitle,
-    documentId,
-    userId,
-  } = useFlashcard(params.forumId);
+  const { flashcardsData, isLoading, isError, documentId, userId } =
+    useFlashcard(params.forumId);
 
   const nextCard = useCallback(() => {
     setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcardsData.length);

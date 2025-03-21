@@ -10,6 +10,8 @@ import {
   MessagesSquare,
   NotebookPen,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function FeatureSection() {
   const features = [
@@ -30,16 +32,20 @@ export default function FeatureSection() {
                 Simply drag and drop your PDF files or click to upload. Our
                 system processes your documents quickly and securely.
               </p>
-              <Button className="rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
-                Try It Now
-              </Button>
+              <Link href={"/sign-in"} className="mt-4 py-4">
+                <Button className="rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
+                  Try It Now
+                </Button>
+              </Link>
             </div>
           </div>
           <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
-            <img
-              src="/placeholder.svg?height=400&width=600"
+            <Image
+              src="/placeholder.svg"
               alt="Document Upload Feature"
               className="h-full w-full object-cover"
+              width={600}
+              height={400}
             />
           </div>
         </div>
@@ -68,10 +74,12 @@ export default function FeatureSection() {
             </div>
           </div>
           <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
-            <img
-              src="/placeholder.svg?height=400&width=600"
+            <Image
+              src="/placeholder.svg"
               alt="AI-Powered Flashcards Feature"
               className="h-full w-full object-cover"
+              width={600}
+              height={400}
             />
           </div>
         </div>
@@ -99,10 +107,12 @@ export default function FeatureSection() {
             </div>
           </div>
           <div className="relative mt-8 h-72 w-full overflow-hidden rounded-lg border border-gray-200">
-            <img
-              src="/placeholder.svg?height=400&width=600"
+            <Image
+              src="/placeholder.svg"
               alt="Personalized Learning Feature"
               className="h-full w-full object-cover"
+              width={600}
+              height={400}
             />
           </div>
         </div>
@@ -132,7 +142,7 @@ export default function FeatureSection() {
           </div>
           <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
             <img
-              src="/placeholder.svg?height=400&width=600"
+              src="/placeholder.svg"
               alt="Community Forum Feature"
               className="h-full w-full object-cover"
             />
@@ -163,10 +173,12 @@ export default function FeatureSection() {
             </div>
           </div>
           <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
-            <img
-              src="/placeholder.svg?height=400&width=600"
+            <Image
+              src="/placeholder.svg"
               alt="Progress Tracking Feature"
               className="h-full w-full object-cover"
+              width={600}
+              height={400}
             />
           </div>
         </div>

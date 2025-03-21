@@ -36,7 +36,10 @@ export async function prepareDocument(page: PDFPage) {
   pageContent = preprocessText(pageContent);
 
   // split the document
-  const splitter = new RecursiveCharacterTextSplitter();
+  const splitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 512,
+    chunkOverlap: 100,
+  });
   const docs = await splitter.splitDocuments([
     new Document({
       pageContent,

@@ -60,8 +60,6 @@ export default function HistoryDetailPage() {
     },
   });
 
-  console.log({ data });
-
   const calculateAverageGrade = (tests: TestHistoryProps[]): string => {
     const totalGrade = tests.reduce((sum, test) => sum + test.grade, 0);
     return (totalGrade / tests.length).toFixed(1);

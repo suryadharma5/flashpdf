@@ -8,40 +8,39 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
+import { GlobeIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import { GlobeIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
 
 export const Navbar = () => {
   const pathName = usePathname();
   const pathArray = pathName.split("/").filter(Boolean);
   const router = useRouter();
   const isMobile = useIsMobile();
-  
+
   // Default to English
-  const [currentLocale, setCurrentLocale] = useState('en');
-  
+  const [currentLocale, setCurrentLocale] = useState("en");
+
   useEffect(() => {
     // Get locale from cookie on client-side
     const getCookie = (name: string) => {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(';').shift() || 'en';
-      return 'en';
+      if (parts.length === 2) return parts.pop()?.split(";").shift() || "en";
+      return "en";
     };
-    
-    const cookieLocale = getCookie('NEXT_LOCALE');
+
+    const cookieLocale = getCookie("NEXT_LOCALE");
     if (cookieLocale) {
       setCurrentLocale(cookieLocale);
     }
@@ -96,8 +95,9 @@ export const Navbar = () => {
       } else {
         throw new Error("Page not found");
       }
-    } catch (error) {
+    } catch (err) {
       // Find the most recent valid path
+      console.error(err);
       let validIndex = index - 1;
       while (validIndex >= 0) {
         const prevHref = `/${pathArray.slice(0, validIndex + 1).join("/")}`;
@@ -117,10 +117,10 @@ export const Navbar = () => {
   const handleLanguageChange = (newLocale: string) => {
     // Set cookie for the new locale
     document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
-    
+
     // Update state to reflect the change immediately
     setCurrentLocale(newLocale);
-    
+
     // Hard reload the page to fully apply the new locale
     window.location.href = window.location.pathname;
   };
@@ -128,7 +128,7 @@ export const Navbar = () => {
   // Language display names
   const languageNames: Record<string, string> = {
     en: "English",
-    id: "Indonesia"
+    id: "Indonesia",
   };
 
   return (
@@ -170,7 +170,7 @@ export const Navbar = () => {
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      
+
       {/* Language Switcher */}
       <div className="flex items-center px-4">
         <DropdownMenu>
@@ -179,15 +179,15 @@ export const Navbar = () => {
             <span>{languageNames[currentLocale] || "English"}</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem 
-              onClick={() => handleLanguageChange('en')}
-              className={currentLocale === 'en' ? 'bg-muted' : ''}
+            <DropdownMenuItem
+              onClick={() => handleLanguageChange("en")}
+              className={currentLocale === "en" ? "bg-muted" : ""}
             >
               English
             </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => handleLanguageChange('id')}
-              className={currentLocale === 'id' ? 'bg-muted' : ''}
+            <DropdownMenuItem
+              onClick={() => handleLanguageChange("id")}
+              className={currentLocale === "id" ? "bg-muted" : ""}
             >
               Indonesia
             </DropdownMenuItem>

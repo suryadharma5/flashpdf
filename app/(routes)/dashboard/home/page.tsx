@@ -1,5 +1,6 @@
 "use client";
 
+import ErrorPage from "@/components/dashboard/error";
 import { ForumProps } from "@/components/dashboard/forum/comment";
 import { LoadingPage } from "@/components/dashboard/loading";
 import { SkeletonCard } from "@/components/dashboard/skeleton-card";
@@ -73,6 +74,10 @@ export default function HomePage() {
     if (hour < 18) return "afternoon";
     return "evening";
   };
+
+  if (isError || isDocumentError) {
+    return <ErrorPage />;
+  }
 
   return (
     <Suspense fallback={<LoadingPage />}>

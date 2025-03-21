@@ -157,7 +157,6 @@ export default function ProgressPage() {
   }, [testHistory]);
 
   const testScoresData = useMemo(() => {
-    console.log({ testScoreById });
     return (
       testScoreById?.map((test) => ({
         date: format(new Date(test.createdAt), "MMMM, dd yyyy"),

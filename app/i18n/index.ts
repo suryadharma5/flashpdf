@@ -1,7 +1,7 @@
-import { createTranslator } from 'next-intl';
+import { createTranslator } from "next-intl";
 
-export const locales = ['en', 'id']; // Update with your supported locales
-export const defaultLocale = 'en';
+export const locales = ["en", "id"]; // Update with your supported locales
+export const defaultLocale = "en";
 
 // This function can be used to get translations in server components
 export async function getTranslations(locale: string) {
@@ -9,6 +9,7 @@ export async function getTranslations(locale: string) {
     return (await import(`./messages/${locale}.json`)).default;
   } catch (error) {
     // Fallback to default locale if translation not found
+    console.error(error);
     return (await import(`./messages/en.json`)).default;
   }
 }

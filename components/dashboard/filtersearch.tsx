@@ -86,7 +86,9 @@ export const FilterSearch = ({
                     className="h-8 gap-1 border-2 border-blue-300 bg-white hover:bg-blue-50"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setSelectedSort && setSelectedSort(null);
+                      if (setSelectedSort) {
+                        setSelectedSort(null);
+                      }
                     }}
                   >
                     {/* Get and display the icon for the selected sort */}
@@ -108,7 +110,9 @@ export const FilterSearch = ({
                       className="ml-0.5 h-3.5 w-3.5 text-blue-500 hover:text-blue-700"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setSelectedSort && setSelectedSort(null);
+                        if (setSelectedSort) {
+                          setSelectedSort(null);
+                        }
                       }}
                     />
                   </Button>
@@ -209,7 +213,9 @@ export const FilterSearch = ({
                   className="h-8 gap-1 border-2 border-blue-300 bg-white hover:bg-blue-50"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSelectedSort && setSelectedSort(null);
+                    if (setSelectedSort) {
+                      setSelectedSort(null);
+                    }
                   }}
                 >
                   {/* Get and display the icon for the selected sort */}
@@ -230,7 +236,9 @@ export const FilterSearch = ({
                     className="ml-0.5 h-3.5 w-3.5 text-blue-500 hover:text-blue-700"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setSelectedSort && setSelectedSort(null);
+                      if (setSelectedSort) {
+                        setSelectedSort(null);
+                      }
                     }}
                   />
                 </Button>

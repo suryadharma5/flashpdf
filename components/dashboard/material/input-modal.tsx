@@ -42,7 +42,7 @@ export const InputModal = ({
     resolver: zodResolver(questionFormSchema),
     defaultValues: {
       document: undefined,
-      numQuestions: 0,
+      numQuestions: String(0),
       documentTitle: "",
     },
   });

@@ -30,7 +30,7 @@ export default function RadarChartComponent() {
     queryKey: ["radarChartData"],
     queryFn: async () => {
       const response = await axiosInstance.get("/api/progress");
-      let chartData = response.data.data as RadarChartDataProps[];
+      const chartData = response.data.data as RadarChartDataProps[];
 
       const allCategories = [
         "science",
@@ -106,7 +106,7 @@ export default function RadarChartComponent() {
                 />
                 <PolarAngleAxis
                   dataKey="category"
-                  tick={({ x, y, textAnchor, value, index, ...props }) => {
+                  tick={({ x, y, textAnchor, index, ...props }) => {
                     const data = chartData[index];
 
                     return (

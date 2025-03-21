@@ -1,4 +1,6 @@
 import NextAuth from "next-auth";
+import createIntlMiddleware from "next-intl/middleware";
+import { NextRequest } from "next/server";
 import authConfig from "./auth.config";
 import {
   apiAuthPrefix,
@@ -6,29 +8,28 @@ import {
   DEFAULT_LOGIN_REDIRECT,
   publicRoutes,
 } from "./route";
-import { NextRequest } from 'next/server';
-import createIntlMiddleware from 'next-intl/middleware';
-
 
 // Define supported locales
-const locales = ['en', 'id'];
-const defaultLocale = 'en';
+const locales = ["en", "id"];
+const defaultLocale = "en";
 
 // Create the internationalization middleware
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const intlMiddleware = createIntlMiddleware({
   locales,
   defaultLocale,
-  localeDetection: true
-
+  localeDetection: true,
 });
 
 const { auth } = NextAuth(authConfig);
 
 function setLocaleCookie(request: NextRequest): void {
-  const locale = request.headers.get('accept-language')?.split(',')[0]?.split('-')[0] || defaultLocale;
-  
+  const locale =
+    request.headers.get("accept-language")?.split(",")[0]?.split("-")[0] ||
+    defaultLocale;
+
   if (locale && locales.includes(locale)) {
-    request.cookies.set('NEXT_LOCALE', locale);
+    request.cookies.set("NEXT_LOCALE", locale);
   }
 }
 
@@ -64,7 +65,6 @@ export const config = {
   matcher: [
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     "/(api|trpc)(.*)",
-    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:jpg|jpeg|gif|png|svg|ico)).*)"
-
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:jpg|jpeg|gif|png|svg|ico)).*)",
   ],
 };

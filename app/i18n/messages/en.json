@@ -1,11 +1,11 @@
 {
-    "common": {
-      "welcome": "Welcome to Ryan Ganz",
-      "home": "Home",
-      "about": "About"
-    },
-    "home": {
-      "title": "FlashAI - Your AI Assistant",
-      "description": "Analyze and work with your documents using AI"
-    }
+  "common": {
+    "welcome": "Welcome to Ryan Ganz",
+    "home": "Home",
+    "about": "About"
+  },
+  "home": {
+    "title": "FlashAI - Your AI Assistant",
+    "description": "Analyze and work with your documents using AI"
   }
+}
