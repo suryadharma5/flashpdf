@@ -67,11 +67,13 @@ export default function Comment({
   queryClient,
   searchQuery,
   selectedCategory,
+  selectedSort,
 }: {
   forumId: string;
   queryClient: QueryClient;
   searchQuery: string;
   selectedCategory: string | null;
+  selectedSort: string | null;
 }) {
   const currentUser = useCurrentUser();
 

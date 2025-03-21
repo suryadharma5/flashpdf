@@ -46,6 +46,7 @@ export default function ForumPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedSort, setSelectedSort] = useState<string | null>(null);
 
   const observerTarget = useRef<HTMLDivElement>(null);
 
@@ -63,6 +64,10 @@ export default function ForumPage() {
       url = url.concat(`&category=${selectedCategory}`);
     }
 
+    if (selectedSort) {
+      url = url.concat(`&sort=${selectedSort}`);
+    }
+
     const res = await axiosInstance.get(url);
 
     return res.data.data as PaginatedForumProps;
@@ -70,7 +75,12 @@ export default function ForumPage() {
 
   const { data, isError, isPending, isFetching, fetchNextPage } =
     useInfiniteQuery({
-      queryKey: ["fetchForum", debouncedSearchQuery, selectedCategory],
+      queryKey: [
+        "fetchForum",
+        debouncedSearchQuery,
+        selectedCategory,
+        selectedSort,
+      ],
       queryFn: fetchForums,
       getNextPageParam: (lastPage, pages) => {
         if (lastPage.hasNext) {
@@ -103,16 +113,23 @@ export default function ForumPage() {
     },
     onMutate: async (forumId) => {
       await queryClient.cancelQueries({
-        queryKey: ["fetchForum", debouncedSearchQuery, selectedCategory],
+        queryKey: [
+          "fetchForum",
+          debouncedSearchQuery,
+          selectedCategory,
+          selectedSort,
+        ],
       });
 
       const previousData = queryClient.getQueryData<InfiniteQueryDataProps>([
         "fetchForum",
         debouncedSearchQuery,
+        selectedCategory,
+        selectedSort,
       ]);
 
       queryClient.setQueryData(
-        ["fetchForum", debouncedSearchQuery],
+        ["fetchForum", debouncedSearchQuery, selectedCategory, selectedSort],
         (oldForums: InfiniteQueryDataProps | undefined) => {
           if (!oldForums) return { pageParams: [], pages: [] };
 
@@ -140,7 +157,7 @@ export default function ForumPage() {
     },
     onSuccess: (data, forumId) => {
       queryClient.setQueryData(
-        ["fetchForum", debouncedSearchQuery],
+        ["fetchForum", debouncedSearchQuery, selectedCategory, selectedSort],
         (oldForums: InfiniteQueryDataProps | undefined) => {
           if (!oldForums || !oldForums.pages) {
             return { pageParams: [], pages: [] };
@@ -169,7 +186,7 @@ export default function ForumPage() {
 
       if (context?.previousData) {
         queryClient.setQueryData(
-          ["fetchForum", debouncedSearchQuery],
+          ["fetchForum", debouncedSearchQuery, selectedCategory, selectedSort],
           context.previousData,
         );
       }
@@ -209,7 +226,6 @@ export default function ForumPage() {
   }, [paginatedData?.hasNext, isPending, isFetching]);
 
   useEffect(() => {
-    console.log("executing");
     const handler = setTimeout(() => {
       if (searchQuery.length >= 3 || searchQuery === "") {
         setDebouncedSearchQuery(searchQuery);
@@ -238,6 +254,9 @@ export default function ForumPage() {
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
           placeHolder="Search forums..."
+          isNeedSorting={true}
+          selectedSort={selectedSort}
+          setSelectedSort={setSelectedSort}
         />
       </div>
 
@@ -363,6 +382,7 @@ export default function ForumPage() {
                           key={post.id}
                           searchQuery={debouncedSearchQuery}
                           selectedCategory={selectedCategory}
+                          selectedSort={selectedSort}
                         />
                       </Card>
                     ))}

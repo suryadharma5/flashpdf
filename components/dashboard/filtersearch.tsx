@@ -1,6 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  ArrowDown10,
+  ArrowUp10,
+  Heart,
+  Search,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 type FilterSearchProps = {
   searchTerm: string;
@@ -8,6 +23,9 @@ type FilterSearchProps = {
   selectedCategory: string | null;
   onCategoryChange: (category: string | null) => void;
   placeHolder?: string;
+  isNeedSorting?: boolean;
+  selectedSort?: string | null;
+  setSelectedSort?: (value: string | null) => void;
 };
 
 const categories = [
@@ -19,13 +37,28 @@ const categories = [
   "Others",
 ];
 
+const sortOptions = [
+  { value: "latest", label: "Most Recent", icon: ArrowDown10 },
+  { value: "oldest", label: "Oldest First", icon: ArrowUp10 },
+  { value: "like", label: "Most Liked", icon: Heart },
+];
+
 export const FilterSearch = ({
   searchTerm,
   setSearchTerm,
   selectedCategory,
   onCategoryChange,
   placeHolder,
+  isNeedSorting = false,
+  selectedSort,
+  setSelectedSort,
 }: FilterSearchProps) => {
+  const isMobile = useIsMobile();
+
+  const getSelectedSortOption = (value: string) => {
+    return sortOptions.find((opt) => opt.value === value);
+  };
+
   return (
     <div className="mb-8 w-full space-y-4">
       <div className="relative">
@@ -40,29 +73,207 @@ export const FilterSearch = ({
       </div>
 
       {/* Category Buttons */}
-      <div className="flex flex-wrap gap-2">
-        {categories.map((category) => (
-          <Button
-            key={category}
-            variant="outline"
-            className={`rounded-full ${
-              category.toLowerCase() === selectedCategory
-                ? "bg-primary text-white hover:bg-gray-500 hover:text-white"
-                : "hover:bg-slate-100 hover:text-slate-900"
-            }`}
-            size="sm"
-            onClick={() =>
-              onCategoryChange(
-                category.toLowerCase() === selectedCategory
-                  ? null
-                  : category.toLowerCase(),
-              )
-            }
-          >
-            <p className="text-xs">{category}</p>
-          </Button>
-        ))}
-      </div>
+      {isMobile ? (
+        <div className="flex w-full flex-col gap-5">
+          {isNeedSorting && (
+            <div className="flex w-full items-center justify-between">
+              <h3 className="text-sm font-medium">Sort by:</h3>
+              <DropdownMenu>
+                {selectedSort ? (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="h-8 gap-1 border-2 border-blue-300 bg-white hover:bg-blue-50"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedSort && setSelectedSort(null);
+                    }}
+                  >
+                    {/* Get and display the icon for the selected sort */}
+                    {(() => {
+                      const option = getSelectedSortOption(selectedSort);
+                      if (option) {
+                        const IconComponent = option.icon;
+                        return (
+                          <IconComponent className="mr-1 h-3.5 w-3.5 text-blue-500" />
+                        );
+                      }
+                      return null;
+                    })()}
+                    <p className="text-sm text-blue-500">
+                      {getSelectedSortOption(selectedSort)?.label ||
+                        selectedSort}
+                    </p>
+                    <X
+                      className="ml-0.5 h-3.5 w-3.5 text-blue-500 hover:text-blue-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedSort && setSelectedSort(null);
+                      }}
+                    />
+                  </Button>
+                ) : (
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-8 gap-1">
+                      <SlidersHorizontal className="h-3.5 w-3.5" />
+                      <span className="text-sm">Sort by</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                )}
+                <DropdownMenuContent align="end" className="w-fit">
+                  <DropdownMenuRadioGroup
+                    value={selectedSort ?? ""}
+                    onValueChange={setSelectedSort}
+                  >
+                    <DropdownMenuRadioItem
+                      value="latest"
+                      className="px-3 py-2 hover:cursor-pointer"
+                    >
+                      <ArrowDown10 className="mr-2 h-4 w-4" />
+                      <span>Most Recent</span>
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem
+                      value="oldest"
+                      className="px-3 py-2 hover:cursor-pointer"
+                    >
+                      <ArrowUp10 className="mr-2 h-4 w-4" />
+                      <span>Oldest First</span>
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem
+                      value="like"
+                      className="px-3 py-2 hover:cursor-pointer"
+                    >
+                      <Heart className="mr-2 h-4 w-4" />
+                      <span>Most Liked</span>
+                    </DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant="default"
+                className={`rounded-full ${
+                  category.toLowerCase() === selectedCategory
+                    ? "bg-primary text-white hover:bg-gray-500 hover:text-white"
+                    : "bg-secondary text-gray-900 hover:bg-gray-300 hover:text-slate-900"
+                }`}
+                size="sm"
+                onClick={() =>
+                  onCategoryChange(
+                    category.toLowerCase() === selectedCategory
+                      ? null
+                      : category.toLowerCase(),
+                  )
+                }
+              >
+                <p className="text-xs">{category}</p>
+              </Button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="flex w-full justify-between">
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant="default"
+                className={`rounded-full ${
+                  category.toLowerCase() === selectedCategory
+                    ? "bg-primary text-white hover:bg-gray-500 hover:text-white"
+                    : "bg-secondary text-gray-900 hover:bg-gray-300 hover:text-slate-900"
+                }`}
+                size="sm"
+                onClick={() =>
+                  onCategoryChange(
+                    category.toLowerCase() === selectedCategory
+                      ? null
+                      : category.toLowerCase(),
+                  )
+                }
+              >
+                <p className="text-xs">{category}</p>
+              </Button>
+            ))}
+          </div>
+          {isNeedSorting && (
+            <DropdownMenu>
+              {selectedSort ? (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="h-8 gap-1 border-2 border-blue-300 bg-white hover:bg-blue-50"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedSort && setSelectedSort(null);
+                  }}
+                >
+                  {/* Get and display the icon for the selected sort */}
+                  {(() => {
+                    const option = getSelectedSortOption(selectedSort);
+                    if (option) {
+                      const IconComponent = option.icon;
+                      return (
+                        <IconComponent className="mr-1 h-3.5 w-3.5 text-blue-500" />
+                      );
+                    }
+                    return null;
+                  })()}
+                  <p className="text-blue-500">
+                    {getSelectedSortOption(selectedSort)?.label || selectedSort}
+                  </p>
+                  <X
+                    className="ml-0.5 h-3.5 w-3.5 text-blue-500 hover:text-blue-700"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedSort && setSelectedSort(null);
+                    }}
+                  />
+                </Button>
+              ) : (
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8 gap-1">
+                    <SlidersHorizontal className="h-3.5 w-3.5" />
+                    Sort by
+                  </Button>
+                </DropdownMenuTrigger>
+              )}
+              <DropdownMenuContent align="start" className="w-fit">
+                <DropdownMenuRadioGroup
+                  value={selectedSort ?? ""}
+                  onValueChange={setSelectedSort}
+                >
+                  <DropdownMenuRadioItem
+                    value="latest"
+                    className="px-3 py-2 hover:cursor-pointer"
+                  >
+                    <ArrowDown10 className="mr-2 h-4 w-4" />
+                    <span>Most Recent</span>
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem
+                    value="oldest"
+                    className="px-3 py-2 hover:cursor-pointer"
+                  >
+                    <ArrowUp10 className="mr-2 h-4 w-4" />
+                    <span>Oldest First</span>
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem
+                    value="like"
+                    className="px-3 py-2 hover:cursor-pointer"
+                  >
+                    <Heart className="mr-2 h-4 w-4" />
+                    <span>Most Liked</span>
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+      )}
     </div>
   );
 };
