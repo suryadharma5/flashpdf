@@ -223,7 +223,7 @@ export const resetStreakIfInactive = async (userId: string) => {
 
   if (dayDiff > 1) {
     // Jika lebih dari 1 hari, reset streak ke 0
-    return await prisma.user.update({
+    return await prismaClient.user.update({
       where: { id: userId },
       data: { currentStreak: 0 },
     });

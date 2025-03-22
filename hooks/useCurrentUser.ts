@@ -5,5 +5,5 @@ export const useCurrentUser = () => {
 
   if (status !== "authenticated") return null;
 
-  return session.user;
+  return session?.user;
 };
