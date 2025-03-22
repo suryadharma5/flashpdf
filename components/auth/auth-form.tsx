@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -10,6 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { useLogin } from "@/hooks/useLogin";
 import { useRegister } from "@/hooks/useRegister";
 import { REDIRECT_ROUTE } from "@/lib/auth/oauth/oauth";
@@ -24,7 +24,6 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { ClipLoader } from "react-spinners";
 import { z } from "zod";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
@@ -262,25 +261,10 @@ export default function AuthForm({ type }: AuthFormProps) {
           <FormSuccess message={success} />
 
           <div>
-            <Button
-              type="submit"
-              disabled={loginPending || registerPending}
-              className="flex w-full justify-center rounded-md border border-transparent bg-black px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-800"
-            >
-              <ClipLoader
-                color="white"
-                size={15}
-                className="mr-1"
-                loading={loginPending || registerPending}
-              />
-              <p>
-                {loginPending || registerPending
-                  ? "Loading..."
-                  : type === "login"
-                    ? "Sign In"
-                    : "Create Account"}
-              </p>
-            </Button>
+            <SubmitButton
+              title={type === "login" ? "Sign In" : "Create Account"}
+              isDisabled={loginPending || registerPending}
+            />
           </div>
         </form>
       </Form>

@@ -14,6 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// authentication
 model User {
   id            String    @id @default(cuid())
   username      String?   @unique
@@ -24,8 +25,22 @@ model User {
   image         String?
   accounts      Account[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  currentStreak    Int       @default(0)
+  longestStreak    Int       @default(0)
+  lastActivityDate DateTime?
+  streakUpdatedAt  DateTime?
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  Document      Document[]
+  History       History[]
+  AnswerHistory AnswerHistory[]
+  Chat          Chat[]
+  Forum         Forum[]
+  ForumLike     ForumLike[]
+  ForumComment  Comment[]
+  SavedDocument SavedDocument[]
+  Notes         Notes[]
 
   @@map("users")
 }
@@ -60,4 +75,227 @@ model Account {
 
   @@id([provider, providerAccountId])
   @@map("accounts")
+}
+
+// question generation
+model Document {
+  id         String      @id @default(cuid())
+  title      String
+  questions  Question[]
+  flashcards Flashcard[]
+  userId     String
+  categoryId String
+  namespace  String
+  isPublic   Boolean     @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  History       History[]
+  Chat          Chat[]
+  Forum         Forum[]
+  SavedDocument SavedDocument[]
+  Notes         Notes[]
+  Category      Category?       @relation(fields: [categoryId], references: [id])
+
+  @@map("documents")
+}
+
+model Category {
+  id   String @id @default(cuid())
+  name String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document Document[]
+
+  @@map("categories")
+}
+
+model Question {
+  id            String   @id @default(cuid())
+  question      String   @db.VarChar()
+  correctAnswer String
+  options       Option[]
+  documentId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document        Document?         @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  QuestionHistory QuestionHistory[]
+
+  @@map("questions")
+}
+
+model Option {
+  id         String @id @default(cuid())
+  text       String @db.VarChar()
+  questionId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  question Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("options")
+}
+
+// Tambahkan model baru untuk flashcard
+model Flashcard {
+  id          String   @id @default(cuid())
+  keyPoint    String
+  explanation String
+  documentId  String
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("flashcards")
+}
+
+enum TestType {
+  PRETEST
+  POSTTEST
+}
+
+model History {
+  id         String   @id @default(cuid())
+  grade      Int
+  type       TestType
+  userId     String
+  documentId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user            User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document        Document?         @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  AnswerHistory   AnswerHistory[]
+  QuestionHistory QuestionHistory[]
+
+  @@map("histories")
+}
+
+model AnswerHistory {
+  id        String @id @default(cuid())
+  answer    String
+  userId    String
+  historyId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  history History @relation(fields: [historyId], references: [id], onDelete: Cascade)
+
+  @@map("answer_histories")
+}
+
+model QuestionHistory {
+  id         String @id @default(cuid())
+  historyId  String
+  questionId String
+
+  createdAt DateTime @default(now())
+
+  history  History  @relation(fields: [historyId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("questions_history")
+}
+
+model Chat {
+  id         String @id @default(cuid())
+  messages   Json
+  documentId String
+  userId     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document Document? @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("chats")
+}
+
+model Forum {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  documentId  String
+  userId      String
+  totalLike   Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document Document?   @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes    ForumLike[]
+  comments Comment[]
+
+  @@map("forums")
+}
+
+model ForumLike {
+  id        String   @id @default(cuid())
+  userId    String
+  forumId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  forum Forum @relation(fields: [forumId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([forumId, userId])
+  @@map("forum_likes")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  comment   String
+  forumId   String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  forum Forum @relation(fields: [forumId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+}
+
+model SavedDocument {
+  id         String @id @default(cuid())
+  userId     String
+  documentId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, documentId])
+  @@map("saved_documents")
+}
+
+model Notes {
+  id         String @id @default(cuid())
+  userId     String
+  documentId String
+  notes      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document Document? @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notes")
 }

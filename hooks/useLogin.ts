@@ -48,14 +48,15 @@ export const useLogin = (
             status: 400,
           });
         } else {
-          console.log("Masuk sini");
           onError({
             message: "Something went wrong",
             status: 500,
           });
         }
       } else {
-        toast.success("Login Success!");
+        toast.success("Login Success!", {
+          duration: 3000,
+        });
         onSuccess();
       }
     },

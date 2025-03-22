@@ -2,6 +2,7 @@ import authConfig from "@/auth.config";
 import { prismaClient } from "@/lib/db";
 import {
   getUserById,
+  resetStreakIfInactive,
   updateUserUsername,
 } from "@/lib/repository/auth/userRepository";
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -30,6 +31,17 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       if (session.user && token.sub) {
         session.user.id = token.sub;
         session.user.username = token.username;
+
+        const user = await resetStreakIfInactive(token.sub);
+
+        if (user) {
+          session.user = {
+            ...session.user,
+            name: user.username,
+            image: user.image,
+            streak: user.currentStreak,
+          };
+        }
       }
       return session;
     },
@@ -49,6 +61,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         const newUsername = existingUser.email.split("@")[0].slice(0, 20);
         await updateUserUsername(existingUser.id, newUsername);
       }
+
+      token.streak = existingUser.currentStreak;
 
       return token;
     },

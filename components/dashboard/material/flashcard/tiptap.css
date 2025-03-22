@@ -1,0 +1,5 @@
+.tiptap-container ul,
+.tiptap-container ol {
+  list-style-type: disc;
+  margin-left: 20px;
+}

@@ -23,9 +23,8 @@ const VerificationPage = () => {
 
     await axiosInstance
       .get(`/api/auth/verify-token/${token}`)
-      .then((data) => {
+      .then(() => {
         setSuccess("success");
-        console.log(data);
       })
       .catch((e) => {
         setError(e);

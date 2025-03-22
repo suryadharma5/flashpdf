@@ -1,6 +1,7 @@
 "use client";
 
 import PlaceHolderImage from "@/public/placeholder.svg";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
@@ -33,16 +34,40 @@ export default function Guidance() {
 
   return (
     <>
-      <div className="mt-8" id="how-it-works">
-        <h2 className="mb-12 text-center text-3xl font-extrabold text-gray-900">
-          How FlashAI Works
-        </h2>
+      <div className="" id="how-it-works">
+        <motion.div
+          initial={{ opacity: 0, x: 0 }}
+          whileInView={{ opacity: 1, x: 0, scale: 1.02 }}
+          transition={{
+            duration: 0.5,
+            ease: "easeOut",
+            delay: 0.2,
+          }}
+          viewport={{ once: true, amount: 0.5 }}
+          className="mb-16 text-center"
+        >
+          <h2 className="mb-4 text-3xl font-bold text-gray-900 dark:text-gray-100 md:text-4xl">
+            How FlashAI Works
+          </h2>
+          <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
+            FlashAI transforms study materials into effective learning tools
+            with personalized flashcards, quizzes, and review sessions. .
+          </p>
+        </motion.div>
         <div className="flex flex-col items-center gap-8 md:flex-row md:justify-between">
           <div className="space-y-4">
             {items.map((item, idx) => (
-              <div
+              <motion.div
                 key={idx}
-                className="flex items-start transition hover:scale-105"
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0, scale: 1.02 }}
+                transition={{
+                  duration: 0.5,
+                  ease: "easeOut",
+                  delay: idx * 0.1,
+                }}
+                viewport={{ once: true }}
+                className="flex items-start"
               >
                 <div className="flex-shrink-0">
                   <div className="flex h-12 w-12 items-center justify-center rounded-md bg-black text-white">
@@ -55,7 +80,7 @@ export default function Guidance() {
                   </h3>
                   <p className="mt-1 text-sm text-gray-500">{item.subtitle}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
           {/* end */}
@@ -70,7 +95,7 @@ export default function Guidance() {
           </div>
         </div>
       </div>
-      <div className="mt-16 text-center">
+      <div className="mt-20 text-center">
         <h2 className="text-3xl font-extrabold text-gray-900">
           Ready to revolutionize your study method?
         </h2>

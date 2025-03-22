@@ -2,8 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
   const router = useRouter();
 
   const scrollToElement = (elementID: string) => {
@@ -16,8 +18,26 @@ export default function Navbar() {
     }
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const section = document.getElementById("hero");
+      if (section) {
+        if (window.scrollY > section.offsetTop - 10) {
+          setIsScrolled(true);
+        } else {
+          setIsScrolled(false);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <nav className="fixed left-0 right-0 top-0 z-20 bg-white shadow-sm">
+    <nav
+      className={`fixed left-0 right-0 top-0 z-20 ${isScrolled ? "bg-white/30 shadow-sm backdrop-blur-md" : "bg-transparent"} transition-all duration-300`}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
           <div className="flex">

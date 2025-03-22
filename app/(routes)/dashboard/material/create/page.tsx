@@ -1,7 +1,8 @@
 "use client";
 
+import { LoadingPage } from "@/components/dashboard/loading";
+import { ComboBoxCategory } from "@/components/dashboard/material/combo-box";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,41 +19,75 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { axiosInstance } from "@/lib/axios";
 import {
   questionFormSchema,
   TQuestionFormSchema,
 } from "@/lib/types/question-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { AlertCircle, CloudUpload, File, Trash2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export default function CreatePage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [isDropping, setIsDropping] = useState(false);
+  const [openCombobox, setOpenCombobox] = useState(false);
+
+  const router = useRouter();
 
   const form = useForm<TQuestionFormSchema>({
     resolver: zodResolver(questionFormSchema),
     defaultValues: {
       document: null,
-      numQuestions: 10,
+      numQuestions: "",
       documentTitle: "",
+      category: "",
     },
   });
 
-  const handleSubmit = (data: TQuestionFormSchema) => {
-    try {
-      console.log(data);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+  const createQuestionMutation = useMutation({
+    mutationFn: async (data: TQuestionFormSchema) => {
+      const formData = new FormData();
+      formData.append("document", data.document!);
+      formData.append("documentTitle", data.documentTitle);
+      formData.append("numQuestions", data.numQuestions);
+      formData.append("category", data.category);
+
+      const res = await axiosInstance.post("/api/material", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return res.data;
+    },
+    onSuccess: (data) => {
       form.reset();
-    } catch (error) {
-      console.log(error);
-    }
+      router.push(
+        `/dashboard/material/library/document/${data.data.id}/pretest`,
+      );
+      toast.success("Questions created!", {
+        duration: 3000,
+      });
+
+      // router.push("/dashboard/material/pretest");
+    },
+    onError: (e) => {
+      toast.error("Failed to create question, please try again");
+      console.log("fail", e);
+    },
+  });
+
+  const handleSubmit = async (data: TQuestionFormSchema) => {
+    createQuestionMutation.mutate(data);
   };
 
   const handleFocus = () => {
@@ -88,9 +123,15 @@ export default function CreatePage() {
     multiple: false,
   });
 
+  if (createQuestionMutation.isPending) {
+    return <LoadingPage text="AI's cooking something up for you..." />;
+  }
+
   return (
-    <div className="space-y-6">
-      <h2 className="text-3xl font-bold">Create New Flashcard</h2>
+    <div className="container mx-auto max-w-7xl space-y-6 p-4">
+      <h1 className="w-full text-start text-3xl font-bold">
+        Create New Flashcard
+      </h1>
       <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Important</AlertTitle>
@@ -133,31 +174,56 @@ export default function CreatePage() {
                   />
                 </div>
 
-                <div className="flex flex-col space-y-2">
-                  <FormField
-                    control={form.control}
-                    name="numQuestions"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Number of Questions</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            onChange={(e) =>
-                              // field.onChange(Number(e.target.value))
-                              field.onChange(e.target.value)
-                            }
-                            ref={inputRef}
-                            onFocus={handleFocus}
-                            className="col-span-3"
-                            placeholder="10"
-                            required
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <div className="space-y-5 lg:grid lg:grid-cols-2 lg:gap-5 lg:space-y-0">
+                  <div className="flex flex-col space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="numQuestions"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Number of Questions</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              onChange={(e) => field.onChange(e.target.value)}
+                              value={field.value || ""}
+                              ref={inputRef}
+                              onFocus={handleFocus}
+                              className="col-span-3"
+                              placeholder="10"
+                              required
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex flex-col space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Category</FormLabel>
+                          <FormControl>
+                            <div className="col-span-3">
+                              <ComboBoxCategory
+                                openCombobox={openCombobox}
+                                setOpenCombobox={setOpenCombobox}
+                                selectedCategory={field.value}
+                                setSelectedCategory={(value) => {
+                                  field.onChange(value);
+                                }}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
 
                 <div className="flex flex-col space-y-2">
@@ -187,7 +253,7 @@ export default function CreatePage() {
                             ) : (
                               <div
                                 {...getRootProps()}
-                                className={`flex h-32 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed hover:cursor-pointer ${isDropping ? "scale-y-110 transition" : "transition"}`}
+                                className={`flex h-32 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed hover:cursor-pointer ${isDropping ? "scale-y-110 bg-blue-100 transition" : "transition"}`}
                                 onDragEnter={() => setIsDropping(true)}
                                 onDragLeave={() => setIsDropping(false)}
                                 onDragOver={(e: React.DragEvent) => {
@@ -223,13 +289,12 @@ export default function CreatePage() {
                 </div>
               </div>
 
-              <Button
-                type="submit"
-                disabled={form.formState.isSubmitting}
-                className="mt-5 w-full"
-              >
-                Generate flashcard
-              </Button>
+              <div className="mt-5">
+                <SubmitButton
+                  title="Generate Flashcard"
+                  isDisabled={createQuestionMutation.isPending}
+                />
+              </div>
             </form>
           </Form>
         </CardContent>
