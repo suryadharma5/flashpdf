@@ -58,5 +58,15 @@
     "score": "Skor",
     "viewHistoryBtn": "Lihat Riwayat",
     "viewFcBtn": "Lihat Flashcard"
+  },
+  "forum": {
+    "discussion": "Diskusi",
+    "firstThought": "Jadi yang pertama memberikan Komentar",
+    "searchForum": "Cari Forum...",
+    "addComment": "Tambahkan Komentar",
+    "hideComment": "Sembunyikan Komentar",
+    "showComment": "Tunjukan Semua Komentar",
+    "post": "Unggah",
+    "noPost": "Tidak ada lagi postingan untuk dimuat"
   }
 }

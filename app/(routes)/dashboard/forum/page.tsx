@@ -28,6 +28,7 @@ import { formatDistanceToNowStrict } from "date-fns";
 import { ArrowUpRight, Heart, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from 'next-intl';
 
 type PaginatedForumProps = {
   forums: ForumProps[];
@@ -43,6 +44,7 @@ export type InfiniteQueryDataProps = {
 };
 
 export default function ForumPage() {
+  const t = useTranslations('forum');
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -253,7 +255,7 @@ export default function ForumPage() {
           setSearchTerm={setSearchQuery}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
-          placeHolder="Search forums..."
+          placeHolder= {t('searchForum')}
           isNeedSorting={true}
           selectedSort={selectedSort}
           setSelectedSort={setSelectedSort}
@@ -428,7 +430,7 @@ export default function ForumPage() {
         {/* Show a message when there are no more posts */}
         {!paginatedData?.hasNext && forums.length > 0 && (
           <p className="py-4 text-center text-muted-foreground">
-            No more posts to load
+            {t('noPost')}
           </p>
         )}
       </div>

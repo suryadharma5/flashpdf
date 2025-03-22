@@ -58,5 +58,15 @@
     "score": "Score",
     "viewHistoryBtn": "View History",
     "viewFcBtn": "View Flashcards"
+  },
+  "forum": {
+    "discussion": "Discussion",
+    "firstThought": "Be the first to share your thoughts!",
+    "searchForum": "Search Forums...",
+    "addComment": "Add Comment",
+    "hideComment": "Hide Comments",
+    "showComment": "Show All Comments",
+    "post": "Post",
+    "noPost": "No more posts to load"
   }
 }

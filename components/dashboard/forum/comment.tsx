@@ -22,6 +22,7 @@ import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useTranslations } from 'next-intl';
 
 export type ForumProps = {
   id: string;
@@ -75,6 +76,7 @@ export default function Comment({
   selectedCategory: string | null;
   selectedSort: string | null;
 }) {
+  const t = useTranslations('forum');
   const currentUser = useCurrentUser();
 
   const form = useForm<TCommentSchema>({
@@ -223,7 +225,7 @@ export default function Comment({
 
   return (
     <div className="mt-2 border-t px-6 py-4">
-      <h3 className="mb-4 text-lg font-semibold">Discussion</h3>
+      <h3 className="mb-4 text-lg font-semibold">{t('discussion')}</h3>
       {isPending ? (
         <div className="flex space-x-4">
           <Skeleton className="h-8 w-8 rounded-full" />
@@ -237,7 +239,7 @@ export default function Comment({
           {comments.length === 0 ? (
             <div className="mb-4 text-center">
               <p className="text-muted-foreground">
-                Be the first to share your thoughts!
+                {t('firstThought')}
               </p>
             </div>
           ) : (
@@ -288,12 +290,12 @@ export default function Comment({
                   {showAllComments ? (
                     <>
                       <ChevronUp className="mr-2 h-4 w-4" />
-                      Hide comments
+                      {t('hideComment')}
                     </>
                   ) : (
                     <>
                       <ChevronDown className="mr-2 h-4 w-4" />
-                      Show all comments
+                      {t('showComment')}
                     </>
                   )}
                 </Button>
@@ -320,7 +322,7 @@ export default function Comment({
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="Add to the discussion..."
+                    placeholder= {t('addComment')}
                     value={newComment}
                     onChange={(e) => {
                       field.onChange(e.target.value);
@@ -344,7 +346,7 @@ export default function Comment({
             {commentMutation.isPending ? (
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
-              "Post"
+              t('post')
             )}
           </Button>
         </form>
