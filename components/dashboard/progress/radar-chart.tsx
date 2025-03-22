@@ -18,6 +18,7 @@ import { axiosInstance } from "@/lib/axios";
 import { Button } from "@react-email/components";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, RotateCcw } from "lucide-react";
+import { useTranslations } from 'next-intl';
 
 type RadarChartDataProps = {
   category: string;
@@ -26,6 +27,8 @@ type RadarChartDataProps = {
 };
 
 export default function RadarChartComponent() {
+  const t = useTranslations('progress');
+  
   const { data: chartData, isPending } = useQuery({
     queryKey: ["radarChartData"],
     queryFn: async () => {
@@ -64,10 +67,10 @@ export default function RadarChartComponent() {
     <Card>
       <CardHeader className="items-center pb-4">
         <CardTitle className="text-xl font-medium text-gray-800">
-          Most Popular Test Categories
+          {t('radarChtTitle')}
         </CardTitle>
         <CardDescription className="text-gray-500">
-          Number of tests taken and completion rates by category
+          {t('radarChtDesc')}
         </CardDescription>
       </CardHeader>
       {isPending ? (

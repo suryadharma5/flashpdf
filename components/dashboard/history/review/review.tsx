@@ -16,6 +16,7 @@ import { BarChart, CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslations } from 'next-intl';
 
 type ReviewProps = {
   documentId: string;
@@ -23,6 +24,7 @@ type ReviewProps = {
 };
 
 export default function Review({ documentId, historyId }: ReviewProps) {
+  const t = useTranslations('history');
   const {
     historyRecord,
     isLoading: historyLoading,
@@ -53,7 +55,7 @@ export default function Review({ documentId, historyId }: ReviewProps) {
                 <div className="mr-2 rounded-sm bg-primary p-1">
                   <BarChart className="text-white" />
                 </div>
-                <p>Performance Summary</p>
+                <p>{t('performanceSummary')}</p>
                 <Skeleton className="ml-5 h-5 w-14 rounded-full" />
               </div>
             </CardTitle>
@@ -77,14 +79,14 @@ export default function Review({ documentId, historyId }: ReviewProps) {
                   <div className="mr-2 rounded-sm bg-primary p-1">
                     <BarChart className="text-white" />
                   </div>
-                  <p>Performance Summary</p>
+                  <p>{t('performanceSummary')}</p>
                   <Badge className="ml-5">
                     {historyRecord.type.charAt(0).toUpperCase() +
                       historyRecord.type.slice(1).toLowerCase()}
                   </Badge>
                 </div>
                 <div className="mb-2 mt-6 flex items-center justify-between">
-                  <span className="text-sm font-medium">Score</span>
+                  <span className="text-sm font-medium">{t('score')}</span>
                   <span className="text-sm font-bold">
                     {historyRecord.grade.toFixed(0)}%
                   </span>
@@ -138,14 +140,14 @@ export default function Review({ documentId, historyId }: ReviewProps) {
             <CardFooter className="grid w-full max-w-4xl grid-cols-2 gap-4">
               <Link className="w-full" href="/dashboard/history">
                 <Button variant="outline" className="w-full">
-                  View history
+                  {t('viewHistoryBtn')}
                 </Button>
               </Link>
               <Link
                 className="w-full"
                 href={`/dashboard/material/library/document/${documentId}/flashcard`}
               >
-                <Button className="w-full">View flashcards</Button>
+                <Button className="w-full">{t('viewFcBtn')}</Button>
               </Link>
             </CardFooter>
           </Card>

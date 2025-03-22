@@ -38,6 +38,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useTranslations } from 'next-intl';
 
 type Document = {
   title: string;
@@ -75,6 +76,7 @@ type TestScoreOvertimeProps = {
 };
 
 export default function ProgressPage() {
+  const t = useTranslations('progress');
   const [selectedOption, setSelectedOption] = useState("option1");
 
   const {
@@ -245,13 +247,13 @@ export default function ProgressPage() {
 
   return (
     <div className="container mx-auto max-w-7xl p-4 sm:p-6">
-      <h1 className="mb-6 text-3xl font-bold">User Statistic</h1>
+      <h1 className="mb-6 text-3xl font-bold">{t('title')}</h1>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <Card className="shadow-sm transition-shadow hover:shadow-md">
           <CardHeader className="bg-blue-100 p-3">
             <CardTitle className="flex items-center text-base font-medium text-gray-700">
-              <p className="w-full text-center">Total Created Flashcards</p>
+              <p className="w-full text-center">{t('totalFcData')}</p>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
@@ -264,7 +266,7 @@ export default function ProgressPage() {
         <Card className="shadow-sm transition-shadow hover:shadow-md">
           <CardHeader className="bg-purple-100 p-3">
             <CardTitle className="flex items-center text-base font-medium text-gray-700">
-              <p className="w-full text-center">Most Used Deck</p>
+              <p className="w-full text-center">{t('mostUsedFc')}</p>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
@@ -279,7 +281,7 @@ export default function ProgressPage() {
         <Card className="shadow-sm transition-shadow hover:shadow-md">
           <CardHeader className="bg-green-100 p-3">
             <CardTitle className="flex items-center text-base font-medium text-gray-700">
-              <p className="w-full text-center">Average Grade</p>
+              <p className="w-full text-center">{t('avgGrade')}</p>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
@@ -295,10 +297,10 @@ export default function ProgressPage() {
           <CardHeader className="relative flex flex-row items-center justify-center">
             <div className="items-center justify-center text-center">
               <CardTitle className="text-xl font-medium text-gray-800">
-                Test Scores Over Time
+                {t('areaGrpTitle')}
               </CardTitle>
               <CardDescription className="text-gray-500">
-                Performance tracking across document
+                {t('areaGrpDesc')}
               </CardDescription>
             </div>
             <div className="absolute right-6">
@@ -364,10 +366,10 @@ export default function ProgressPage() {
         <Card className="pb-0">
           <CardHeader className="items-center">
             <CardTitle className="text-xl font-medium text-gray-800">
-              Flashcard Visibility Summary
+              {t('pieChtTitle')}
             </CardTitle>
             <CardDescription className="text-gray-500">
-              Distribution of private and public flashcards
+              {t('pieChtDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent className="-mt-3 pb-0">
@@ -413,9 +415,9 @@ export default function ProgressPage() {
         <Card>
           <CardHeader className="items-center">
             <CardTitle className="text-xl font-medium text-gray-800">
-              Top Tests Taken
+              {t('barChtTitle1')}
             </CardTitle>
-            <CardDescription>Your most frequently taken tests</CardDescription>
+            <CardDescription>{t('barChtDesc1')}</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
@@ -441,10 +443,10 @@ export default function ProgressPage() {
         <Card>
           <CardHeader className="items-center">
             <CardTitle className="text-xl font-medium text-gray-800">
-              Test Type Breakdown
+              {t('barChtTitle2')}
             </CardTitle>
             <CardDescription>
-              Your Pre-Test and Post-Test Activity
+              {t('barChtDesc2')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -464,7 +466,7 @@ export default function ProgressPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Best Subject
+              {t('bestSubject')}
             </CardTitle>
             <Trophy className="h-4 w-4 text-green-500" />
           </CardHeader>
@@ -476,7 +478,7 @@ export default function ProgressPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Weakest Subject
+              {t('weakSubject')}
             </CardTitle>
             <TrendingDown className="h-4 w-4 text-red-500" />
           </CardHeader>
