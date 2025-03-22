@@ -165,7 +165,7 @@ export const updateUserStreak = async (userId: string) => {
   today.setHours(0, 0, 0, 0); // Reset ke awal hari
 
   if (!user.lastActivityDate) {
-    await prisma.user.update({
+    await prismaClient.user.update({
       where: { id: userId },
       data: {
         currentStreak: 1,
@@ -194,7 +194,7 @@ export const updateUserStreak = async (userId: string) => {
   }
 
   // Update user di database
-  await prisma.user.update({
+  await prismaClient.user.update({
     where: { id: userId },
     data: {
       currentStreak: newStreak,

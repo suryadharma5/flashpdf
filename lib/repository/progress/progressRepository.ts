@@ -16,7 +16,7 @@ export async function getChartData(userId: string) {
 
   const categoryData = await Promise.all(
     result.map(async (history) => {
-      const document = await prisma.document.findUnique({
+      const document = await prismaClient.document.findUnique({
         where: { id: history.documentId },
         select: {
           Category: {
