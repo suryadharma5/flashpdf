@@ -21,8 +21,11 @@
     "viewFlashcardBtn": "Lihat Flashcard",
     "takePretestBtn": "Ambil Pre-test",
     "noFlashcard": "Belum ada Flashcard Terbuat",
-    "sectionTrendingTitle": "Flashcards Populer",
-    "trendDesc": "Dibuat oleh:"
+    "sectionTrendingTitle": "Flashcard Populer",
+    "trendDesc": "Dibuat oleh:",
+    "takePostTestBtn": "Ambil Post-test",
+    "retakePostTestBtn": "Ulang Post-test",
+    "noTrendingFlashcard": "Belum ada flashcards populer"
   },
   "progress":{
     "title": "Statistik User",

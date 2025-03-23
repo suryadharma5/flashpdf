@@ -236,8 +236,8 @@ export default function HomePage() {
                                   className="w-full"
                                 >
                                   {isPostTestComplete(doc.History)
-                                    ? "Retake Post-test"
-                                    : "Take Post-test"}
+                                    ? t('retakePostTestBtn')
+                                    : t('takePostTestBtn')}
                                 </Button>
                               </Link>
                             ) : (
@@ -328,7 +328,7 @@ export default function HomePage() {
                   </div>
                 ) : (
                   <Card className="p-5 text-center text-muted-foreground">
-                    No trending flashcards yet
+                    {t('noTrendingFlashcard')}
                   </Card>
                 ))
               )}
