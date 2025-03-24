@@ -26,7 +26,10 @@
     "takePretestBtn": "Take Pre-test",
     "noFlashcard": "No flashcards created yet",
     "sectionTrendingTitle": "Trending Flashcards",
-    "trendDesc": "Created By:"
+    "trendDesc": "Created By:",
+    "takePostTestBtn": "Take Post-test",
+    "retakePostTestBtn": "Retake Post-test",
+    "noTrendingFlashcard": "No trending flashcards yet"
   },
   "create": {
     "title": "Create New Flashcard",
