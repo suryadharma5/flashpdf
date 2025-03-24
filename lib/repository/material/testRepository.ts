@@ -86,13 +86,10 @@ export const getUserAnswerHistory = async (
       AnswerHistory: true,
       QuestionHistory: {
         select: {
-          question: true,
-        },
-      },
-      document: {
-        select: {
-          questions: {
+          question: {
             select: {
+              correctAnswer: true,
+              question: true,
               options: true,
             },
           },
@@ -178,6 +175,9 @@ export const getUserAnswerHistories = async (
         },
       },
       AnswerHistory: false,
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 

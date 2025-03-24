@@ -6,23 +6,16 @@ type AnswerHistoryProps = {
   answer: string;
 };
 
-type QuestionHistoryProps = {
-  question: {
-    correctAnswer: string;
-    question: string;
-  };
-};
-
 type OptionProps = {
   text: string;
 };
 
-type QuestionDocumentProps = {
-  options: OptionProps[];
-};
-
-type DocumentProps = {
-  questions: QuestionDocumentProps[];
+type QuestionHistoryProps = {
+  question: {
+    correctAnswer: string;
+    question: string;
+    options: OptionProps[];
+  };
 };
 
 export type HistoryProps = {
@@ -31,7 +24,6 @@ export type HistoryProps = {
   createdAt: string;
   AnswerHistory: AnswerHistoryProps[];
   QuestionHistory: QuestionHistoryProps[];
-  document: DocumentProps;
 };
 
 export const useUserAnswer = (documentId: string, historyId: string) => {

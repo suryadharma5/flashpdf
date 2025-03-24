@@ -11,7 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useUserAnswer } from "@/hooks/useUserAnswer";
+import { cn } from "@/lib/utils";
 import { BarChart, CheckCircle, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -25,6 +27,8 @@ type ReviewProps = {
 
 export default function Review({ documentId, historyId }: ReviewProps) {
   const t = useTranslations("history");
+  const isMobile = useIsMobile();
+
   const {
     historyRecord,
     isLoading: historyLoading,
@@ -32,6 +36,8 @@ export default function Review({ documentId, historyId }: ReviewProps) {
     error: historyError,
     isSuccess: historySuccess,
   } = useUserAnswer(documentId, historyId);
+
+  console.log({ historyRecord });
 
   if (isHistoryError) {
     console.error(historyError);
@@ -55,7 +61,9 @@ export default function Review({ documentId, historyId }: ReviewProps) {
                 <div className="mr-2 rounded-sm bg-primary p-1">
                   <BarChart className="text-white" />
                 </div>
-                <p>{t("performanceSummary")}</p>
+                <p className={isMobile ? "text-sm" : ""}>
+                  {t("performanceSummary")}
+                </p>
                 <Skeleton className="ml-5 h-5 w-14 rounded-full" />
               </div>
             </CardTitle>
@@ -99,18 +107,33 @@ export default function Review({ documentId, historyId }: ReviewProps) {
               {historyRecord.QuestionHistory.map((data, idx) => (
                 <div className="rounded-lg border px-6 pb-6 pt-4" key={idx}>
                   <div className="flex items-center justify-start">
-                    <h2 className="text-xl font-semibold">
+                    <h2
+                      className={cn(
+                        "font-semibold",
+                        isMobile ? "text-sm" : "text-lg",
+                      )}
+                    >
                       {idx + 1}. {data.question.question}
                     </h2>
                     {data.question.correctAnswer ===
                     historyRecord.AnswerHistory[idx].answer ? (
-                      <CheckCircle className="ml-4 text-green-500" />
+                      <CheckCircle
+                        className={cn(
+                          "ml-4 text-green-500",
+                          isMobile ? "h-9 w-9" : "h-5 w-5",
+                        )}
+                      />
                     ) : (
-                      <XCircle className="ml-4 text-red-500" />
+                      <XCircle
+                        className={cn(
+                          "ml-4 text-red-500",
+                          isMobile ? "h-9 w-9" : "h-6 w-6",
+                        )}
+                      />
                     )}
                   </div>
                   <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                    {historyRecord.document.questions[idx].options.map(
+                    {historyRecord.QuestionHistory[idx].question.options.map(
                       (option, index) => {
                         const userAnswer =
                           historyRecord.AnswerHistory[idx].answer;
@@ -124,7 +147,7 @@ export default function Review({ documentId, historyId }: ReviewProps) {
                             className={`h-auto w-full justify-start overflow-hidden whitespace-normal break-words rounded-md border px-2 py-6 text-left text-foreground transition-all ${isCorrect ? "bg-green-500" : ""} ${isUserAnswer && !isCorrect ? "bg-red-500" : ""} ${!isCorrect && !isUserAnswer ? "bg-background" : ""}`}
                           >
                             <span
-                              className={`max-w-full text-sm ${isCorrect ? "font-semibold text-white" : ""} ${isUserAnswer && !isCorrect ? "font-semibo text-white" : ""}`}
+                              className={`max-w-full text-sm ${isCorrect ? "font-semibold text-white" : ""} ${isUserAnswer && !isCorrect ? "font-semibold text-white" : ""}`}
                             >
                               {option.text}
                             </span>
