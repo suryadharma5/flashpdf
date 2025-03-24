@@ -5,6 +5,7 @@ import { useAutoResizeTextarea } from "@/hooks/useAutoResizeTextarea";
 import { cn } from "@/lib/utils";
 import { ChatRequestOptions } from "ai";
 import { CircleStop, CornerRightUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction, useCallback } from "react";
 
 const MIN_HEIGHT = 56;
@@ -39,12 +40,14 @@ export default function AIInput({
     adjustHeight(true);
   }, [adjustHeight, input]);
 
+  const t = useTranslations("flashcard");
+
   return (
     <div className="w-full py-4">
       <div className="relative mx-auto w-full max-w-xl">
         <Textarea
           id="ai-input-05"
-          placeholder="Ask me anything!"
+          placeholder={t("placeHolderAiInput")}
           className="min-h-[40px] w-full max-w-xl resize-none text-wrap rounded-3xl border-none bg-black/5 py-4 pl-4 pr-12 text-sm text-black placeholder:text-black/70"
           ref={textareaRef}
           value={input}

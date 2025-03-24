@@ -18,8 +18,8 @@ import { categoryColors } from "@/lib/util/category";
 import EmptyImage from "@/public/Chill-Time.svg";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useTranslations } from 'next-intl';
 
 type Document = {
   title: string;
@@ -38,7 +38,7 @@ type TestHistoryProps = {
 };
 
 export default function HistoryPage() {
-  const t = useTranslations('history');
+  const t = useTranslations("history");
   const isMobile = useIsMobile();
 
   const {
@@ -79,7 +79,7 @@ export default function HistoryPage() {
   return (
     <div className="container mx-auto max-w-7xl p-4 sm:p-6">
       <h1 className="mb-8 w-full text-start text-3xl font-bold">
-        {t('title')}
+        {t("title")}
       </h1>
 
       {isPending ? (
@@ -127,7 +127,7 @@ export default function HistoryPage() {
                         {calculateAverageGrade(tests)}%
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {t('avgGrade')}
+                        {t("avgGrade")}
                       </p>
                     </CardContent>
                     <CardFooter>
@@ -136,7 +136,8 @@ export default function HistoryPage() {
                         className="w-full"
                       >
                         <Button variant="outline" className="w-full">
-                          {t('viewDetail')} <ChevronRight className="ml-2 h-4 w-4" />
+                          {t("viewDetail")}{" "}
+                          <ChevronRight className="ml-2 h-4 w-4" />
                         </Button>
                       </Link>
                     </CardFooter>

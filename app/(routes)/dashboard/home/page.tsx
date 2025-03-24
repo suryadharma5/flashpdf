@@ -15,10 +15,11 @@ import { categoryColors } from "@/lib/util/category";
 import { Forum, Question } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
+import { enUS, id } from "date-fns/locale";
 import { BookOpen, Clock, Clock9, Flame, Heart } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { Suspense } from "react";
-import { useTranslations } from 'next-intl';
 
 type HistoryProps = {
   type: string;
@@ -43,7 +44,9 @@ export default function HomePage() {
   const username = user ? (user.username ?? user.name ?? "Guest") : "Guest";
 
   const isMobile = useIsMobile();
-  const t = useTranslations('home');
+  const t = useTranslations("home");
+  const locale = useLocale();
+  const dateFnsLocale = locale === "id" ? id : enUS;
 
   const {
     data: posts,
@@ -74,9 +77,9 @@ export default function HomePage() {
 
   const timeOfDay = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return t('time1');
-    if (hour < 18) return t('time2');
-    return t('time3');
+    if (hour < 12) return t("time1");
+    if (hour < 18) return t("time2");
+    return t("time3");
   };
 
   if (isError || isDocumentError) {
@@ -95,11 +98,11 @@ export default function HomePage() {
                   <div className="flex h-full flex-col justify-between">
                     <div>
                       <h1 className="text-2xl font-medium text-gray-900">
-                        {t('introduction')} {timeOfDay()},{" "}
+                        {t("introduction")} {timeOfDay()},{" "}
                         <span className="font-bold">{username}</span>
                       </h1>
                       <p className="mt-2 text-muted-foreground">
-                      {t('welcomeDesc')}
+                        {t("welcomeDesc")}
                       </p>
                     </div>
 
@@ -109,7 +112,7 @@ export default function HomePage() {
                           className="bg-black text-white hover:bg-gray-800"
                           size="lg"
                         >
-                          {t('buttonCreate')}
+                          {t("buttonCreate")}
                         </Button>
                       </Link>
                       <Link href="/dashboard/material/library">
@@ -118,7 +121,7 @@ export default function HomePage() {
                           size="lg"
                           className="border-gray-200"
                         >
-                          {t('buttonContinue')}
+                          {t("buttonContinue")}
                         </Button>
                       </Link>
                     </div>
@@ -127,7 +130,7 @@ export default function HomePage() {
 
                 <Card className="border border-gray-100 p-6 shadow-sm">
                   <h2 className="mb-4 text-sm font-medium uppercase tracking-wider text-gray-500">
-                    {t('progressTitle')}
+                    {t("progressTitle")}
                   </h2>
 
                   <div className="space-y-4">
@@ -136,7 +139,9 @@ export default function HomePage() {
                         <BookOpen className="h-5 w-5 text-purple-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">{t('progressCard')}</p>
+                        <p className="text-sm text-gray-500">
+                          {t("progressCard")}
+                        </p>
                         <p className="text-xl font-semibold">
                           {isDocumentPending ? 0 : documents?.length}
                         </p>
@@ -148,7 +153,9 @@ export default function HomePage() {
                         <Clock className="h-5 w-5 text-blue-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">{t('progressMinutes')}</p>
+                        <p className="text-sm text-gray-500">
+                          {t("progressMinutes")}
+                        </p>
                         <p className="text-xl font-semibold">12 mins</p>
                       </div>
                     </div>
@@ -158,7 +165,9 @@ export default function HomePage() {
                         <Flame className="h-5 w-5 text-amber-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">{t('progressStreak')}</p>
+                        <p className="text-sm text-gray-500">
+                          {t("progressStreak")}
+                        </p>
                         <p className="text-xl font-semibold">{user.streak}</p>
                       </div>
                     </div>
@@ -169,13 +178,15 @@ export default function HomePage() {
 
             <div>
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-xl font-semibold">{t('sectionRecentTitle')}</h2>
+                <h2 className="text-xl font-semibold">
+                  {t("sectionRecentTitle")}
+                </h2>
                 <Link href="/dashboard/material/library">
                   <Button
                     variant="link"
                     className="text-gray-600 hover:text-black"
                   >
-                    {t('expandSection')}
+                    {t("expandSection")}
                   </Button>
                 </Link>
               </div>
@@ -207,7 +218,10 @@ export default function HomePage() {
                           <div className="mt-2 flex items-center gap-1 text-muted-foreground">
                             <Clock9 size={15} />
                             <p className="text-xs">
-                              {formatDistanceToNowStrict(doc.createdAt)} ago
+                              {formatDistanceToNowStrict(doc.createdAt, {
+                                locale: dateFnsLocale,
+                                addSuffix: true,
+                              })}
                             </p>
                           </div>
                         </CardHeader>
@@ -222,7 +236,7 @@ export default function HomePage() {
                                 className="w-full"
                                 disabled={doc.History.length <= 0}
                               >
-                                {t('viewFlashcardBtn')}
+                                {t("viewFlashcardBtn")}
                               </Button>
                             </Link>
                             {doc.History.length > 0 ? (
@@ -250,7 +264,7 @@ export default function HomePage() {
                                   size="sm"
                                   className="w-full"
                                 >
-                                  {t('takePretestBtn')}
+                                  {t("takePretestBtn")}
                                 </Button>
                               </Link>
                             )}
@@ -261,7 +275,7 @@ export default function HomePage() {
                   </div>
                 ) : (
                   <Card className="p-5 text-center text-muted-foreground">
-                    {t('noFlashcard')}
+                    {t("noFlashcard")}
                   </Card>
                 ))
               )}
@@ -269,13 +283,15 @@ export default function HomePage() {
 
             <div>
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-xl font-semibold">{t('sectionTrendingTitle')}</h2>
+                <h2 className="text-xl font-semibold">
+                  {t("sectionTrendingTitle")}
+                </h2>
                 <Link href={`/dashboard/forum`}>
                   <Button
                     variant="link"
                     className="text-gray-600 hover:text-black"
                   >
-                    {t('expandSection')}
+                    {t("expandSection")}
                   </Button>
                 </Link>
               </div>
@@ -309,7 +325,7 @@ export default function HomePage() {
                             {post.title}
                           </CardTitle>
                           <p className="text-sm text-muted-foreground">
-                            {t('trendDesc')} {post.user.username}
+                            {t("trendDesc")} {post.user.username}
                           </p>
                         </CardHeader>
                         <CardFooter className="flex items-center justify-between">
@@ -320,7 +336,7 @@ export default function HomePage() {
                           <Link
                             href={`/dashboard/forum/${post.documentId}/flashcard`}
                           >
-                            <Button>{t('viewFlashcardBtn')}</Button>
+                            <Button>{t("viewFlashcardBtn")}</Button>
                           </Link>
                         </CardFooter>
                       </Card>

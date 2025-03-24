@@ -15,6 +15,7 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { axiosInstance } from "@/lib/axios";
 import { TForumSchema } from "@/lib/types/forum";
 import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -35,6 +36,8 @@ export function ShareDialog({
 }: ShareDialogProps) {
   const [description, setDescription] = useState("");
 
+  const t = useTranslations("shareFlashcard");
+
   const createForumMutation = useMutation({
     mutationFn: async (data: TForumSchema) => {
       const res = await axiosInstance.post("/api/forum", {
@@ -44,7 +47,7 @@ export function ShareDialog({
       return res.data;
     },
     onSuccess: () => {
-      toast.success("Flashcard set shared!", {
+      toast.success(t("alertSuccess"), {
         duration: 3000,
       });
       setDescription("");
@@ -75,14 +78,12 @@ export function ShareDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Share Flashcard Set</DialogTitle>
-          <DialogDescription>
-            Make your flashcards available to others
-          </DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title">{t("formTitle")}</Label>
             <Input
               id="title"
               value={documentTitle.replace(
@@ -95,7 +96,7 @@ export function ShareDialog({
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="public">Description</Label>
+            <Label htmlFor="public">{t("formDescription")}</Label>
             <Input
               id="description"
               value={description}
@@ -117,11 +118,11 @@ export function ShareDialog({
             className="w-full"
             onClick={() => onOpenChange(false)}
           >
-            Cancel
+            {t("cancelBtn")}
           </Button>
 
           <SubmitButton
-            title="Share"
+            title={t("shareBtn")}
             isDisabled={createForumMutation.isPending}
             onClick={handleSubmit}
             isEmpty={!description}

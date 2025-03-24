@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Pagination,
@@ -10,6 +12,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type PaginationProps = {
   currPage: number;
@@ -32,10 +35,11 @@ export function PaginationNavigator({
   skipToStart,
   skipToEnd,
 }: PaginationProps) {
+  const t = useTranslations("pagination");
   return (
     <Pagination className="items-center justify-end gap-1">
       <div className="mr-3 whitespace-nowrap text-sm text-muted-foreground">
-        Page {currPage} of {totalPage}
+        {t("page")} {currPage} {t("of")} {totalPage}
       </div>
       <PaginationContent>
         <PaginationItem>

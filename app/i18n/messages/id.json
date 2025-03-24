@@ -4,12 +4,16 @@
     "home": "Home",
     "about": "About"
   },
+  "pagination": {
+    "page": "Halaman",
+    "of": "dari"
+  },
   "home": {
-    "introduction":"Selamat",
+    "introduction": "Selamat",
     "time1": "Pagi",
     "time2": "Siang",
     "time3": "Malam",
-    "welcomeDesc" : "Apa yang anda ingin pelajari hari ini?",
+    "welcomeDesc": "Apa yang anda ingin pelajari hari ini?",
     "buttonCreate": "Buat Flashcard",
     "buttonContinue": "Lanjutkan Pembelajaran",
     "progressTitle": "Progres Anda",
@@ -24,7 +28,89 @@
     "sectionTrendingTitle": "Flashcards Populer",
     "trendDesc": "Dibuat oleh:"
   },
-  "progress":{
+  "create": {
+    "title": "Buat Flashcard",
+    "warnTitle": "Penting",
+    "warnMessage": "Saat Anda membuat flashcard, pretest akan secara otomatis dibuat. Anda harus menyelesaikan pretest sebelum mengakses flashcard untuk membantu mempersonalisasi pengalaman belajar Anda.",
+    "formTitle": "Detail Flashcard",
+    "formDescription": "Masukkan informasi untuk flashcard baru Anda",
+    "formDocTitle": "Judul Dokumen",
+    "formNumberQuerstions": "Jumlah Flashcard",
+    "formCategory": "Kategori",
+    "formCategorySelect": "Pilih kategori",
+    "formCategoryNotFound": "Tidak ada kategori yang cocok",
+    "formSearchCategory": "Cari kategori",
+    "formPdf": "File PDF",
+    "formPdfUpload": "Seret dan lepaskan file di sini atau klik untuk memilih",
+    "formSubmitBtn": "Buat Flashcard"
+  },
+  "myFlashcard": {
+    "title": "Flashcard Saya",
+    "titleSaved": "Flashcard Tersimpan",
+    "searchFlashcard": "Masukkan setidaknya 3 huruf untuk mencari dokumen",
+    "viewFlashcardBtn": "Lihat Flashcard",
+    "deleteFlashcardBtn": "Hapus",
+    "takePretestBtn": "Ikuti Pre-test",
+    "takePosttestBtn": "Ikuti Post-test",
+    "retakePosttestBtn": "Ulangi Post-test",
+    "makePrivBtn": "Jadikan private",
+    "makePubBtn": "Jadikan publik",
+    "question": "pertanyaan",
+    "warnCompletePretest": "Selesaikan pretest untuk membuka flashcard.",
+    "warnPostTestComplete": "Post-test selesai!",
+    "warnCompletePosttest": "Tingkatkan keterampilan Anda dengan post-test!",
+    "alertTitle": "Apakah Anda yakin?",
+    "alertMessagePrivate": "Mengubah dokumen ini menjadi private akan menghapus data forum yang terkait. Apakah Anda yakin ingin melanjutkan?",
+    "alertMessageDelete": "Menghapus dokumen ini bersifat permanen dan juga akan menghapus seluruh riwayat tes yang terkait. Apakah Anda yakin ingin melanjutkan?",
+    "alertCancel": "Batal",
+    "alertContinue": "Lanjutkan",
+    "documentEmpty": "Anda belum mengunggah dokumen apa pun",
+    "documentNotFound": "Dokumen tidak ditemukan",
+    "alertFlashcardPrivate": "Flashcard sekarang private",
+    "alertDocumentDeleted": "Dokumen terhapus!",
+    "by": "oleh",
+    "savedDocumentEmpty": "Anda belum menyimpan dokumen apa pun"
+  },
+  "shareFlashcard": {
+    "title": "Bagikan Set Flashcard",
+    "description": "Buat flashcard Anda tersedia untuk orang lain",
+    "formTitle": "Judul",
+    "formDescription": "Deskripsi",
+    "cancelBtn": "Batal",
+    "shareBtn": "Bagikan",
+    "alertSuccess": "Set flashcard dibagikan!"
+  },
+  "flashcard": {
+    "tapToFlip": "klik untuk melihat penjelasan",
+    "nextBtn": "Berikutnya",
+    "prevBtn": "Sebelumnya",
+    "askAi": "Tanya AI",
+    "placeHolderAiInput": "Tanyakan apa saja!"
+  },
+  "test": {
+    "question": "pertanyaan",
+    "of": "dari",
+    "thisQuestion": "pertanyaan ini",
+    "help": "Bantuan",
+    "testInstructionTitle": "Petunjuk Tes",
+    "testInstruction1": "Baca setiap pertanyaan dengan cermat sebelum menjawab.",
+    "testInstruction2": "Anda dapat menandai pertanyaan untuk ditinjau nanti.",
+    "testInstruction3": "Gunakan tombol Sebelumnya dan Berikutnya untuk bernavigasi.",
+    "testInstruction4": "Anda harus menjawab semua pertanyaan sebelum mengirimkan.",
+    "testInstruction5": "Klik kirim setelah selesai.",
+    "answered": "terjawab",
+    "prevBtn": "Sebelumnya",
+    "nextBtn": "Berikutnya",
+    "submitBtn": "Kirim",
+    "navigatorTitle": "Navigator Pertanyaan",
+    "alertBackTitle": "Apakah Anda yakin?",
+    "alertBackMessage": "Jika Anda kembali sekarang, semua progres Anda akan hilang. Apakah Anda ingin melanjutkan?",
+    "backBtn": "Kembali",
+    "unAnsweredQuetion": "Anda memiliki {count} pertanyaan yang belum dijawab. Silakan jawab semua pertanyaan sebelum mengirimkan.",
+    "flagQuestion": "Pertanyaan {index} ditandai untuk ditinjau",
+    "unFlagQuestion": "Pertanyaan {index} tidak ditandai"
+  },
+  "progress": {
     "title": "Statistik User",
     "totalFcData": "Total Flashcard Terbuat",
     "mostUsedFc": "Flashcard Paling Sering Digunakan",
@@ -68,5 +154,21 @@
     "showComment": "Tunjukan Semua Komentar",
     "post": "Unggah",
     "noPost": "Tidak ada lagi postingan untuk dimuat"
+  },
+  "sidebar": {
+    "editTitle": "Edit Profil",
+    "editDesc": "Lakukan perubahan pada profil Anda di sini. Klik simpan saat Anda selesai.",
+    "cameraInstruction": "Klik ikon kamera untuk mengunggah foto baru",
+    "saveBtn": "Simpan perubahan",
+    "saving": "Menyimpan...",
+    "errUsernameExist": "Nama pengguna sudah ada!",
+    "errUploadImage": "Gagal memperbarui profil, silakan coba lagi!",
+    "successUpdate": "Profil berhasil diperbarui!"
+  },
+  "search": {
+    "title": "Urutkan",
+    "recent": "Terbaru",
+    "oldest": "Terlama",
+    "popular": "Paling Disukai"
   }
 }

@@ -26,7 +26,9 @@ import EmptyImage from "@/public/Chill-Time.svg";
 import { Forum, Question } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
+import { enUS, id } from "date-fns/locale";
 import { CheckCircle, ChevronsUp, CircleAlert, Clock9 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -71,6 +73,9 @@ export default function Page() {
 
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
+  const t = useTranslations("myFlashcard");
+  const locale = useLocale();
+  const dateFnsLocale = locale === "id" ? id : enUS;
 
   const fetchDocument = async (pageNum: number) => {
     let url = `/api/material?limit=6&page=${pageNum}`;
@@ -110,7 +115,7 @@ export default function Page() {
       return res.data;
     },
     onSuccess: () => {
-      toast.success("Flashcard is now private", {
+      toast.success(t("alertFlashcardPrivate"), {
         duration: 3000,
       });
 
@@ -139,7 +144,7 @@ export default function Page() {
       return res.data;
     },
     onSuccess: () => {
-      toast.success("Document removed!", {
+      toast.success(t("alertDocumentDeleted"), {
         duration: 3000,
       });
 
@@ -225,14 +230,14 @@ export default function Page() {
   return (
     <div className="container mx-auto max-w-7xl p-4 sm:p-6">
       <h1 className="mb-8 w-full text-start text-3xl font-bold">
-        My Flashcards
+        {t("title")}
       </h1>
       <FilterSearch
         searchTerm={searchQuery}
         setSearchTerm={setSearchQuery}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
-        placeHolder="Input at least 3 letters to search documents"
+        placeHolder={t("searchFlashcard")}
       />
       {isLoading || isFetching ? (
         <>
@@ -273,11 +278,11 @@ export default function Page() {
                                   items={[
                                     data.isPublic
                                       ? {
-                                          label: "Make private",
+                                          label: t("makePrivBtn"),
                                           onClick: () => {
                                             showAlert(
-                                              "Are you sure?",
-                                              "Changing this document to private will remove its associated forum data. Are you sure you want to proceed?",
+                                              t("alertTitle"),
+                                              t("alertMessagePrivate"),
                                               () =>
                                                 handleDelete(
                                                   data.id,
@@ -289,7 +294,7 @@ export default function Page() {
                                           },
                                         }
                                       : {
-                                          label: "Make public",
+                                          label: t("makePubBtn"),
                                           onClick: () => {
                                             toggleDialog(data.id);
                                             document.body.style.pointerEvents =
@@ -297,13 +302,13 @@ export default function Page() {
                                           },
                                         },
                                     {
-                                      label: "Delete",
+                                      label: t("deleteFlashcardBtn"),
                                       className: "text-red-600",
                                       onClick: () => {
                                         document.body.style.pointerEvents = "";
                                         showAlert(
-                                          "Are you sure?",
-                                          "Deleting this document is permanent and will also delete all associated test history. Are you sure you want to proceed?",
+                                          t("alertTitle"),
+                                          t("alertMessageDelete"),
                                           () => {
                                             deleteDocumentMutation.mutate(
                                               data.id,
@@ -331,14 +336,18 @@ export default function Page() {
                               <div className="mt-2 flex items-center gap-1">
                                 <Clock9 size={15} />
                                 <p className="text-xs">
-                                  {formatDistanceToNowStrict(data.createdAt)}{" "}
-                                  ago
+                                  {formatDistanceToNowStrict(data.createdAt, {
+                                    locale: dateFnsLocale,
+                                    addSuffix: true,
+                                  })}{" "}
                                 </p>
                               </div>
                               <div className="mt-2 flex items-center gap-1">
                                 <p className="text-sm">
-                                  {data.questions.length} question
-                                  {data.questions.length !== 1 ? "s" : ""}
+                                  {data.questions.length} {t("question")}
+                                  {data.questions.length > 1 && locale === "en"
+                                    ? "s"
+                                    : ""}
                                 </p>
                               </div>
                             </CardDescription>
@@ -350,19 +359,21 @@ export default function Page() {
                           <div className="mb-2 flex rounded-md bg-yellow-100 px-3 py-1 text-yellow-800">
                             <CircleAlert className="mr-2 h-4 w-4" />
                             <p className="text-xs">
-                              Complete the pretest to unlock flashcards.
+                              {t("warnCompletePretest")}
                             </p>
                           </div>
                         ) : isPostTestComplete(data.History) ? (
                           <div className="mb-2 flex w-full rounded-md bg-green-100 px-3 py-1 text-green-800">
                             <CheckCircle className="mr-2 h-4 w-4" />
-                            <p className="text-xs">Post-test completed!</p>
+                            <p className="text-xs">
+                              {t("warnPostTestComplete")}
+                            </p>
                           </div>
                         ) : (
                           <div className="mb-2 flex w-full rounded-md bg-blue-100 px-3 py-1 text-blue-800">
                             <ChevronsUp className="mr-2 h-4 w-4" />
                             <p className="text-xs">
-                              Boost your skills with a quick post-test!
+                              {t("warnCompletePosttest")}
                             </p>
                           </div>
                         )}
@@ -377,7 +388,7 @@ export default function Page() {
                               className="w-full"
                               disabled={data.History.length <= 0}
                             >
-                              View Flashcards
+                              {t("viewFlashcardBtn")}
                             </Button>
                           </Link>
 
@@ -392,8 +403,8 @@ export default function Page() {
                                 className="w-full"
                               >
                                 {isPostTestComplete(data.History)
-                                  ? "Retake Post-test"
-                                  : "Take Post-test"}
+                                  ? t("retakePosttestBtn")
+                                  : t("takePosttestBtn")}
                               </Button>
                             </Link>
                           ) : (
@@ -406,7 +417,7 @@ export default function Page() {
                                 size="sm"
                                 className="w-full"
                               >
-                                Take Pre-test
+                                {t("takePretestBtn")}
                               </Button>
                             </Link>
                           )}
@@ -427,7 +438,7 @@ export default function Page() {
             ) : (
               <Empty
                 image={EmptyImage}
-                description="Document not found"
+                description={t("documentNotFound")}
                 isActionButtonNeeded={false}
               />
             )}
@@ -464,7 +475,7 @@ export default function Page() {
       ) : (
         <Empty
           image={EmptyImage}
-          description="You have not upload any document yet"
+          description={t("documentEmpty")}
           isActionButtonNeeded={true}
           actionButtonLink="/dashboard/material/create"
           actionButtonText="Upload now"

@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import EmptyImage from "@/public/Chill-Time.svg";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle, ChevronsUp, CircleAlert, TrashIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -67,6 +68,8 @@ export default function SavedDocumentsPage() {
 
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
+  const t = useTranslations("myFlashcard");
+  const locale = useLocale();
 
   const fetchSavedDocument = async () => {
     let url = `/api/save?limit=6&page=${currentPage}`;
@@ -106,7 +109,7 @@ export default function SavedDocumentsPage() {
       return res.data;
     },
     onSuccess: () => {
-      toast.success("Document removed!", {
+      toast.success(t("alertDocumentDeleted"), {
         duration: 3000,
       });
 
@@ -178,7 +181,7 @@ export default function SavedDocumentsPage() {
   return (
     <div className="container mx-auto flex max-w-7xl flex-col items-start p-4">
       <h1 className="mb-8 w-full text-start text-3xl font-bold">
-        Saved Flashcards
+        {t("titleSaved")}
       </h1>
 
       <FilterSearch
@@ -186,7 +189,7 @@ export default function SavedDocumentsPage() {
         setSearchTerm={setSearchQuery}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
-        placeHolder="Input at least 3 letters to search saved documents"
+        placeHolder={t("searchFlashcard")}
       />
 
       {isLoading || isFetching ? (
@@ -228,12 +231,12 @@ export default function SavedDocumentsPage() {
                               <Dropdown
                                 items={[
                                   {
-                                    label: "Delete",
+                                    label: t("deleteFlashcardBtn"),
                                     className: "text-red-700",
                                     onClick: () => {
                                       showAlert(
-                                        "Are you sure?",
-                                        "Deleting this document is permanent and will also delete all associated test history. Are you sure you want to proceed?",
+                                        t("alertTitle"),
+                                        t("alertMessageDelete"),
                                         () => {
                                           deleteSavedDocumentMutation.mutate(
                                             doc.document.id,
@@ -255,10 +258,15 @@ export default function SavedDocumentsPage() {
                             </h2>
                           </CardTitle>
                           <p className="mb-2 flex items-center justify-between text-sm text-gray-500">
-                            <span>by {doc.document.user.username}</span>
                             <span>
-                              {doc.document._count.questions} question
-                              {doc.document._count.questions !== 1 ? "s" : ""}
+                              {t("by")} {doc.document.user.username}
+                            </span>
+                            <span>
+                              {doc.document._count.questions} {t("question")}
+                              {doc.document._count.questions > 1 &&
+                              locale === "en"
+                                ? "s"
+                                : ""}
                             </span>
                           </p>
                         </div>
@@ -267,21 +275,20 @@ export default function SavedDocumentsPage() {
                       {doc.document.History.length <= 0 ? (
                         <div className="mb-2 flex rounded-md bg-yellow-100 px-3 py-1 text-yellow-800">
                           <CircleAlert className="mr-2 h-4 w-4" />
-                          <p className="text-xs">
-                            Complete pretest to unlock flashcards!
-                          </p>
+                          <p className="text-xs">{t("warnCompletePretest")}</p>
                         </div>
                       ) : isPostTestComplete(doc.document.History) ? (
                         <div className="mb-2 flex w-full rounded-md bg-green-100 px-3 py-1 text-green-800">
                           <CheckCircle className="mr-2 h-4 w-4" />
-                          <p className="text-xs">Post-test completed!</p>
+                          <p className="text-xs">
+                            {" "}
+                            {t("warnPostTestComplete")}
+                          </p>
                         </div>
                       ) : (
                         <div className="mb-2 flex w-full rounded-md bg-blue-100 px-3 py-1 text-blue-800">
                           <ChevronsUp className="mr-2 h-4 w-4" />
-                          <p className="text-xs">
-                            Boost your skills with post-test!
-                          </p>
+                          <p className="text-xs">{t("warnCompletePosttest")}</p>
                         </div>
                       )}
 
@@ -295,7 +302,7 @@ export default function SavedDocumentsPage() {
                             className="w-full"
                             disabled={doc.document.History.length <= 0}
                           >
-                            View Flashcards
+                            {t("viewFlashcardBtn")}
                           </Button>
                         </Link>
 
@@ -310,8 +317,8 @@ export default function SavedDocumentsPage() {
                               className="w-full"
                             >
                               {isPostTestComplete(doc.document.History)
-                                ? "Retake Post-test"
-                                : "Take Post-test"}
+                                ? t("retakePosttestBtn")
+                                : t("takePosttestBtn")}
                             </Button>
                           </Link>
                         ) : (
@@ -324,7 +331,7 @@ export default function SavedDocumentsPage() {
                               size="sm"
                               className="w-full"
                             >
-                              Take Pre-test
+                              {t("takePretestBtn")}
                             </Button>
                           </Link>
                         )}
@@ -344,7 +351,7 @@ export default function SavedDocumentsPage() {
             ) : (
               <Empty
                 image={EmptyImage}
-                description="Document not found"
+                description={t("documentNotFound")}
                 isActionButtonNeeded={false}
               />
             )}
@@ -373,7 +380,7 @@ export default function SavedDocumentsPage() {
       ) : (
         <Empty
           image={EmptyImage}
-          description="You have not saved any document yet"
+          description={t("savedDocumentEmpty")}
           isActionButtonNeeded={true}
           actionButtonLink="/dashboard/forum"
           actionButtonText="Explore forum"

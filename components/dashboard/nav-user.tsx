@@ -21,12 +21,14 @@ import {
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { ChevronsUpDown, LogOut, UserPen } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export function NavUser() {
   const [openProfileModal, setOpenProfileModal] = useState(false);
 
   const { isMobile } = useSidebar();
+  const t = useTranslations("sidebar");
 
   const user = useCurrentUser();
   const username = user.username ? user.username : user.name;
@@ -92,7 +94,7 @@ export function NavUser() {
                   }}
                 >
                   <UserPen />
-                  Edit Profile
+                  {t("editTitle")}
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />

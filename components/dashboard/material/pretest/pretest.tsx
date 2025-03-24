@@ -29,6 +29,7 @@ import { axiosInstance } from "@/lib/axios";
 import { TTestTypeEnum, TUploadHistorySchema } from "@/lib/types/question-form";
 import { useMutation } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Flag, HelpCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { redirect, usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IoFlagSharp } from "react-icons/io5";
@@ -48,6 +49,7 @@ export default function Test({ documentId }: PretestProps) {
   const user = useCurrentUser();
   const router = useRouter();
   const pathName = usePathname();
+  const t = useTranslations("test");
   const { questions, isError, isLoading, error, isSuccess, documentTitle } =
     useQuestions(documentId);
 
@@ -98,7 +100,10 @@ export default function Test({ documentId }: PretestProps) {
 
     if (unansweredQuestions > 0) {
       toast.error(
-        `You have ${unansweredQuestions} unanswered question${unansweredQuestions > 1 ? "s" : ""}. Please answer all questions before submitting.`,
+        t("unAnsweredQuetion", {
+          count: unansweredQuestions,
+          plural: unansweredQuestions > 1 ? "s" : "",
+        }),
         {
           duration: 3000,
         },
@@ -143,10 +148,10 @@ export default function Test({ documentId }: PretestProps) {
       const newFlagged = new Set(prevFlagged);
       if (newFlagged.has(index)) {
         newFlagged.delete(index);
-        toast.info(`Question ${index + 1} unflagged`);
+        toast.info(t("unFlagQuestion", { index: index + 1 }));
       } else {
         newFlagged.add(index);
-        toast.info(`Question ${index + 1} flagged for review`);
+        toast.info(t("flagQuestion", { index: index + 1 }));
       }
       return newFlagged;
     });
@@ -200,12 +205,13 @@ export default function Test({ documentId }: PretestProps) {
                     {suffix?.toLowerCase() === "pretest"
                       ? "Pretest"
                       : "Posttest"}{" "}
-                    questions
+                    {t("question")}
                   </p>
                   <div className="mb-4 flex items-center justify-between font-normal">
                     <div className="mt-2 flex items-center space-x-2">
                       <small className="text-xs text-muted-foreground">
-                        Question {currentQuestion + 1} of {questions.length}
+                        {t("question")} {currentQuestion + 1} {t("of")}{" "}
+                        {questions.length}
                       </small>
                     </div>
                   </div>
@@ -245,7 +251,7 @@ export default function Test({ documentId }: PretestProps) {
                             {flaggedQuestions.has(currentQuestion)
                               ? "Unflag"
                               : "Flag"}{" "}
-                            this question
+                            {t("thisQuestion")}
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -281,25 +287,19 @@ export default function Test({ documentId }: PretestProps) {
                       <DialogTrigger asChild>
                         <Button variant="outline" size="sm">
                           <HelpCircle className="mr-2 h-4 w-4" />
-                          Help
+                          {t("help")}
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>Test Instructions</DialogTitle>
+                          <DialogTitle>{t("testInstructionTitle")}</DialogTitle>
                           <div className="text-sm text-muted-foreground">
                             <ul className="mt-3 list-disc space-y-2 pl-4">
-                              <li>
-                                Read each question carefully before answering.
-                              </li>
-                              <li>You can flag questions to review later.</li>
-                              <li>
-                                Use the Previous and Next buttons to navigate.
-                              </li>
-                              <li>
-                                You must answer all questions before submitting.
-                              </li>
-                              <li>Click Submit when you're done.</li>
+                              <li>{t("testInstruction1")}</li>
+                              <li>{t("testInstruction2")}</li>
+                              <li>{t("testInstruction3")}</li>
+                              <li>{t("testInstruction4")}</li>
+                              <li>{t("testInstruction5")}</li>
                             </ul>
                           </div>
                         </DialogHeader>
@@ -307,7 +307,7 @@ export default function Test({ documentId }: PretestProps) {
                     </Dialog>
                     <p className="text-sm text-muted-foreground">
                       {userAnswers.filter((answer) => answer !== null).length}{" "}
-                      of {questions.length} answered
+                      {t("of")} {questions.length} {t("answered")}
                     </p>
                   </div>
                 </>
@@ -321,13 +321,18 @@ export default function Test({ documentId }: PretestProps) {
                   variant="outline"
                 >
                   <ChevronLeft className="mr-2 h-4 w-4" />
-                  Previous
+                  {t("prevBtn")}
                 </Button>
                 {currentQuestion === questions.length - 1 ? (
-                  <Button onClick={handleSubmit}>Submit</Button>
+                  <Button
+                    disabled={submitAnswer.isPending}
+                    onClick={handleSubmit}
+                  >
+                    {t("submitBtn")}
+                  </Button>
                 ) : (
                   <Button onClick={handleNext}>
-                    Next
+                    {t("nextBtn")}
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 )}

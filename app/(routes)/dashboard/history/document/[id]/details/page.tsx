@@ -19,9 +19,9 @@ import { categoryColors } from "@/lib/util/category";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Award, BarChart, ChevronLeft } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useTranslations } from 'next-intl';
 
 type DocumentProps = {
   id: string;
@@ -48,7 +48,7 @@ type ParamsProps = {
 };
 
 export default function HistoryDetailPage() {
-  const t = useTranslations('history');
+  const t = useTranslations("history");
   const params: ParamsProps = useParams();
   const isMobile = useIsMobile();
 
@@ -128,7 +128,9 @@ export default function HistoryDetailPage() {
       <div className="mb-6 grid gap-4 px-5 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('avgGrade')}</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("avgGrade")}
+            </CardTitle>
             <BarChart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -139,7 +141,9 @@ export default function HistoryDetailPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('highGrade')}</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("highGrade")}
+            </CardTitle>
             <Award className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -148,7 +152,9 @@ export default function HistoryDetailPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('improvement')}</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("improvement")}
+            </CardTitle>
             <Award className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -156,7 +162,7 @@ export default function HistoryDetailPage() {
               {improvementPercentage > 0 ? "+" : ""}
               {improvementPercentage.toFixed(1)}%
             </div>
-            <p className="text-xs text-muted-foreground">{t('fromPretest')}</p>
+            <p className="text-xs text-muted-foreground">{t("fromPretest")}</p>
           </CardContent>
         </Card>
       </div>
@@ -164,10 +170,10 @@ export default function HistoryDetailPage() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>{t('date')}</TableHead>
-            <TableHead>{t('type')}</TableHead>
-            <TableHead>{t('grade')}</TableHead>
-            <TableHead>{t('actions')}</TableHead>
+            <TableHead>{t("date")}</TableHead>
+            <TableHead>{t("type")}</TableHead>
+            <TableHead>{t("grade")}</TableHead>
+            <TableHead>{t("actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -193,7 +199,7 @@ export default function HistoryDetailPage() {
                   href={`/dashboard/history/document/${attempt.documentId}/review/${attempt.id}`}
                 >
                   <Button variant="outline" size="sm">
-                    {t('viewResult')}
+                    {t("viewResult")}
                   </Button>
                 </Link>
               </TableCell>

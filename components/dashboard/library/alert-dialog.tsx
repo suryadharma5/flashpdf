@@ -1,3 +1,5 @@
+"use client";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,6 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useTranslations } from "next-intl";
 
 type AlertProps = {
   title: string;
@@ -24,6 +27,7 @@ export function Alert({
   onOpenChange,
   onSubmit,
 }: AlertProps) {
+  const t = useTranslations("myFlashcard");
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -38,9 +42,11 @@ export function Alert({
               document.body.style.pointerEvents = "";
             }}
           >
-            Cancel
+            {t("alertCancel")}
           </AlertDialogCancel>
-          <AlertDialogAction onClick={onSubmit}>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={onSubmit}>
+            {t("alertContinue")}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
