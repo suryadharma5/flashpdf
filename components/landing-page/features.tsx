@@ -32,8 +32,8 @@ export default function FeatureSection() {
                 Simply drag and drop your PDF files or click to upload. Our
                 system processes your documents quickly and securely.
               </p>
-              <Link href={"/sign-in"} className="mt-4 py-4">
-                <Button className="rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
+              <Link href={"/sign-in"}>
+                <Button className="mt-3 rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
                   Try It Now
                 </Button>
               </Link>
@@ -68,9 +68,11 @@ export default function FeatureSection() {
                 Our advanced AI analyzes your PDF content and generates
                 intelligent flashcards based on your specific questions.
               </p>
-              <Button className="rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
-                Explore AI Features
-              </Button>
+              <Link href={"/sign-in"}>
+                <Button className="mt-3 rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
+                  Explore AI Features
+                </Button>
+              </Link>
             </div>
           </div>
           <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
@@ -101,9 +103,11 @@ export default function FeatureSection() {
                 with the correct ones. Enhance your learning by understanding
                 mistakes and improving retention.
               </p>
-              <Button className="rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
-                Study Now
-              </Button>
+              <Link href={"/sign-in"}>
+                <Button className="mt-3 rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
+                  Study Now
+                </Button>
+              </Link>
             </div>
           </div>
           <div className="relative mt-8 h-72 w-full overflow-hidden rounded-lg border border-gray-200">
@@ -135,9 +139,11 @@ export default function FeatureSection() {
                 Share your flashcards with other users, discuss study
                 strategies, and collaborate on learning materials.
               </p>
-              <Button className="rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
-                Join Community
-              </Button>
+              <Link href={"/sign-in"}>
+                <Button className="mt-3 rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
+                  Join Community
+                </Button>
+              </Link>
             </div>
           </div>
           <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
@@ -167,9 +173,11 @@ export default function FeatureSection() {
                 Monitor your learning journey with detailed progress reports and
                 performance analytics for each test taken.
               </p>
-              <Button className="rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
-                View Analytics
-              </Button>
+              <Link href={"/sign-in"}>
+                <Button className="mt-3 rounded-md px-4 py-2 text-sm font-medium text-white transition-colors">
+                  View Analytics
+                </Button>
+              </Link>
             </div>
           </div>
           <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
@@ -215,10 +223,10 @@ export default function FeatureSection() {
         <div className="relative flex h-[40rem] w-full flex-col items-start justify-start [perspective:1000px] md:h-[45rem]">
           <Tabs
             tabs={features}
-            containerClassName="justify-center mb-8"
+            containerClassName="justify-start md:justify-center mb-8 overflow-x-auto pb-2 -mx-4 px-4 w-[calc(100%+2rem)]"
             activeTabClassName="bg-primary text-white"
-            tabClassName="font-medium text-sm md:text-base"
-            contentClassName="mt-12"
+            tabClassName="font-medium text-sm whitespace-nowrap"
+            contentClassName="mt-8 md:mt-12"
           />
         </div>
       </div>

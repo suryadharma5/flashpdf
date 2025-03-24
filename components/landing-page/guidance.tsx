@@ -1,12 +1,15 @@
 "use client";
 
+import { useIsMobile } from "@/hooks/use-mobile";
 import PlaceHolderImage from "@/public/placeholder.svg";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "../ui/button";
 
 export default function Guidance() {
+  const [marginTop, setMarginTop] = useState(0);
   const items = [
     {
       title: "Upload Your PDF",
@@ -31,10 +34,11 @@ export default function Guidance() {
   ];
 
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   return (
     <>
-      <div className="" id="how-it-works">
+      <div id="how-it-works" className={isMobile ? "mt-60" : ""}>
         <motion.div
           initial={{ opacity: 0, x: 0 }}
           whileInView={{ opacity: 1, x: 0, scale: 1.02 }}
