@@ -8,13 +8,20 @@ import {
 } from "ai";
 import { z } from "zod";
 
+const SYSTEM_PROMPT = `
+Imagine you are a university professor, and you want to help your students understand the material better using flashcard.
+The learning activity for your students consist of pre-test, learn the flashcards, then post-test. The content of these three activities must relate to each other. Pre-test and post-test are created from the same question bank. 
+Flashcard consists of keyword and its definition from the document user uploaded. To create the pairs, first you need to summarise each paragraph from the document. Then, for each paragraph, create at least one pair of keyword and definition.
+After that, you need to create the question bank. For each definition, create at least two questions and answers.  The pair should be critical, suitable for university students.`;
+
 export const createQuestion = async (text: string, numOfQuestions: string) => {
   console.log(`Generating ${numOfQuestions} questions...`);
 
   const { object: generatedMaterial, usage } = await generateObject({
     model: openai("gpt-4o-mini"),
-    maxTokens: 700,
+    maxTokens: 2000,
     temperature: 0.6,
+    system: SYSTEM_PROMPT,
     prompt: `
         Based on the following text::
         1. create 1 multiple-choice questions with format:
@@ -27,6 +34,8 @@ export const createQuestion = async (text: string, numOfQuestions: string) => {
           - A concise explanation of that key point
         ---
         ${text}
+        ---
+        Ensure that the entire process of creating flashcards and questions maintains the original language of the document so that students can learn more effectively.
     `,
     schema: z.object({
       questions: z.array(
