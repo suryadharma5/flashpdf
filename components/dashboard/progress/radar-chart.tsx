@@ -14,6 +14,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
 import { Button } from "@react-email/components";
 import { useQuery } from "@tanstack/react-query";
@@ -28,6 +29,7 @@ type RadarChartDataProps = {
 
 export default function RadarChartComponent() {
   const t = useTranslations("progress");
+  const isMobile = useIsMobile();
 
   const { data: chartData, isPending } = useQuery({
     queryKey: ["radarChartData"],
@@ -121,13 +123,19 @@ export default function RadarChartComponent() {
                         fontWeight={500}
                         {...props}
                       >
-                        <tspan>{data.tests}</tspan>
-                        <tspan className="fill-muted-foreground">/</tspan>
-                        <tspan>{data.averageGrade}%</tspan>
+                        {isMobile ? (
+                          <></>
+                        ) : (
+                          <>
+                            <tspan>{data.tests}</tspan>
+                            <tspan className="fill-muted-foreground">/</tspan>
+                            <tspan>{data.averageGrade}%</tspan>
+                          </>
+                        )}
                         <tspan
                           x={x}
                           dy={"1rem"}
-                          fontSize={12}
+                          fontSize={isMobile ? 8 : 12}
                           className="fill-muted-foreground"
                         >
                           {data.category.replace(

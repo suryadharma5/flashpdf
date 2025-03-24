@@ -12,6 +12,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { axiosInstance } from "@/lib/axios";
 import { categoryColors } from "@/lib/util/category";
+import { cn } from "@/lib/utils";
 import { Forum, Question } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
@@ -88,7 +89,12 @@ export default function HomePage() {
 
   return (
     <Suspense fallback={<LoadingPage />}>
-      <main className="flex-1 overflow-y-auto overflow-x-hidden">
+      <main
+        className={cn(
+          "flex-1 overflow-y-auto overflow-x-hidden",
+          isMobile && "mb-20",
+        )}
+      >
         <div className="mx-auto px-4 py-8 xl:max-w-5xl">
           <div className="space-y-10">
             <div className="mx-auto">

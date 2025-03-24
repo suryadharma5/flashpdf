@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
 import { Forum, Question } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
@@ -77,6 +78,7 @@ type TestScoreOvertimeProps = {
 
 export default function ProgressPage() {
   const t = useTranslations("progress");
+  const isMobile = useIsMobile();
   const [selectedOption, setSelectedOption] = useState("option1");
 
   const {
@@ -302,30 +304,63 @@ export default function ProgressPage() {
               <CardDescription className="text-gray-500">
                 {t("areaGrpDesc")}
               </CardDescription>
+              {isMobile && (
+                <div className="my-2 flex justify-center">
+                  <Select value={selectedOption} onValueChange={onOptionChange}>
+                    <SelectTrigger className="h-fit w-fit text-xs">
+                      <SelectValue>
+                        {
+                          documents.find((doc) => doc.id === selectedOption)
+                            ?.title
+                        }
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="hover:cursor-pointer">
+                      {documents.map((doc) => (
+                        <SelectItem
+                          key={doc.id}
+                          value={doc.id}
+                          className="text-xs hover:cursor-pointer"
+                        >
+                          {doc.title.replace(
+                            doc.title.charAt(0),
+                            doc.title.charAt(0).toUpperCase(),
+                          )}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
-            <div className="absolute right-6">
-              <Select value={selectedOption} onValueChange={onOptionChange}>
-                <SelectTrigger className="w-40">
-                  <SelectValue>
-                    {documents.find((doc) => doc.id === selectedOption)?.title}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="hover:cursor-pointer">
-                  {documents.map((doc) => (
-                    <SelectItem
-                      key={doc.id}
-                      value={doc.id}
-                      className="hover:cursor-pointer"
-                    >
-                      {doc.title.replace(
-                        doc.title.charAt(0),
-                        doc.title.charAt(0).toUpperCase(),
-                      )}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {!isMobile && (
+              <div className="absolute right-6" hidden={isMobile}>
+                <Select value={selectedOption} onValueChange={onOptionChange}>
+                  <SelectTrigger className="h-fit w-fit text-xs">
+                    <SelectValue>
+                      {
+                        documents.find((doc) => doc.id === selectedOption)
+                          ?.title
+                      }
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="hover:cursor-pointer">
+                    {documents.map((doc) => (
+                      <SelectItem
+                        key={doc.id}
+                        value={doc.id}
+                        className="text-xs hover:cursor-pointer"
+                      >
+                        {doc.title.replace(
+                          doc.title.charAt(0),
+                          doc.title.charAt(0).toUpperCase(),
+                        )}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </CardHeader>
 
           <CardContent>

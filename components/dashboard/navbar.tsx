@@ -168,7 +168,7 @@ export const Navbar = () => {
       <div className="flex items-center px-4">
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center rounded-md px-2 py-1 hover:bg-muted">
-            <GlobeIcon className="mr-2 h-4 w-4" />
+            <GlobeIcon className="mr-2 h-4 w-4 text-gray-700" />
             <span className="text-sm text-gray-800">
               {languageNames[currentLocale]}
             </span>
