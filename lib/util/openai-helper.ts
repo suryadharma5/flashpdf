@@ -19,17 +19,16 @@ export const createQuestion = async (text: string, numOfQuestions: string) => {
 
   const { object: generatedMaterial, usage } = await generateObject({
     model: openai("gpt-4o-mini"),
-    maxTokens: 2000,
     temperature: 0.6,
     system: SYSTEM_PROMPT,
     prompt: `
         Based on the following text::
-        1. create 1 multiple-choice questions with format:
+        1. create 15 multiple-choice questions with format:
            - Question
            - Options (without A, B, C, D prefixes, just provide the answer choices directly)
            - Correct Answer
         
-        2. Additionally, extract 2 key learning points as flashcards with:
+        2. Additionally, extract ${numOfQuestions} key learning points as flashcards with:
           - A key point or concept from the text
           - A concise explanation of that key point
         ---
