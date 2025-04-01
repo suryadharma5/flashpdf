@@ -38,7 +38,7 @@ export default function Guidance() {
 
   return (
     <>
-      <div id="how-it-works" className={isMobile ? "mt-60" : ""}>
+      <div id="how-it-works" className={isMobile ? "mt-32" : "mt-60"}>
         <motion.div
           initial={{ opacity: 0, x: 0 }}
           whileInView={{ opacity: 1, x: 0, scale: 1.02 }}

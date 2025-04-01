@@ -2,6 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs-features";
+import Image2 from "@/public/AskAI.svg";
+import Image1 from "@/public/EasyUpload.svg";
+import Image4 from "@/public/Forum.svg";
+import Image5 from "@/public/Progress.svg";
+import Image3 from "@/public/Review.svg";
 import { motion } from "framer-motion";
 import {
   BarChart3,
@@ -39,11 +44,11 @@ export default function FeatureSection() {
               </Link>
             </div>
           </div>
-          <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
+          <div className="relative mt-8 h-fit w-full overflow-hidden rounded-lg border-gray-200 py-6">
             <Image
-              src="/placeholder.svg"
+              src={Image1}
               alt="Document Upload Feature"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-fill"
               width={600}
               height={400}
             />
@@ -75,11 +80,11 @@ export default function FeatureSection() {
               </Link>
             </div>
           </div>
-          <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
+          <div className="relative mt-8 h-fit w-full overflow-hidden rounded-lg border-gray-200 py-6">
             <Image
-              src="/placeholder.svg"
-              alt="AI-Powered Flashcards Feature"
-              className="h-full w-full object-cover"
+              src={Image2}
+              alt="Document Upload Feature"
+              className="h-full w-full object-fill"
               width={600}
               height={400}
             />
@@ -110,11 +115,11 @@ export default function FeatureSection() {
               </Link>
             </div>
           </div>
-          <div className="relative mt-8 h-72 w-full overflow-hidden rounded-lg border border-gray-200">
+          <div className="relative mt-8 h-fit w-full overflow-hidden rounded-lg border-gray-200 py-6">
             <Image
-              src="/placeholder.svg"
-              alt="Personalized Learning Feature"
-              className="h-full w-full object-cover"
+              src={Image3}
+              alt="Document Upload Feature"
+              className="h-full w-full object-fill"
               width={600}
               height={400}
             />
@@ -146,11 +151,13 @@ export default function FeatureSection() {
               </Link>
             </div>
           </div>
-          <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
-            <img
-              src="/placeholder.svg"
-              alt="Community Forum Feature"
-              className="h-full w-full object-cover"
+          <div className="relative mt-8 h-fit w-full overflow-hidden rounded-lg border-gray-200 py-6">
+            <Image
+              src={Image4}
+              alt="Document Upload Feature"
+              className="h-full w-full object-fill"
+              width={600}
+              height={400}
             />
           </div>
         </div>
@@ -180,11 +187,11 @@ export default function FeatureSection() {
               </Link>
             </div>
           </div>
-          <div className="relative mt-8 h-64 w-full overflow-hidden rounded-lg border border-gray-200">
+          <div className="relative mt-8 h-fit w-full overflow-hidden rounded-lg border-gray-200 py-6">
             <Image
-              src="/placeholder.svg"
-              alt="Progress Tracking Feature"
-              className="h-full w-full object-cover"
+              src={Image5}
+              alt="Document Upload Feature"
+              className="h-full w-full object-fill"
               width={600}
               height={400}
             />
