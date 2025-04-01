@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   enhancedQuery = query ?? "";
 
   if (lastQuestion) {
-    enhancedQuery = `${lastQuestion} ${query}`;
+    enhancedQuery = `${lastQuestion} | ${query}`;
   }
 
   if (!userMessage) {

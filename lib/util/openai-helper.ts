@@ -68,6 +68,7 @@ export const createQuestion = async (text: string, numOfQuestions: string) => {
 export const getEmbeddings = async (text: string) => {
   const { embedding, usage } = await embed({
     model: openai.embedding("text-embedding-3-small"),
+    // model: openai.embedding("text-embedding-ada-002"),
     value: text.replace(/\n/g, " "),
   });
 
