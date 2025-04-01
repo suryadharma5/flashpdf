@@ -35,6 +35,8 @@ type TestHistoryProps = {
   documentId: string;
   createdAt: string;
   document: Document;
+  averageGrade: number;
+  takeTestCount: number;
 };
 
 export default function HistoryPage() {
@@ -42,7 +44,7 @@ export default function HistoryPage() {
   const isMobile = useIsMobile();
 
   const {
-    data: testHistory,
+    data: groupedTests,
     isError,
     isPending,
   } = useQuery({
@@ -53,28 +55,9 @@ export default function HistoryPage() {
     },
   });
 
-  const groupedTest = testHistory?.reduce(
-    (acc, test) => {
-      const id = test.documentId;
-      acc[id] = acc[id] || [];
-      acc[id].push(test);
-      return acc;
-    },
-    {} as Record<string, TestHistoryProps[]>,
-  );
-
-  const groupedTests = groupedTest ? Object.entries(groupedTest) : [];
-
-  const calculateAverageGrade = (tests: TestHistoryProps[]): string => {
-    const totalGrade = tests.reduce((sum, test) => sum + test.grade, 0);
-    return (totalGrade / tests.length).toFixed(1);
-  };
-
   if (isError) {
     return <ErrorPage />;
   }
-
-  console.log({ testHistory });
 
   return (
     <div className="container mx-auto max-w-7xl p-4 sm:p-6">
@@ -94,37 +77,38 @@ export default function HistoryPage() {
         <>
           {groupedTests && groupedTests.length > 0 ? (
             <div className="mb-6 grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {groupedTests?.map(([id, tests]) => {
+              {groupedTests?.map((history) => {
                 return (
                   <Card
-                    key={id}
+                    key={history.documentId}
                     className="flex flex-col transition-all duration-300 hover:shadow-lg"
                   >
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-xl font-semibold text-gray-900">
-                          {tests[0].document.title.charAt(0).toUpperCase() +
-                            tests[0].document.title.slice(1).toLowerCase()}
+                          {history.document.title.charAt(0).toUpperCase() +
+                            history.document.title.slice(1).toLowerCase()}
                         </CardTitle>
                         <Badge
-                          className={`${categoryColors[tests[0].document.Category.name]} w-fit`}
+                          className={`${categoryColors[history.document.Category.name]} w-fit`}
                           variant={"default"}
                         >
-                          {tests[0].document.Category.name.replace(
-                            tests[0].document.Category.name.charAt(0),
-                            tests[0].document.Category.name
+                          {history.document.Category.name.replace(
+                            history.document.Category.name.charAt(0),
+                            history.document.Category.name
                               .charAt(0)
                               .toUpperCase(),
                           )}
                         </Badge>
                       </div>
                       <Badge variant={"default"} className="w-fit">
-                        {tests.length} attempt{tests.length > 1 ? "s" : ""}
+                        {history.takeTestCount} attempt
+                        {history.takeTestCount > 1 ? "s" : ""}
                       </Badge>
                     </CardHeader>
                     <CardContent className="flex-grow">
                       <div className="text-3xl font-bold">
-                        {calculateAverageGrade(tests)}%
+                        {history.averageGrade}
                       </div>
                       <p className="text-sm text-muted-foreground">
                         {t("avgGrade")}
@@ -132,7 +116,7 @@ export default function HistoryPage() {
                     </CardContent>
                     <CardFooter>
                       <Link
-                        href={`/dashboard/history/document/${tests[0].documentId}/details`}
+                        href={`/dashboard/history/document/${history.documentId}/details`}
                         className="w-full"
                       >
                         <Button variant="outline" className="w-full">

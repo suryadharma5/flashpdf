@@ -8,6 +8,7 @@ import {
   getUserAnswerHistories,
   getUserAnswerHistory,
   getUserHistoriesByDocumentId,
+  getUserProgressHistory,
 } from "@/lib/repository/material/testRepository";
 import { uploadHistorySchema } from "@/lib/types/question-form";
 import { NextRequest, NextResponse } from "next/server";
@@ -114,6 +115,7 @@ export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const documentId = searchParams.get("documentId");
   const historyId = searchParams.get("historyId");
+  const type = searchParams.get("type");
   const userId = await auth();
 
   if (historyId && documentId) {
@@ -151,6 +153,20 @@ export async function GET(req: NextRequest) {
       userId!.user.id,
     );
 
+    const data = histories != null ? histories : [];
+
+    return NextResponse.json(
+      {
+        status: 200,
+        data: data,
+        message: "OK",
+      },
+      {
+        status: 200,
+      },
+    );
+  } else if (type === "progress") {
+    const histories = await getUserProgressHistory(userId!.user.id);
     const data = histories != null ? histories : [];
 
     return NextResponse.json(

@@ -88,7 +88,7 @@ export default function ProgressPage() {
   } = useQuery({
     queryKey: ["fetchHistory"],
     queryFn: async () => {
-      const res = await axiosInstance.get("/api/history");
+      const res = await axiosInstance.get("/api/history?type=progress");
       return res.data.data as TestHistoryProps[];
     },
   });
@@ -288,7 +288,7 @@ export default function ProgressPage() {
           </CardHeader>
           <CardContent className="p-4">
             <div className="w-full text-center text-2xl font-semibold text-gray-800">
-              {averageGrade}%
+              {averageGrade}
             </div>
           </CardContent>
         </Card>
@@ -504,7 +504,12 @@ export default function ProgressPage() {
             <Trophy className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{bestSubject}</div>
+            <div className="text-2xl font-bold">
+              {bestSubject.replace(
+                bestSubject.charAt(0),
+                bestSubject.charAt(0).toUpperCase(),
+              )}
+            </div>
           </CardContent>
         </Card>
 
@@ -516,7 +521,12 @@ export default function ProgressPage() {
             <TrendingDown className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{weakestSubject}</div>
+            <div className="text-2xl font-bold">
+              {weakestSubject.replace(
+                weakestSubject.charAt(0),
+                weakestSubject.charAt(0).toUpperCase(),
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

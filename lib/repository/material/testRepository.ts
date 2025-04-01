@@ -179,6 +179,67 @@ export const getUserAnswerHistories = async (
     orderBy: {
       createdAt: "desc",
     },
+    distinct: ["documentId"],
+  });
+
+  if (!userAnswersHistory) {
+    return null;
+  }
+
+  const testStats = await prismaTx.history.groupBy({
+    by: ["documentId"],
+    where: {
+      userId: userId,
+    },
+    _count: {
+      documentId: true,
+    },
+    _avg: {
+      grade: true,
+    },
+  });
+
+  // const averageGrade = await prismaTx.history.groupBy({});
+
+  const historyWithStats = userAnswersHistory.map((history) => {
+    const stats = testStats.find((ts) => ts.documentId === history.documentId);
+
+    return {
+      ...history,
+      takeTestCount: stats?._count.documentId || 0,
+      averageGrade: stats?._avg.grade || history.grade,
+    };
+  });
+
+  return historyWithStats;
+};
+
+export const getUserProgressHistory = async (
+  userId: string,
+  tx?: PrismaTransaction,
+) => {
+  const prismaTx = tx || prismaClient;
+
+  const userAnswersHistory = await prismaTx.history.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      document: {
+        select: {
+          title: true,
+          Category: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+      AnswerHistory: false,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   if (!userAnswersHistory) {
