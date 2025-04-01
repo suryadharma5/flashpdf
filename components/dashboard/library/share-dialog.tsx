@@ -25,6 +25,9 @@ interface ShareDialogProps {
   documentTitle: string;
   documentId: string;
   queryClient: QueryClient;
+  currentPage: number;
+  debouncedSearchQuery: string;
+  selectedCategory: string | null;
 }
 
 export function ShareDialog({
@@ -33,6 +36,9 @@ export function ShareDialog({
   documentTitle,
   documentId,
   queryClient,
+  currentPage,
+  debouncedSearchQuery,
+  selectedCategory,
 }: ShareDialogProps) {
   const [description, setDescription] = useState("");
 
@@ -53,7 +59,14 @@ export function ShareDialog({
       setDescription("");
       onOpenChange(false);
 
-      queryClient.invalidateQueries({ queryKey: ["fetchDocument"] });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "documents",
+          currentPage,
+          debouncedSearchQuery,
+          selectedCategory,
+        ],
+      });
     },
     onError: (e: CustomError) => {
       console.error(e);

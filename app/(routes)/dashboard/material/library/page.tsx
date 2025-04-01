@@ -430,6 +430,9 @@ export default function Page() {
                         documentTitle={data.title}
                         documentId={data.id}
                         queryClient={queryClient}
+                        currentPage={currentPage}
+                        debouncedSearchQuery={debouncedSearchQuery}
+                        selectedCategory={selectedCategory}
                       />
                     </Card>
                   </div>
