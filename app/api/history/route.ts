@@ -5,6 +5,7 @@ import {
   createAnswerHistory,
   createQuestionsHistory,
   createTestHistory,
+  getHistoriesTotalEntries,
   getUserAnswerHistories,
   getUserAnswerHistory,
   getUserHistoriesByDocumentId,
@@ -116,6 +117,8 @@ export async function GET(req: NextRequest) {
   const documentId = searchParams.get("documentId");
   const historyId = searchParams.get("historyId");
   const type = searchParams.get("type");
+  const limit = searchParams.get("limit");
+  const page = searchParams.get("page");
   const userId = await auth();
 
   if (historyId && documentId) {
@@ -180,13 +183,35 @@ export async function GET(req: NextRequest) {
       },
     );
   } else {
-    const histories = await getUserAnswerHistories(userId!.user.id);
+    const currPage = parseInt(page!) - 1 || 0;
+    const currLimit = parseInt(limit!) || 6;
+    const offset = currPage * currLimit;
+
+    const totalEntries = await getHistoriesTotalEntries(userId!.user.id);
+    const totalPages = Math.ceil(totalEntries / currLimit);
+    const hasNext = currPage + 1 < totalPages;
+    const hasPrev = currPage > 0;
+
+    const histories = await getUserAnswerHistories(
+      userId!.user.id,
+      currLimit,
+      offset,
+    );
+
+    console.log({ currLimit, offset });
+
     const data = histories != null ? histories : [];
 
     return NextResponse.json(
       {
         status: 200,
-        data: data,
+        data: {
+          histories: data,
+          totalEntries,
+          totalPages,
+          hasNext,
+          hasPrev,
+        },
         message: "OK",
       },
       {

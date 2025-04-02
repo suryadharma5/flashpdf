@@ -153,13 +153,31 @@ export const getUserHistoriesByDocumentId = async (
   return userHistory;
 };
 
+export const getHistoriesTotalEntries = async (userId: string) => {
+  const histories = await prismaClient.history.findMany({
+    where: {
+      userId: userId,
+    },
+    distinct: ["documentId"],
+    select: {
+      id: true,
+    },
+  });
+
+  return histories.length;
+};
+
 export const getUserAnswerHistories = async (
   userId: string,
+  limit: number,
+  offset: number,
   tx?: PrismaTransaction,
 ) => {
   const prismaTx = tx || prismaClient;
 
   const userAnswersHistory = await prismaTx.history.findMany({
+    take: limit,
+    skip: offset,
     where: {
       userId: userId,
     },

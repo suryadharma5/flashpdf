@@ -2,6 +2,7 @@
 
 import { Empty } from "@/components/dashboard/empty";
 import ErrorPage from "@/components/dashboard/error";
+import { PaginationNavigator } from "@/components/dashboard/pagination";
 import { SkeletonCard } from "@/components/dashboard/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,11 +16,13 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
 import { categoryColors } from "@/lib/util/category";
+import { cn } from "@/lib/utils";
 import EmptyImage from "@/public/Chill-Time.svg";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { useState } from "react";
 
 type Document = {
   title: string;
@@ -39,21 +42,52 @@ type TestHistoryProps = {
   takeTestCount: number;
 };
 
+type PaginatedTestHistoryProps = {
+  histories: TestHistoryProps[];
+  totalEntries: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+};
+
 export default function HistoryPage() {
   const t = useTranslations("history");
   const isMobile = useIsMobile();
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const {
-    data: groupedTests,
-    isError,
-    isPending,
-  } = useQuery({
-    queryKey: ["fetchHistory"],
-    queryFn: async () => {
-      const res = await axiosInstance.get("/api/history");
-      return res.data.data as TestHistoryProps[];
-    },
+  const fetchTestHistory = async (pageNum: number) => {
+    let url = `/api/history?limit=6&page=${pageNum}`;
+
+    const res = await axiosInstance.get(url);
+
+    return res.data.data as PaginatedTestHistoryProps;
+  };
+
+  const { data, isError, isPending } = useQuery({
+    queryKey: ["fetchHistory", currentPage],
+    queryFn: () => fetchTestHistory(currentPage),
   });
+
+  const groupedTests = data?.histories ?? [];
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => prev - 1);
+  };
+
+  const handleSkip = (destination: "start" | "end") => {
+    switch (destination) {
+      case "start":
+        setCurrentPage(1);
+        break;
+      case "end":
+        setCurrentPage(data?.totalPages ?? 1);
+        break;
+    }
+  };
 
   if (isError) {
     return <ErrorPage />;
@@ -138,6 +172,25 @@ export default function HistoryPage() {
           )}
         </>
       )}
+      <div
+        className={cn(
+          "mt-6",
+          groupedTests.length < 4 && !isMobile
+            ? "absolute bottom-7 right-24"
+            : "",
+        )}
+      >
+        <PaginationNavigator
+          currPage={currentPage}
+          totalPage={data?.totalPages ?? 0}
+          hasNext={data?.hasNext ?? false}
+          hasPrev={data?.hasPrev ?? false}
+          clickNext={handleNextPage}
+          clickPrevious={handlePreviousPage}
+          skipToStart={() => handleSkip("start")}
+          skipToEnd={() => handleSkip("end")}
+        />
+      </div>
     </div>
   );
 }
