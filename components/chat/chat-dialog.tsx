@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/sheet";
 import { ChatRequestOptions, Message } from "ai";
 import { BotMessageSquare } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction } from "react";
 import AIInput from "./chat-input";
 
@@ -33,6 +34,8 @@ export const ChatDialog = ({
   handleSubmit,
   stop,
 }: ChatDialogProps) => {
+  const t = useTranslations("flashcard");
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -42,7 +45,9 @@ export const ChatDialog = ({
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-lg">
         <div className="flex h-full flex-col">
-          <SheetTitle className="mb-4 text-2xl font-bold">Ask AI</SheetTitle>
+          <SheetTitle className="mb-4 text-2xl font-bold">
+            {t("askAi")}
+          </SheetTitle>
           <ScrollArea className="mb-4 flex-grow pr-7">
             <div className="space-y-4">
               <MessageBlock messages={messages} />

@@ -4,6 +4,7 @@ import { FlashCardDataProps } from "@/hooks/useFlashcard";
 
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type FlashcardProps = {
   isFlipped: boolean;
@@ -25,6 +26,8 @@ export const Flashcard = ({
   questions,
 }: FlashcardProps) => {
   const currentCard = questions[currentCardIndex];
+
+  const t = useTranslations("flashcard");
 
   return (
     <Card className="w-full max-w-4xl border-0 bg-white shadow-none">
@@ -53,7 +56,7 @@ export const Flashcard = ({
                 <p
                   className={`mt-4 ${isMobile ? "text-sm" : "text-base"} text-gray-500`}
                 >
-                  click to see explanation
+                  {t("tapToFlip")}
                 </p>
               </div>
               <div className="absolute inset-0 flex w-full flex-col justify-center rounded-lg border border-green-200 bg-green-100/25 p-8 text-center shadow-lg [backface-visibility:hidden] [transform:rotateY(180deg)]">
@@ -76,7 +79,7 @@ export const Flashcard = ({
           size={isMobile ? "sm" : "lg"}
         >
           <ChevronLeft className={`${isMobile ? "" : "mr-2"} h-6 w-6`} />
-          {isMobile ? "" : "Previous"}
+          {isMobile ? "" : t("prevBtn")}
         </Button>
         <span className="font-medium text-gray-600">
           {currentCardIndex + 1} / {questions.length}
@@ -86,7 +89,7 @@ export const Flashcard = ({
           variant="outline"
           size={isMobile ? "sm" : "lg"}
         >
-          {isMobile ? "" : "Next"}
+          {isMobile ? "" : t("nextBtn")}
           <ChevronRight className={`${isMobile ? "" : "ml-2"} h-6 w-6`} />
         </Button>
       </CardFooter>

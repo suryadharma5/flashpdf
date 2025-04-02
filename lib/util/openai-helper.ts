@@ -8,25 +8,33 @@ import {
 } from "ai";
 import { z } from "zod";
 
+const SYSTEM_PROMPT = `
+Imagine you are a university professor, and you want to help your students understand the material better using flashcard.
+The learning activity for your students consist of pre-test, learn the flashcards, then post-test. The content of these three activities must relate to each other. Pre-test and post-test are created from the same question bank. 
+Flashcard consists of keyword and its definition from the document user uploaded. To create the pairs, first you need to summarise each paragraph from the document. Then, for each paragraph, create at least one pair of keyword and definition.
+After that, you need to create the question bank. For each definition, create at least two questions and answers.  The pair should be critical, suitable for university students.`;
+
 export const createQuestion = async (text: string, numOfQuestions: string) => {
   console.log(`Generating ${numOfQuestions} questions...`);
 
   const { object: generatedMaterial, usage } = await generateObject({
     model: openai("gpt-4o-mini"),
-    maxTokens: 700,
     temperature: 0.6,
+    system: SYSTEM_PROMPT,
     prompt: `
         Based on the following text::
-        1. create 1 multiple-choice questions with format:
+        1. create 15 multiple-choice questions with format:
            - Question
            - Options (without A, B, C, D prefixes, just provide the answer choices directly)
            - Correct Answer
         
-        2. Additionally, extract 2 key learning points as flashcards with:
+        2. Additionally, extract ${numOfQuestions} key learning points as flashcards with:
           - A key point or concept from the text
           - A concise explanation of that key point
         ---
         ${text}
+        ---
+        Ensure that the entire process of creating flashcards and questions maintains the original language of the document so that students can learn more effectively.
     `,
     schema: z.object({
       questions: z.array(
@@ -60,6 +68,7 @@ export const createQuestion = async (text: string, numOfQuestions: string) => {
 export const getEmbeddings = async (text: string) => {
   const { embedding, usage } = await embed({
     model: openai.embedding("text-embedding-3-small"),
+    // model: openai.embedding("text-embedding-ada-002"),
     value: text.replace(/\n/g, " "),
   });
 

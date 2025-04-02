@@ -86,13 +86,10 @@ export const getUserAnswerHistory = async (
       AnswerHistory: true,
       QuestionHistory: {
         select: {
-          question: true,
-        },
-      },
-      document: {
-        select: {
-          questions: {
+          question: {
             select: {
+              correctAnswer: true,
+              question: true,
               options: true,
             },
           },
@@ -156,7 +153,86 @@ export const getUserHistoriesByDocumentId = async (
   return userHistory;
 };
 
+export const getHistoriesTotalEntries = async (userId: string) => {
+  const histories = await prismaClient.history.findMany({
+    where: {
+      userId: userId,
+    },
+    distinct: ["documentId"],
+    select: {
+      id: true,
+    },
+  });
+
+  return histories.length;
+};
+
 export const getUserAnswerHistories = async (
+  userId: string,
+  limit: number,
+  offset: number,
+  tx?: PrismaTransaction,
+) => {
+  const prismaTx = tx || prismaClient;
+
+  const userAnswersHistory = await prismaTx.history.findMany({
+    take: limit,
+    skip: offset,
+    where: {
+      userId: userId,
+    },
+    include: {
+      document: {
+        select: {
+          title: true,
+          Category: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+      AnswerHistory: false,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    distinct: ["documentId"],
+  });
+
+  if (!userAnswersHistory) {
+    return null;
+  }
+
+  const testStats = await prismaTx.history.groupBy({
+    by: ["documentId"],
+    where: {
+      userId: userId,
+    },
+    _count: {
+      documentId: true,
+    },
+    _avg: {
+      grade: true,
+    },
+  });
+
+  // const averageGrade = await prismaTx.history.groupBy({});
+
+  const historyWithStats = userAnswersHistory.map((history) => {
+    const stats = testStats.find((ts) => ts.documentId === history.documentId);
+
+    return {
+      ...history,
+      takeTestCount: stats?._count.documentId || 0,
+      averageGrade: stats?._avg.grade || history.grade,
+    };
+  });
+
+  return historyWithStats;
+};
+
+export const getUserProgressHistory = async (
   userId: string,
   tx?: PrismaTransaction,
 ) => {
@@ -178,6 +254,9 @@ export const getUserAnswerHistories = async (
         },
       },
       AnswerHistory: false,
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 

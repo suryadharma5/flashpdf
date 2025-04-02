@@ -1,6 +1,7 @@
 "use client";
 
-import PlaceHolderImage from "@/public/placeholder.svg";
+import { useIsMobile } from "@/hooks/use-mobile";
+import GuidanceImg from "@/public/guidance.svg";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -31,10 +32,11 @@ export default function Guidance() {
   ];
 
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   return (
     <>
-      <div className="" id="how-it-works">
+      <div id="how-it-works" className={isMobile ? "mt-32" : "mt-60"}>
         <motion.div
           initial={{ opacity: 0, x: 0 }}
           whileInView={{ opacity: 1, x: 0, scale: 1.02 }}
@@ -86,7 +88,7 @@ export default function Guidance() {
           {/* end */}
           <div className="mt-10 md:mt-0">
             <Image
-              src={PlaceHolderImage}
+              src={GuidanceImg}
               alt="Visual guide on how to use FlashAI"
               width={300}
               height={300}

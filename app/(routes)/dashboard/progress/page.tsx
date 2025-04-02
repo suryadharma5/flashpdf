@@ -19,11 +19,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
 import { Forum, Question } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { TrendingDown, Trophy } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import {
   Area,
@@ -75,6 +77,8 @@ type TestScoreOvertimeProps = {
 };
 
 export default function ProgressPage() {
+  const t = useTranslations("progress");
+  const isMobile = useIsMobile();
   const [selectedOption, setSelectedOption] = useState("option1");
 
   const {
@@ -84,7 +88,7 @@ export default function ProgressPage() {
   } = useQuery({
     queryKey: ["fetchHistory"],
     queryFn: async () => {
-      const res = await axiosInstance.get("/api/history");
+      const res = await axiosInstance.get("/api/history?type=progress");
       return res.data.data as TestHistoryProps[];
     },
   });
@@ -245,13 +249,13 @@ export default function ProgressPage() {
 
   return (
     <div className="container mx-auto max-w-7xl p-4 sm:p-6">
-      <h1 className="mb-6 text-3xl font-bold">User Statistic</h1>
+      <h1 className="mb-6 text-3xl font-bold">{t("title")}</h1>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <Card className="shadow-sm transition-shadow hover:shadow-md">
           <CardHeader className="bg-blue-100 p-3">
             <CardTitle className="flex items-center text-base font-medium text-gray-700">
-              <p className="w-full text-center">Total Created Flashcards</p>
+              <p className="w-full text-center">{t("totalFcData")}</p>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
@@ -264,7 +268,7 @@ export default function ProgressPage() {
         <Card className="shadow-sm transition-shadow hover:shadow-md">
           <CardHeader className="bg-purple-100 p-3">
             <CardTitle className="flex items-center text-base font-medium text-gray-700">
-              <p className="w-full text-center">Most Used Deck</p>
+              <p className="w-full text-center">{t("mostUsedFc")}</p>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
@@ -279,12 +283,12 @@ export default function ProgressPage() {
         <Card className="shadow-sm transition-shadow hover:shadow-md">
           <CardHeader className="bg-green-100 p-3">
             <CardTitle className="flex items-center text-base font-medium text-gray-700">
-              <p className="w-full text-center">Average Grade</p>
+              <p className="w-full text-center">{t("avgGrade")}</p>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
             <div className="w-full text-center text-2xl font-semibold text-gray-800">
-              {averageGrade}%
+              {averageGrade}
             </div>
           </CardContent>
         </Card>
@@ -295,35 +299,68 @@ export default function ProgressPage() {
           <CardHeader className="relative flex flex-row items-center justify-center">
             <div className="items-center justify-center text-center">
               <CardTitle className="text-xl font-medium text-gray-800">
-                Test Scores Over Time
+                {t("areaGrpTitle")}
               </CardTitle>
               <CardDescription className="text-gray-500">
-                Performance tracking across document
+                {t("areaGrpDesc")}
               </CardDescription>
+              {isMobile && (
+                <div className="my-2 flex justify-center">
+                  <Select value={selectedOption} onValueChange={onOptionChange}>
+                    <SelectTrigger className="h-fit w-fit text-xs">
+                      <SelectValue>
+                        {
+                          documents.find((doc) => doc.id === selectedOption)
+                            ?.title
+                        }
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="hover:cursor-pointer">
+                      {documents.map((doc) => (
+                        <SelectItem
+                          key={doc.id}
+                          value={doc.id}
+                          className="text-xs hover:cursor-pointer"
+                        >
+                          {doc.title.replace(
+                            doc.title.charAt(0),
+                            doc.title.charAt(0).toUpperCase(),
+                          )}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
-            <div className="absolute right-6">
-              <Select value={selectedOption} onValueChange={onOptionChange}>
-                <SelectTrigger className="w-40">
-                  <SelectValue>
-                    {documents.find((doc) => doc.id === selectedOption)?.title}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="hover:cursor-pointer">
-                  {documents.map((doc) => (
-                    <SelectItem
-                      key={doc.id}
-                      value={doc.id}
-                      className="hover:cursor-pointer"
-                    >
-                      {doc.title.replace(
-                        doc.title.charAt(0),
-                        doc.title.charAt(0).toUpperCase(),
-                      )}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {!isMobile && (
+              <div className="absolute right-6" hidden={isMobile}>
+                <Select value={selectedOption} onValueChange={onOptionChange}>
+                  <SelectTrigger className="h-fit w-fit text-xs">
+                    <SelectValue>
+                      {
+                        documents.find((doc) => doc.id === selectedOption)
+                          ?.title
+                      }
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="hover:cursor-pointer">
+                    {documents.map((doc) => (
+                      <SelectItem
+                        key={doc.id}
+                        value={doc.id}
+                        className="text-xs hover:cursor-pointer"
+                      >
+                        {doc.title.replace(
+                          doc.title.charAt(0),
+                          doc.title.charAt(0).toUpperCase(),
+                        )}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </CardHeader>
 
           <CardContent>
@@ -364,10 +401,10 @@ export default function ProgressPage() {
         <Card className="pb-0">
           <CardHeader className="items-center">
             <CardTitle className="text-xl font-medium text-gray-800">
-              Flashcard Visibility Summary
+              {t("pieChtTitle")}
             </CardTitle>
             <CardDescription className="text-gray-500">
-              Distribution of private and public flashcards
+              {t("pieChtDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent className="-mt-3 pb-0">
@@ -413,9 +450,9 @@ export default function ProgressPage() {
         <Card>
           <CardHeader className="items-center">
             <CardTitle className="text-xl font-medium text-gray-800">
-              Top Tests Taken
+              {t("barChtTitle1")}
             </CardTitle>
-            <CardDescription>Your most frequently taken tests</CardDescription>
+            <CardDescription>{t("barChtDesc1")}</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
@@ -441,11 +478,9 @@ export default function ProgressPage() {
         <Card>
           <CardHeader className="items-center">
             <CardTitle className="text-xl font-medium text-gray-800">
-              Test Type Breakdown
+              {t("barChtTitle2")}
             </CardTitle>
-            <CardDescription>
-              Your Pre-Test and Post-Test Activity
-            </CardDescription>
+            <CardDescription>{t("barChtDesc2")}</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250} className="p-2">
@@ -464,24 +499,34 @@ export default function ProgressPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Best Subject
+              {t("bestSubject")}
             </CardTitle>
             <Trophy className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{bestSubject}</div>
+            <div className="text-2xl font-bold">
+              {bestSubject.replace(
+                bestSubject.charAt(0),
+                bestSubject.charAt(0).toUpperCase(),
+              )}
+            </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Weakest Subject
+              {t("weakSubject")}
             </CardTitle>
             <TrendingDown className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{weakestSubject}</div>
+            <div className="text-2xl font-bold">
+              {weakestSubject.replace(
+                weakestSubject.charAt(0),
+                weakestSubject.charAt(0).toUpperCase(),
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

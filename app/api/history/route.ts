@@ -5,9 +5,11 @@ import {
   createAnswerHistory,
   createQuestionsHistory,
   createTestHistory,
+  getHistoriesTotalEntries,
   getUserAnswerHistories,
   getUserAnswerHistory,
   getUserHistoriesByDocumentId,
+  getUserProgressHistory,
 } from "@/lib/repository/material/testRepository";
 import { uploadHistorySchema } from "@/lib/types/question-form";
 import { NextRequest, NextResponse } from "next/server";
@@ -114,6 +116,9 @@ export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const documentId = searchParams.get("documentId");
   const historyId = searchParams.get("historyId");
+  const type = searchParams.get("type");
+  const limit = searchParams.get("limit");
+  const page = searchParams.get("page");
   const userId = await auth();
 
   if (historyId && documentId) {
@@ -163,14 +168,50 @@ export async function GET(req: NextRequest) {
         status: 200,
       },
     );
-  } else {
-    const histories = await getUserAnswerHistories(userId!.user.id);
+  } else if (type === "progress") {
+    const histories = await getUserProgressHistory(userId!.user.id);
     const data = histories != null ? histories : [];
 
     return NextResponse.json(
       {
         status: 200,
         data: data,
+        message: "OK",
+      },
+      {
+        status: 200,
+      },
+    );
+  } else {
+    const currPage = parseInt(page!) - 1 || 0;
+    const currLimit = parseInt(limit!) || 6;
+    const offset = currPage * currLimit;
+
+    const totalEntries = await getHistoriesTotalEntries(userId!.user.id);
+    const totalPages = Math.ceil(totalEntries / currLimit);
+    const hasNext = currPage + 1 < totalPages;
+    const hasPrev = currPage > 0;
+
+    const histories = await getUserAnswerHistories(
+      userId!.user.id,
+      currLimit,
+      offset,
+    );
+
+    console.log({ currLimit, offset });
+
+    const data = histories != null ? histories : [];
+
+    return NextResponse.json(
+      {
+        status: 200,
+        data: {
+          histories: data,
+          totalEntries,
+          totalPages,
+          hasNext,
+          hasPrev,
+        },
         message: "OK",
       },
       {

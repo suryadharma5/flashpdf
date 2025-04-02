@@ -43,16 +43,9 @@ export const createDocumentQuestion = async (
 };
 
 export const getDocumentQuestion = async (documentId: string) => {
-  const documents = await prismaClient.document.findUnique({
-    where: {
-      id: documentId!,
-    },
+  const document = await prismaClient.document.findUnique({
+    where: { id: documentId },
     include: {
-      questions: {
-        include: {
-          options: true,
-        },
-      },
       user: {
         select: {
           id: true,
@@ -61,11 +54,40 @@ export const getDocumentQuestion = async (documentId: string) => {
     },
   });
 
-  if (!documents) {
+  if (!document) {
     return null;
   }
 
-  return documents;
+  // Get 10 ID pertanyaan acak
+  const randomQuestionIds = await prismaClient.$queryRaw<{ id: string }[]>`
+    SELECT id FROM "questions"
+    WHERE "documentId" = ${documentId}
+    ORDER BY RANDOM()
+    LIMIT 10
+  `;
+
+  const questionIds = randomQuestionIds.map((q) => q.id);
+
+  // Fetch pertanyaan lengkap
+  const questions = await prismaClient.question.findMany({
+    where: {
+      id: { in: questionIds },
+    },
+    include: {
+      options: true,
+    },
+  });
+
+  // Sort pertanyaan secara manual untuk mempertahankan urutan acak
+  const sortedQuestions = questionIds
+    .map((id) => questions.find((question) => question.id === id))
+    .filter(Boolean);
+
+  // Kembalikan dokumen dengan pertanyaan acak
+  return {
+    ...document,
+    questions: sortedQuestions,
+  };
 };
 
 export const getFlashcardsData = async (documentId: string) => {
@@ -174,9 +196,9 @@ export const getPaginatedDocuments = async (
     take: limit,
     include: {
       History: true,
-      questions: {
+      flashcards: {
         select: {
-          question: true,
+          id: true,
         },
       },
       Forum: {

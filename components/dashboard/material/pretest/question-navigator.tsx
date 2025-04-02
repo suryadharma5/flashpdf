@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronLeft } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -37,6 +38,7 @@ export const QuestionNavigator = ({
   const [alertDescription, setAlertDescription] = useState("");
 
   const router = useRouter();
+  const t = useTranslations("test");
 
   const showAlert = (
     title: string,
@@ -53,7 +55,7 @@ export const QuestionNavigator = ({
     <Card className="mb-4 w-full shadow-lg md:mb-0 md:w-64">
       <CardHeader className="rounded-t-lg bg-primary text-primary-foreground">
         <CardTitle className="text-center text-xl font-bold">
-          Question Navigator
+          {t("navigatorTitle")}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4">
@@ -82,16 +84,14 @@ export const QuestionNavigator = ({
         <Button
           size="lg"
           onClick={() =>
-            showAlert(
-              "Are you sure?",
-              "If you go back now, all your progress will be lost. Do you want to proceed?",
-              () => router.back(),
+            showAlert(t("alertBackTitle"), t("alertBackMessage"), () =>
+              router.back(),
             )
           }
           className="mt-4 w-full"
         >
           <ChevronLeft className="mr-2 h-5 w-5" />
-          Back
+          {t("backBtn")}
         </Button>
       </CardContent>
 

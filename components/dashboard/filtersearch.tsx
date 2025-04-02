@@ -9,6 +9,7 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,12 +38,6 @@ const categories = [
   "Others",
 ];
 
-const sortOptions = [
-  { value: "latest", label: "Most Recent", icon: ArrowDown10 },
-  { value: "oldest", label: "Oldest First", icon: ArrowUp10 },
-  { value: "like", label: "Most Liked", icon: Heart },
-];
-
 export const FilterSearch = ({
   searchTerm,
   setSearchTerm,
@@ -54,6 +49,13 @@ export const FilterSearch = ({
   setSelectedSort,
 }: FilterSearchProps) => {
   const isMobile = useIsMobile();
+  const t = useTranslations("search");
+
+  const sortOptions = [
+    { value: "latest", label: t("recent"), icon: ArrowDown10 },
+    { value: "oldest", label: t("oldest"), icon: ArrowUp10 },
+    { value: "like", label: t("popular"), icon: Heart },
+  ];
 
   const getSelectedSortOption = (value: string) => {
     return sortOptions.find((opt) => opt.value === value);
@@ -77,7 +79,7 @@ export const FilterSearch = ({
         <div className="flex w-full flex-col gap-5">
           {isNeedSorting && (
             <div className="flex w-full items-center justify-between">
-              <h3 className="text-sm font-medium">Sort by:</h3>
+              <h3 className="text-sm font-medium">{t("title")}</h3>
               <DropdownMenu>
                 {selectedSort ? (
                   <Button
@@ -120,7 +122,7 @@ export const FilterSearch = ({
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm" className="h-8 gap-1">
                       <SlidersHorizontal className="h-3.5 w-3.5" />
-                      <span className="text-sm">Sort by</span>
+                      <span className="text-sm">{t("title")}</span>
                     </Button>
                   </DropdownMenuTrigger>
                 )}
@@ -134,21 +136,21 @@ export const FilterSearch = ({
                       className="px-3 py-2 hover:cursor-pointer"
                     >
                       <ArrowDown10 className="mr-2 h-4 w-4" />
-                      <span>Most Recent</span>
+                      <span>{t("recent")}</span>
                     </DropdownMenuRadioItem>
                     <DropdownMenuRadioItem
                       value="oldest"
                       className="px-3 py-2 hover:cursor-pointer"
                     >
                       <ArrowUp10 className="mr-2 h-4 w-4" />
-                      <span>Oldest First</span>
+                      <span>{t("oldest")}</span>
                     </DropdownMenuRadioItem>
                     <DropdownMenuRadioItem
                       value="like"
                       className="px-3 py-2 hover:cursor-pointer"
                     >
                       <Heart className="mr-2 h-4 w-4" />
-                      <span>Most Liked</span>
+                      <span>{t("popular")}</span>
                     </DropdownMenuRadioItem>
                   </DropdownMenuRadioGroup>
                 </DropdownMenuContent>
@@ -246,7 +248,7 @@ export const FilterSearch = ({
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="h-8 gap-1">
                     <SlidersHorizontal className="h-3.5 w-3.5" />
-                    Sort by
+                    {t("title")}
                   </Button>
                 </DropdownMenuTrigger>
               )}
@@ -260,21 +262,21 @@ export const FilterSearch = ({
                     className="px-3 py-2 hover:cursor-pointer"
                   >
                     <ArrowDown10 className="mr-2 h-4 w-4" />
-                    <span>Most Recent</span>
+                    <span>{t("recent")}</span>
                   </DropdownMenuRadioItem>
                   <DropdownMenuRadioItem
                     value="oldest"
                     className="px-3 py-2 hover:cursor-pointer"
                   >
                     <ArrowUp10 className="mr-2 h-4 w-4" />
-                    <span>Oldest First</span>
+                    <span>{t("oldest")}</span>
                   </DropdownMenuRadioItem>
                   <DropdownMenuRadioItem
                     value="like"
                     className="px-3 py-2 hover:cursor-pointer"
                   >
                     <Heart className="mr-2 h-4 w-4" />
-                    <span>Most Liked</span>
+                    <span>{t("popular")}</span>
                   </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>

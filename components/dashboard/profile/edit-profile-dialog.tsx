@@ -24,6 +24,7 @@ import { TUpdateProfileSchema, updateProfileSchema } from "@/lib/types/profile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Camera, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -44,6 +45,8 @@ export default function EditProfileModal({
   const [avatarUrl, setAvatarUrl] = useState(imageUrl);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isChanged, setIsChanged] = useState(false);
+
+  const t = useTranslations("sidebar");
 
   const form = useForm<TUpdateProfileSchema>({
     resolver: zodResolver(updateProfileSchema),
@@ -84,7 +87,7 @@ export default function EditProfileModal({
     onSuccess: () => {
       form.reset();
       setOpen(false);
-      toast.success("Profile update!", {
+      toast.success(t("successUpdate"), {
         duration: 3000,
       });
     },
@@ -92,9 +95,9 @@ export default function EditProfileModal({
       console.log(e.response?.data.status);
 
       if (e.response?.data.status === 409) {
-        toast.error("Username already existed!");
+        toast.error(t("errUsernameExist"));
       } else {
-        toast.error("Failed to update profile, please try again!");
+        toast.error(t("errUploadImage"));
       }
     },
   });
@@ -120,10 +123,8 @@ export default function EditProfileModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="border-2 sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
-          </DialogDescription>
+          <DialogTitle>{t("editTitle")}</DialogTitle>
+          <DialogDescription>{t("editDesc")}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -177,7 +178,7 @@ export default function EditProfileModal({
                   </div>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Click the camera icon to upload a new photo
+                  {t("cameraInstruction")}
                 </div>
               </div>
               <div className="grid gap-2">
@@ -210,10 +211,10 @@ export default function EditProfileModal({
                 {updateProfileMutation.isPending ? (
                   <>
                     <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                    Saving...
+                    {t("saving")}
                   </>
                 ) : (
-                  "Save changes"
+                  t("saveBtn")
                 )}
               </Button>
             </DialogFooter>

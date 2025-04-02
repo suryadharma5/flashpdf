@@ -25,7 +25,9 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
+import { enUS, id } from "date-fns/locale";
 import { ArrowUpRight, Heart, MessageCircle } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -43,6 +45,7 @@ export type InfiniteQueryDataProps = {
 };
 
 export default function ForumPage() {
+  const t = useTranslations("forum");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -52,6 +55,8 @@ export default function ForumPage() {
 
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
+  const locale = useLocale();
+  const dateFnsLocale = locale === "id" ? id : enUS;
 
   const fetchForums = async ({ pageParam }: { pageParam: number }) => {
     let url = `/api/forum?limit=5&page=${pageParam}`;
@@ -253,7 +258,7 @@ export default function ForumPage() {
           setSearchTerm={setSearchQuery}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
-          placeHolder="Search forums..."
+          placeHolder={t("searchForum")}
           isNeedSorting={true}
           selectedSort={selectedSort}
           setSelectedSort={setSelectedSort}
@@ -309,8 +314,11 @@ export default function ForumPage() {
                             <small className="text-xs text-muted-foreground">
                               {formatDistanceToNowStrict(
                                 new Date(post.createdAt),
+                                {
+                                  locale: dateFnsLocale,
+                                  addSuffix: true,
+                                },
                               )}{" "}
-                              ago
                             </small>
                           </div>
                           <Badge
@@ -428,7 +436,7 @@ export default function ForumPage() {
         {/* Show a message when there are no more posts */}
         {!paginatedData?.hasNext && forums.length > 0 && (
           <p className="py-4 text-center text-muted-foreground">
-            No more posts to load
+            {t("noPost")}
           </p>
         )}
       </div>

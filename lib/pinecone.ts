@@ -68,8 +68,6 @@ export async function loadDocumentIntoPineCone(
   const loader = new PDFLoader(file);
   const pages = (await loader.load()) as PDFPage[];
 
-  console.log({ pages });
-
   // split and segment the pdf
   const documents = await Promise.all(
     pages.map((page) => prepareDocument(page)),
@@ -111,8 +109,6 @@ export async function getMatchesFromEmbeddings(
       includeMetadata: true,
     });
 
-    console.log({ queryResult });
-
     return queryResult.matches || [];
   } catch (error) {
     console.log("error querying pinecone", error);
@@ -126,6 +122,7 @@ export async function getContext(query: string, namespace: string) {
 
   matches.forEach((match) => {
     console.log(`Match score: ${match.score}`);
+    console.log(match.metadata as MetaData);
   });
 
   const qualifiedMatches = matches.filter(

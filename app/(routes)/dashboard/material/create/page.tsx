@@ -28,6 +28,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { AlertCircle, CloudUpload, File, Trash2Icon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -42,6 +43,7 @@ export default function CreatePage() {
   const [openCombobox, setOpenCombobox] = useState(false);
 
   const router = useRouter();
+  const t = useTranslations("create");
 
   const form = useForm<TQuestionFormSchema>({
     resolver: zodResolver(questionFormSchema),
@@ -129,25 +131,17 @@ export default function CreatePage() {
 
   return (
     <div className="container mx-auto max-w-7xl space-y-6 p-4">
-      <h1 className="w-full text-start text-3xl font-bold">
-        Create New Flashcard
-      </h1>
+      <h1 className="w-full text-start text-3xl font-bold">{t("title")}</h1>
       <Alert>
         <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Important</AlertTitle>
-        <AlertDescription>
-          When you create a flashcard, a pretest will be automatically
-          generated. You'll need to complete the pretest before accessing the
-          flashcards to help personalize your learning experience.
-        </AlertDescription>
+        <AlertTitle>{t("warnTitle")}</AlertTitle>
+        <AlertDescription>{t("warnMessage")}</AlertDescription>
       </Alert>
 
       <Card>
         <CardHeader>
-          <CardTitle>Flashcard Details</CardTitle>
-          <CardDescription>
-            Enter the information for your new flashcard
-          </CardDescription>
+          <CardTitle>{t("formTitle")}</CardTitle>
+          <CardDescription>{t("formDescription")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
           <Form {...form}>
@@ -159,7 +153,7 @@ export default function CreatePage() {
                     name="documentTitle"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Document Title</FormLabel>
+                        <FormLabel>{t("formDocTitle")}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -181,7 +175,7 @@ export default function CreatePage() {
                       name="numQuestions"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Number of Questions</FormLabel>
+                          <FormLabel>{t("formNumberQuerstions")}</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
@@ -206,7 +200,7 @@ export default function CreatePage() {
                       name="category"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Category</FormLabel>
+                          <FormLabel>{t("formCategory")}</FormLabel>
                           <FormControl>
                             <div className="col-span-3">
                               <ComboBoxCategory
@@ -232,7 +226,7 @@ export default function CreatePage() {
                     name="document"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>PDF File</FormLabel>
+                        <FormLabel>{t("formPdf")}</FormLabel>
                         <FormControl>
                           <div>
                             {field.value ? (
@@ -276,7 +270,7 @@ export default function CreatePage() {
                                 />
                                 <CloudUpload />
                                 <small className="mt-3 text-gray-500">
-                                  Drag and drop files here or click to select
+                                  {t("formPdfUpload")}
                                 </small>
                               </div>
                             )}
@@ -291,7 +285,7 @@ export default function CreatePage() {
 
               <div className="mt-5">
                 <SubmitButton
-                  title="Generate Flashcard"
+                  title={t("formSubmitBtn")}
                   isDisabled={createQuestionMutation.isPending}
                 />
               </div>

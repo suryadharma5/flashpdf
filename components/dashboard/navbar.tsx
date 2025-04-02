@@ -18,6 +18,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
+import { getCookie } from "@/lib/cookie";
 import { GlobeIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -32,14 +33,6 @@ export const Navbar = () => {
   const [currentLocale, setCurrentLocale] = useState("en");
 
   useEffect(() => {
-    // Get locale from cookie on client-side
-    const getCookie = (name: string) => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(";").shift() || "en";
-      return "en";
-    };
-
     const cookieLocale = getCookie("NEXT_LOCALE");
     if (cookieLocale) {
       setCurrentLocale(cookieLocale);
@@ -127,8 +120,8 @@ export const Navbar = () => {
 
   // Language display names
   const languageNames: Record<string, string> = {
-    en: "English",
-    id: "Indonesia",
+    en: isMobile ? "EN" : "English",
+    id: isMobile ? "ID" : "Indonesia",
   };
 
   return (
@@ -174,22 +167,24 @@ export const Navbar = () => {
       {/* Language Switcher */}
       <div className="flex items-center px-4">
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-1 rounded-md px-2 py-1 hover:bg-muted">
-            <GlobeIcon className="h-4 w-4" />
-            <span>{languageNames[currentLocale] || "English"}</span>
+          <DropdownMenuTrigger className="flex items-center rounded-md px-2 py-1 hover:bg-muted">
+            <GlobeIcon className="mr-2 h-4 w-4 text-gray-700" />
+            <span className="text-sm text-gray-800">
+              {languageNames[currentLocale]}
+            </span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               onClick={() => handleLanguageChange("en")}
-              className={currentLocale === "en" ? "bg-muted" : ""}
+              className={`${currentLocale === "en" ? "bg-muted" : ""} hover:cursor-pointer`}
             >
-              English
+              <span className="mr-2">🇺🇸</span> English
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => handleLanguageChange("id")}
-              className={currentLocale === "id" ? "bg-muted" : ""}
+              className={`${currentLocale === "id" ? "bg-muted" : ""} hover:cursor-pointer`}
             >
-              Indonesia
+              <span className="mr-2">🇮🇩</span> Indonesia
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

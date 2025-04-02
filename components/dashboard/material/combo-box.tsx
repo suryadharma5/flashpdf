@@ -16,6 +16,7 @@ import { axiosInstance } from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Check, ChevronsUpDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import ErrorPage from "../error";
 
@@ -39,10 +40,7 @@ export const ComboBoxCategory = ({
 }: ComboBoxCategoryProps) => {
   const [categories, setCategories] = useState<CategoryProps[] | []>([]);
 
-  // const handleAddCategory = () => {
-  //   console.log("category added");
-  //   setNewCategory("");
-  // }
+  const t = useTranslations("create");
 
   const { isError } = useQuery({
     queryKey: ["fetchCategories"],
@@ -77,18 +75,18 @@ export const ComboBoxCategory = ({
             {selectedCategoryName
               ? selectedCategoryName.charAt(0).toUpperCase() +
                 selectedCategoryName.slice(1)
-              : "Select category"}
+              : t("formCategorySelect")}
           </p>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command>
-          <CommandInput placeholder="Search category" />
+          <CommandInput placeholder={t("formSearchCategory")} />
           <CommandList>
             <CommandEmpty className="px-1 py-2">
               <p className="py-1 text-center text-sm text-muted-foreground">
-                No matching categories
+                {t("formCategoryNotFound")}
               </p>
             </CommandEmpty>
             <CommandGroup>
@@ -97,7 +95,6 @@ export const ComboBoxCategory = ({
                   key={category.id}
                   value={category.id}
                   onSelect={(currentValue) => {
-                    console.log({ currentValue });
                     setSelectedCategory(
                       currentValue === selectedCategory ? "" : currentValue,
                     );
@@ -120,25 +117,6 @@ export const ComboBoxCategory = ({
                 </CommandItem>
               ))}
             </CommandGroup>
-            {/* <CommandGroup className="border-t pt-2">
-              <div className="flex items-center gap-2 p-2">
-                <Input
-                  placeholder="Add new category..."
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
-                  className="flex-1"
-                />
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={handleAddCategory}
-                  disabled={!newCategory.trim()}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add
-                </Button>
-              </div>
-            </CommandGroup> */}
           </CommandList>
         </Command>
       </PopoverContent>
