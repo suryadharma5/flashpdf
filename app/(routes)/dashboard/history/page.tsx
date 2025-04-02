@@ -56,7 +56,7 @@ export default function HistoryPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const fetchTestHistory = async (pageNum: number) => {
-    let url = `/api/history?limit=6&page=${pageNum}`;
+    const url = `/api/history?limit=6&page=${pageNum}`;
 
     const res = await axiosInstance.get(url);
 
