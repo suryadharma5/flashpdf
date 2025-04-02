@@ -23,7 +23,7 @@ import { TDeleteForumSchema } from "@/lib/types/forum";
 import { categoryColors } from "@/lib/util/category";
 import { cn } from "@/lib/utils";
 import EmptyImage from "@/public/Chill-Time.svg";
-import { Forum, Question } from "@prisma/client";
+import { Forum } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
 import { enUS, id } from "date-fns/locale";
@@ -37,12 +37,16 @@ type HistoryProps = {
   type: string;
 };
 
+type FlashcardProps = {
+  id: string;
+};
+
 type DocumentProps = {
   id: string;
   createdAt: string;
   title: string;
   isPublic: boolean;
-  questions: Question[];
+  flashcards: FlashcardProps[];
   History: HistoryProps[];
   Forum: Forum[];
   Category: {
@@ -344,8 +348,8 @@ export default function Page() {
                               </div>
                               <div className="mt-2 flex items-center gap-1">
                                 <p className="text-sm">
-                                  {data.questions.length} {t("question")}
-                                  {data.questions.length > 1 && locale === "en"
+                                  {data.flashcards.length} {t("question")}
+                                  {data.flashcards.length > 1 && locale === "en"
                                     ? "s"
                                     : ""}
                                 </p>

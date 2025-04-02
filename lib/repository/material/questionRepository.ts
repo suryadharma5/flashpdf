@@ -196,9 +196,9 @@ export const getPaginatedDocuments = async (
     take: limit,
     include: {
       History: true,
-      questions: {
+      flashcards: {
         select: {
-          question: true,
+          id: true,
         },
       },
       Forum: {
