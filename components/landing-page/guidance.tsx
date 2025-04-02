@@ -1,7 +1,7 @@
 "use client";
 
 import { useIsMobile } from "@/hooks/use-mobile";
-import PlaceHolderImage from "@/public/placeholder.svg";
+import GuidanceImg from "@/public/guidance.svg";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -88,7 +88,7 @@ export default function Guidance() {
           {/* end */}
           <div className="mt-10 md:mt-0">
             <Image
-              src={PlaceHolderImage}
+              src={GuidanceImg}
               alt="Visual guide on how to use FlashAI"
               width={300}
               height={300}
