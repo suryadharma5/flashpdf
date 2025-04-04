@@ -118,7 +118,7 @@ export default function Test({ documentId }: PretestProps) {
 
     const processedAnswers = userAnswers.map((answer) => ({
       answer: answer,
-      userId: user.id,
+      userId: user?.id ?? "",
     }));
 
     const questionsHistory = questions.map((q) => ({
@@ -129,7 +129,7 @@ export default function Test({ documentId }: PretestProps) {
       history: {
         grade: (score / questions.length) * 100,
         type: suffix?.toUpperCase() as TTestTypeEnum,
-        userId: user.id,
+        userId: user?.id ?? "",
         documentId: documentId,
       },
       answers: processedAnswers,

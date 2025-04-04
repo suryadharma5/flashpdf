@@ -17,7 +17,7 @@
     "buttonCreate": "Buat Flashcard",
     "buttonContinue": "Lanjutkan Pembelajaran",
     "progressTitle": "Progres Anda",
-    "progressCard": "Flascard Terbuat",
+    "progressCard": "Flashcard Terbuat",
     "progressMinutes": "Menit Belajar",
     "progressStreak": "Streak Sekarang",
     "sectionRecentTitle": "Flashcard Terkini",
@@ -120,7 +120,7 @@
     "avgGrade": "Nilai Rata-Rata",
     "areaGrpTitle": "Nilai Tes Sepanjang Waktu",
     "areaGrpDesc": "Pelacakan kinerja di seluruh dokumen",
-    "pieChtTitle": "Ringkasan Visibilitas Flascards",
+    "pieChtTitle": "Ringkasan Visibilitas Flashcards",
     "pieChtDesc": "Distribusi Flashcards pribadi dan publik",
     "radarChtTitle": "Kategori Tes Terpopuler",
     "radarChtDesc": "Jumlah tes yang diambil dan tingkat penyelesaian berdasarkan kategori",
@@ -129,7 +129,9 @@
     "barChtTitle2": "Rincian Jenis Tes",
     "barChtDesc2": "Aktivitas Pre-Tes dan Post-Tes Anda",
     "bestSubject": "Subject Terbaik Anda",
-    "weakSubject": "Subject Terlemah Anda"
+    "weakSubject": "Subject Terlemah Anda",
+    "noProgressYet": "Belum ada riwayat tes",
+    "noProgressYetDesc": "Anda belum mengikuti tes apa pun. Kerjakan tes untuk melihat performa anda"
   },
   "history": {
     "title": "Riwayat Tes",
@@ -146,7 +148,9 @@
     "performanceSummary": "Ringkasan Performa",
     "score": "Skor",
     "viewHistoryBtn": "Lihat Riwayat",
-    "viewFcBtn": "Lihat Flashcard"
+    "viewFcBtn": "Lihat Flashcard",
+    "noHistoryYet": "Belum ada riwayat tes",
+    "attempt": "percobaan"
   },
   "forum": {
     "discussion": "Diskusi",

@@ -174,7 +174,9 @@ export default function HomePage() {
                         <p className="text-sm text-gray-500">
                           {t("progressStreak")}
                         </p>
-                        <p className="text-xl font-semibold">{user.streak}</p>
+                        <p className="text-xl font-semibold">
+                          {user?.streak ?? 0}
+                        </p>
                       </div>
                     </div>
                   </div>

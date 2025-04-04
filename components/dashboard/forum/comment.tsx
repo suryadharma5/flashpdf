@@ -143,8 +143,8 @@ export default function Comment({
             comment: comment,
             createdAt: new Date().toISOString(),
             user: {
-              username: currentUser.username,
-              image: currentUser.image,
+              username: currentUser?.username,
+              image: currentUser?.image,
             },
           },
           ...previousComments, // Tambahkan komentar baru di awal array

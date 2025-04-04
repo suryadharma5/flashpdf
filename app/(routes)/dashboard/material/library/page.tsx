@@ -253,7 +253,7 @@ export default function Page() {
             ))}
           </div>
         </>
-      ) : documents ? (
+      ) : documents && documents.length > 0 ? (
         <>
           <div className="relative min-h-[65vh] w-full">
             {documents && documents.length > 0 ? (

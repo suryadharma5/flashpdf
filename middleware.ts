@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import createIntlMiddleware from "next-intl/middleware";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import authConfig from "./auth.config";
 import {
   apiAuthPrefix,
@@ -33,7 +33,48 @@ function setLocaleCookie(request: NextRequest): void {
   }
 }
 
+// Function to handle CORS - Add this new function
+function handleCORS(request: NextRequest) {
+  // Check if it's a CORS preflight request
+  if (request.method === "OPTIONS") {
+    return new NextResponse(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "https://app.flashai.site",
+        "Access-Control-Allow-Methods":
+          "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+        "Access-Control-Allow-Headers":
+          "Content-Type, Authorization, X-CSRF-Token",
+        "Access-Control-Max-Age": "86400", // 24 hours
+      },
+    });
+  }
+
+  // For normal requests, continue processing but prep for CORS headers
+  return null;
+}
+
+// Add CORS headers to any response
+function addCORSHeaders(response: NextResponse) {
+  response.headers.set(
+    "Access-Control-Allow-Origin",
+    "https://app.flashai.site",
+  ); // Sebaiknya batasi ke domain tertentu di production
+  response.headers.set(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+  );
+  response.headers.set(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization",
+  );
+  return response;
+}
+
 export default auth((req) => {
+  const corsResponse = handleCORS(req);
+  if (corsResponse) return corsResponse;
+
   setLocaleCookie(req);
 
   const { nextUrl } = req;
@@ -42,6 +83,11 @@ export default auth((req) => {
   const isApiAuthRoute = nextUrl.pathname.includes(apiAuthPrefix);
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+
+  if (nextUrl.pathname.startsWith("/api/")) {
+    const response = NextResponse.next();
+    return addCORSHeaders(response);
+  }
 
   if (isApiAuthRoute) {
     return;
