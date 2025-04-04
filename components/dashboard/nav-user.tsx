@@ -31,7 +31,7 @@ export function NavUser() {
   const t = useTranslations("sidebar");
 
   const user = useCurrentUser();
-  const username = user.username ? user.username : user.name;
+  const username = user?.username ? user.username : user?.name;
 
   const handleLogOut = async () => {
     console.log("logging out");
@@ -52,14 +52,14 @@ export function NavUser() {
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.image} alt={username} />
+                  <AvatarImage src={user?.image} alt={username} />
                   <AvatarFallback className="rounded-lg">
-                    {username.slice(0, 2).toUpperCase()}
+                    {username?.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{username}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate text-xs">{user?.email}</span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
               </SidebarMenuButton>
@@ -73,14 +73,14 @@ export function NavUser() {
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={user.image} alt={username} />
+                    <AvatarImage src={user?.image} alt={username} />
                     <AvatarFallback className="rounded-lg">
-                      {username.toUpperCase().slice(0, 2)}
+                      {username?.toUpperCase().slice(0, 2)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">{username}</span>
-                    <span className="truncate text-xs">{user.email}</span>
+                    <span className="truncate text-xs">{user?.email}</span>
                   </div>
                 </div>
               </DropdownMenuLabel>
@@ -113,8 +113,8 @@ export function NavUser() {
       <EditProfileModal
         open={openProfileModal}
         setOpen={setOpenProfileModal}
-        username={username}
-        imageUrl={user.image}
+        username={username ?? ""}
+        imageUrl={user?.image ?? ""}
       />
     </>
   );

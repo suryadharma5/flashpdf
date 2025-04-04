@@ -142,7 +142,7 @@ export default function HistoryPage() {
                     </CardHeader>
                     <CardContent className="flex-grow">
                       <div className="text-3xl font-bold">
-                        {history.averageGrade}
+                        {history.averageGrade.toFixed(1)}
                       </div>
                       <p className="text-sm text-muted-foreground">
                         {t("avgGrade")}
@@ -167,7 +167,7 @@ export default function HistoryPage() {
             <Empty
               image={EmptyImage}
               isActionButtonNeeded={false}
-              description="No Test History Yet"
+              description={t("noHistoryYet")}
             />
           )}
         </>

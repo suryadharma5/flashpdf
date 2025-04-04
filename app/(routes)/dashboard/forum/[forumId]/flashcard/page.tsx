@@ -90,7 +90,7 @@ export default function ForumPreview() {
           if (prevData === null)
             return {
               documentId: documentId,
-              userId: user.id,
+              userId: user?.id,
             };
           return null;
         },
@@ -140,7 +140,7 @@ export default function ForumPreview() {
                     >
                       Review Flashcards
                     </h1>
-                    {user.id !== userId && (
+                    {user?.id !== userId && (
                       <Button
                         size={isMobile ? "icon" : "default"}
                         variant={savedData !== null ? "default" : "outline"}
