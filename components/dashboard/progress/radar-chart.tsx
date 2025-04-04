@@ -90,7 +90,7 @@ export default function RadarChartComponent() {
                   color: "hsl(var(--chart-2))",
                 },
                 averageGrade: {
-                  label: "Average Grade (%) ",
+                  label: "Average Grade ",
                   color: "hsl(var(--chart-4))",
                 },
               }}
@@ -129,7 +129,7 @@ export default function RadarChartComponent() {
                           <>
                             <tspan>{data.tests}</tspan>
                             <tspan className="fill-muted-foreground">/</tspan>
-                            <tspan>{data.averageGrade}%</tspan>
+                            <tspan>{data.averageGrade.toFixed(1)}</tspan>
                           </>
                         )}
                         <tspan
