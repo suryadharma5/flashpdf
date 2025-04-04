@@ -131,7 +131,9 @@
     "bestSubject": "Your Best Subject",
     "weakSubject": "Your Weakest Subject",
     "noProgressYet": "No test history yet",
-    "noProgressYetDesc": "You haven't taken any tests yet. Take a test to see your performance"
+    "noProgressYetDesc": "You haven't taken any tests yet. Take a test to see your performance",
+    "noDocumentYet": "No document yet",
+    "noDocumentYetDesc": "Add documents to start learning and track your progress"
   },
   "history": {
     "title": "Test History",
@@ -150,9 +152,7 @@
     "viewHistoryBtn": "View History",
     "viewFcBtn": "View Flashcards",
     "noHistoryYet": "No test history yet",
-    "attempt": "attempt",
-    "noDocumentYet": "No document yet",
-    "noDocumentYetDesc": "Add documents to start learning and track your progress"
+    "attempt": "attempt"
   },
   "forum": {
     "discussion": "Discussion",
