@@ -150,7 +150,9 @@
     "viewHistoryBtn": "Lihat Riwayat",
     "viewFcBtn": "Lihat Flashcard",
     "noHistoryYet": "Belum ada riwayat tes",
-    "attempt": "percobaan"
+    "attempt": "percobaan",
+    "noDocumentYet": "Belum ada dokumen",
+    "noDocumentYetDesc": "Tambahkan dokumen untuk mulai belajar dan melacak kemajuan Anda"
   },
   "forum": {
     "discussion": "Diskusi",

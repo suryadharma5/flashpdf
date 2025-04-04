@@ -150,7 +150,9 @@
     "viewHistoryBtn": "View History",
     "viewFcBtn": "View Flashcards",
     "noHistoryYet": "No test history yet",
-    "attempt": "attempt"
+    "attempt": "attempt",
+    "noDocumentYet": "No document yet",
+    "noDocumentYetDesc": "Add documents to start learning and track your progress"
   },
   "forum": {
     "discussion": "Discussion",

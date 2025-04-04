@@ -443,7 +443,10 @@ export default function ProgressPage() {
             </CardContent>
           ) : (
             <div className="px-5 pb-5">
-              <NoChartData />
+              <NoChartData
+                title={t("noDocumentYet")}
+                subtitle={t("noDocumentYetDesc")}
+              />
             </div>
           )}
           <div className="flex flex-col items-center">
