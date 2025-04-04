@@ -129,7 +129,9 @@
     "barChtTitle2": "Test Type Breakdown",
     "barChtDesc2": "Your Pre-Test and Post-Test Activity",
     "bestSubject": "Your Best Subject",
-    "weakSubject": "Your Weakest Subject"
+    "weakSubject": "Your Weakest Subject",
+    "noProgressYet": "No test history yet",
+    "noProgressYetDesc": "You haven't taken any tests yet. Take a test to see your performance"
   },
   "history": {
     "title": "Test History",
@@ -146,7 +148,8 @@
     "performanceSummary": "Performance Summary",
     "score": "Score",
     "viewHistoryBtn": "View History",
-    "viewFcBtn": "View Flashcards"
+    "viewFcBtn": "View Flashcards",
+    "noHistoryYet": "No test history yet"
   },
   "forum": {
     "discussion": "Discussion",
