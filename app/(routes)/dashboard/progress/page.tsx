@@ -3,6 +3,7 @@
 import ErrorPage from "@/components/dashboard/error";
 import { LoadingPage } from "@/components/dashboard/loading";
 import RadarChartComponent from "@/components/dashboard/progress/radar-chart";
+import { NoChartData } from "@/components/progress/empty/no-chart-data";
 import {
   Card,
   CardContent,
@@ -118,7 +119,7 @@ export default function ProgressPage() {
       );
       return res.data.data as TestScoreOvertimeProps[];
     },
-    enabled: !!documents,
+    enabled: !!documents && documents.length > 0,
   });
 
   const totalFlashcards = documents?.length ?? 0;
@@ -363,37 +364,46 @@ export default function ProgressPage() {
             )}
           </CardHeader>
 
-          <CardContent>
-            {isTestScorePending ? (
-              <div className="w-full">
-                <Skeleton className="h-60 w-full" />
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height={250}>
-                <AreaChart data={testScoresData}>
-                  <XAxis dataKey="date" tick={false} />
-                  <YAxis
-                    domain={[0, 100]}
-                    ticks={[0, 25, 50, 75, 100]}
-                    tickFormatter={(value) => (value % 50 === 0 ? value : "")}
-                  />
-                  <Tooltip />
-                  <Area
-                    type="monotone"
-                    dataKey="score"
-                    stroke="#4F46E5"
-                    fill="#C7D2FE"
-                    dot={{
-                      fill: "var(--color-desktop)",
-                    }}
-                    activeDot={{
-                      r: 6,
-                    }}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            )}
-          </CardContent>
+          {testScoresData.length > 0 ? (
+            <CardContent>
+              {isTestScorePending ? (
+                <div className="w-full">
+                  <Skeleton className="h-60 w-full" />
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={250}>
+                  <AreaChart data={testScoresData}>
+                    <XAxis dataKey="date" tick={false} />
+                    <YAxis
+                      domain={[0, 100]}
+                      ticks={[0, 25, 50, 75, 100]}
+                      tickFormatter={(value) => (value % 50 === 0 ? value : "")}
+                    />
+                    <Tooltip />
+                    <Area
+                      type="monotone"
+                      dataKey="score"
+                      stroke="#4F46E5"
+                      fill="#C7D2FE"
+                      dot={{
+                        fill: "var(--color-desktop)",
+                      }}
+                      activeDot={{
+                        r: 6,
+                      }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          ) : (
+            <div className="px-5 pb-5">
+              <NoChartData
+                title={t("noProgressYet")}
+                subtitle={t("noProgressYetDesc")}
+              />
+            </div>
+          )}
         </Card>
       </div>
 
@@ -407,27 +417,35 @@ export default function ProgressPage() {
               {t("pieChtDesc")}
             </CardDescription>
           </CardHeader>
-          <CardContent className="-mt-3 pb-0">
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={flashcardData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  innerRadius={50}
-                  label
-                >
-                  {flashcardData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
+          {(totalPublicFlashcards ??
+          (0 > 0 || totalPrivateFlashcards) ??
+          0 > 0) ? (
+            <CardContent className="-mt-3 pb-0">
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie
+                    data={flashcardData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    innerRadius={50}
+                    label
+                  >
+                    {flashcardData.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          ) : (
+            <div className="px-5 pb-5">
+              <NoChartData />
+            </div>
+          )}
           <div className="flex flex-col items-center">
             <CardFooter className="mt-auto">
               <div className="flex w-full justify-center gap-6">
@@ -454,25 +472,36 @@ export default function ProgressPage() {
             </CardTitle>
             <CardDescription>{t("barChtDesc1")}</CardDescription>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={flashcardDecksData}>
-                <XAxis dataKey="name" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                  {flashcardDecksData.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={
-                        ["#36A2EB", "#FFCE56", "#4BC0C0", "#FF9F40"][index % 4]
-                      }
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
+          {flashcardDecksData.length > 0 ? (
+            <CardContent>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={flashcardDecksData}>
+                  <XAxis dataKey="name" />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip />
+                  <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                    {flashcardDecksData.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={
+                          ["#36A2EB", "#FFCE56", "#4BC0C0", "#FF9F40"][
+                            index % 4
+                          ]
+                        }
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          ) : (
+            <div className="px-5 pb-5">
+              <NoChartData
+                title={t("noProgressYet")}
+                subtitle={t("noProgressYetDesc")}
+              />
+            </div>
+          )}
         </Card>
 
         <Card>
@@ -482,16 +511,25 @@ export default function ProgressPage() {
             </CardTitle>
             <CardDescription>{t("barChtDesc2")}</CardDescription>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250} className="p-2">
-              <BarChart layout="vertical" data={testTypeData}>
-                <XAxis type="number" allowDecimals={false} />
-                <YAxis dataKey="name" type="category" />
-                <Tooltip />
-                <Bar dataKey="count" fill="#6ACDDF" radius={[0, 7, 7, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
+          {(pretestCount ?? (0 > 0 || posttestCount) ?? 0 > 0) ? (
+            <CardContent>
+              <ResponsiveContainer width="100%" height={250} className="p-2">
+                <BarChart layout="vertical" data={testTypeData}>
+                  <XAxis type="number" allowDecimals={false} />
+                  <YAxis dataKey="name" type="category" />
+                  <Tooltip />
+                  <Bar dataKey="count" fill="#6ACDDF" radius={[0, 7, 7, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          ) : (
+            <div className="px-5 pb-5">
+              <NoChartData
+                title={t("noProgressYet")}
+                subtitle={t("noProgressYetDesc")}
+              />
+            </div>
+          )}
         </Card>
       </div>
 
