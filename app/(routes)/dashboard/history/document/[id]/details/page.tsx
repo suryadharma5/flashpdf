@@ -16,9 +16,16 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
 import { categoryColors } from "@/lib/util/category";
+import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Award, BarChart, ChevronLeft } from "lucide-react";
+import {
+  Award,
+  BarChart,
+  ChevronLeft,
+  TrendingDown,
+  TrendingUp,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -135,7 +142,7 @@ export default function HistoryDetailPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {calculateAverageGrade(data)}%
+              {calculateAverageGrade(data)}
             </div>
           </CardContent>
         </Card>
@@ -147,7 +154,7 @@ export default function HistoryDetailPage() {
             <Award className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{calculateMaxGrade(data)}%</div>
+            <div className="text-2xl font-bold">{calculateMaxGrade(data)}</div>
           </CardContent>
         </Card>
         <Card>
@@ -155,10 +162,19 @@ export default function HistoryDetailPage() {
             <CardTitle className="text-sm font-medium">
               {t("improvement")}
             </CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
+            {improvementPercentage >= 0 ? (
+              <TrendingUp className="h-4 w-4 text-green-500" />
+            ) : (
+              <TrendingDown className="h-4 w-4 text-red-500" />
+            )}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div
+              className={cn(
+                "text-2xl font-bold",
+                improvementPercentage >= 0 ? "text-green-500" : "text-red-500",
+              )}
+            >
               {improvementPercentage > 0 ? "+" : ""}
               {improvementPercentage.toFixed(1)}%
             </div>
@@ -190,10 +206,12 @@ export default function HistoryDetailPage() {
                       : "default"
                   }
                 >
-                  {attempt.type.toLowerCase()}
+                  {attempt.type.toLowerCase() === "pretest"
+                    ? "Pre-Test"
+                    : "Post-Test"}
                 </Badge>
               </TableCell>
-              <TableCell>{attempt.grade}%</TableCell>
+              <TableCell>{attempt.grade}</TableCell>
               <TableCell>
                 <Link
                   href={`/dashboard/history/document/${attempt.documentId}/review/${attempt.id}`}

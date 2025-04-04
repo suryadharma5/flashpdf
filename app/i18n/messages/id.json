@@ -149,7 +149,8 @@
     "score": "Skor",
     "viewHistoryBtn": "Lihat Riwayat",
     "viewFcBtn": "Lihat Flashcard",
-    "noHistoryYet": "Belum ada riwayat tes"
+    "noHistoryYet": "Belum ada riwayat tes",
+    "attempt": "percobaan"
   },
   "forum": {
     "discussion": "Diskusi",

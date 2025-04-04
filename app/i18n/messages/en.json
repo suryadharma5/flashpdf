@@ -149,7 +149,8 @@
     "score": "Score",
     "viewHistoryBtn": "View History",
     "viewFcBtn": "View Flashcards",
-    "noHistoryYet": "No test history yet"
+    "noHistoryYet": "No test history yet",
+    "attempt": "attempt"
   },
   "forum": {
     "discussion": "Discussion",

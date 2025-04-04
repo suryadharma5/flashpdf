@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import EmptyImage from "@/public/Chill-Time.svg";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -53,6 +53,7 @@ type PaginatedTestHistoryProps = {
 export default function HistoryPage() {
   const t = useTranslations("history");
   const isMobile = useIsMobile();
+  const locale = useLocale();
   const [currentPage, setCurrentPage] = useState(1);
 
   const fetchTestHistory = async (pageNum: number) => {
@@ -136,8 +137,10 @@ export default function HistoryPage() {
                         </Badge>
                       </div>
                       <Badge variant={"default"} className="w-fit">
-                        {history.takeTestCount} attempt
-                        {history.takeTestCount > 1 ? "s" : ""}
+                        {history.takeTestCount} {t("attempt")}
+                        {history.takeTestCount > 1 && locale === "en"
+                          ? "s"
+                          : ""}
                       </Badge>
                     </CardHeader>
                     <CardContent className="flex-grow">
