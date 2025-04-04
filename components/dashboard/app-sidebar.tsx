@@ -4,7 +4,6 @@ import {
   BookmarkIcon,
   ChartLine,
   Files,
-  GalleryVerticalEnd,
   History,
   House,
   LayoutDashboard,
@@ -37,7 +36,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     teams: [
       {
         name: "Flash AI",
-        logo: GalleryVerticalEnd,
         plan: "AI Powered",
       },
     ],
