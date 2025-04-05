@@ -131,7 +131,9 @@
     "bestSubject": "Subject Terbaik Anda",
     "weakSubject": "Subject Terlemah Anda",
     "noProgressYet": "Belum ada riwayat tes",
-    "noProgressYetDesc": "Anda belum mengikuti tes apa pun. Kerjakan tes untuk melihat performa anda"
+    "noProgressYetDesc": "Anda belum mengikuti tes apa pun. Kerjakan tes untuk melihat performa anda",
+    "noDocumentYet": "Belum ada dokumen",
+    "noDocumentYetDesc": "Tambahkan dokumen untuk mulai belajar dan melacak kemajuan Anda"
   },
   "history": {
     "title": "Riwayat Tes",

@@ -8,7 +8,7 @@ export const sendEmailVerification = async (email: string, token: string) => {
   const confirmLink = `${baseURL}/verification-email?token=${token}`;
 
   const emailSent = await resend.emails.send({
-    from: "onboarding@flashai.site",
+    from: "onboarding@flashai.cloud",
     to: email,
     subject: "FlashAI Email Verification",
     react: MailTemplate({ verificationLink: confirmLink }),

@@ -187,7 +187,7 @@ export const updateUserStreak = async (userId: string) => {
 
   if (dayDiff === 0) {
     return;
-  } else if (dayDiff === 1) {
+  } else if (dayDiff >= 1) {
     newStreak = user.currentStreak + 1;
   } else {
     newStreak = 0;
