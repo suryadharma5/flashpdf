@@ -46,6 +46,13 @@ type Document = {
   title: string;
 };
 
+type DocumentHistoryProps = {
+  document: {
+    id: string;
+    title: string;
+  };
+};
+
 type TestHistoryProps = {
   id: string;
   grade: number;
@@ -107,9 +114,25 @@ export default function ProgressPage() {
   });
 
   const {
+    data: documentHistories,
+    isError: isDocumentHistoriesError,
+    isPending: isDocumentHistoriesPending,
+  } = useQuery({
+    queryKey: ["fetchDocumentHistories"],
+    queryFn: async () => {
+      const res = await axiosInstance.get(
+        "/api/progress?type=documentHistories",
+      );
+      return res.data.data as DocumentHistoryProps[];
+    },
+  });
+
+  console.log({ documentHistories });
+
+  const {
     data: testScoreById,
     isError: isTestScoreError,
-    isPending: isTestScorePending,
+    isLoading: isTestScorePending,
     refetch,
   } = useQuery({
     queryKey: ["fetchTestScore", selectedOption],
@@ -119,7 +142,7 @@ export default function ProgressPage() {
       );
       return res.data.data as TestScoreOvertimeProps[];
     },
-    enabled: !!documents && documents.length > 0,
+    enabled: !!documentHistories && documentHistories.length > 0,
   });
 
   const totalFlashcards = documents?.length ?? 0;
@@ -235,16 +258,21 @@ export default function ProgressPage() {
   }, [testHistory]);
 
   useEffect(() => {
-    if (documents && documents.length > 0) {
-      setSelectedOption(documents[0].id);
+    if (documentHistories && documentHistories.length > 0) {
+      setSelectedOption(documentHistories[0].document.id);
     }
-  }, [documents]);
+  }, [documentHistories]);
 
-  if (isPending || isDocumentPending) {
+  if (isPending || isDocumentPending || isDocumentHistoriesPending) {
     return <LoadingPage />;
   }
 
-  if (isError || isDocumentError || isTestScoreError) {
+  if (
+    isError ||
+    isDocumentError ||
+    isTestScoreError ||
+    isDocumentHistoriesError
+  ) {
     return <ErrorPage />;
   }
 
@@ -306,26 +334,30 @@ export default function ProgressPage() {
                 {t("areaGrpDesc")}
               </CardDescription>
               {isMobile && (
-                <div className="my-2 flex justify-center">
+                <div
+                  className="my-2 flex justify-center"
+                  hidden={documentHistories.length <= 0}
+                >
                   <Select value={selectedOption} onValueChange={onOptionChange}>
                     <SelectTrigger className="h-fit w-fit text-xs">
                       <SelectValue>
                         {
-                          documents.find((doc) => doc.id === selectedOption)
-                            ?.title
+                          documentHistories?.find(
+                            (doc) => doc.document.id === selectedOption,
+                          )?.document.title
                         }
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent className="hover:cursor-pointer">
-                      {documents.map((doc) => (
+                      {documentHistories?.map((doc) => (
                         <SelectItem
-                          key={doc.id}
-                          value={doc.id}
+                          key={doc.document.id}
+                          value={doc.document.id}
                           className="text-xs hover:cursor-pointer"
                         >
-                          {doc.title.replace(
-                            doc.title.charAt(0),
-                            doc.title.charAt(0).toUpperCase(),
+                          {doc.document.title.replace(
+                            doc.document.title.charAt(0),
+                            doc.document.title.charAt(0).toUpperCase(),
                           )}
                         </SelectItem>
                       ))}
@@ -335,26 +367,30 @@ export default function ProgressPage() {
               )}
             </div>
             {!isMobile && (
-              <div className="absolute right-6" hidden={isMobile}>
+              <div
+                className="absolute right-6"
+                hidden={isMobile || documentHistories.length <= 0}
+              >
                 <Select value={selectedOption} onValueChange={onOptionChange}>
                   <SelectTrigger className="h-fit w-fit text-xs">
                     <SelectValue>
                       {
-                        documents.find((doc) => doc.id === selectedOption)
-                          ?.title
+                        documentHistories?.find(
+                          (doc) => doc.document.id === selectedOption,
+                        )?.document.title
                       }
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="hover:cursor-pointer">
-                    {documents.map((doc) => (
+                    {documentHistories?.map((doc) => (
                       <SelectItem
-                        key={doc.id}
-                        value={doc.id}
+                        key={doc.document.id}
+                        value={doc.document.id}
                         className="text-xs hover:cursor-pointer"
                       >
-                        {doc.title.replace(
-                          doc.title.charAt(0),
-                          doc.title.charAt(0).toUpperCase(),
+                        {doc.document.title.replace(
+                          doc.document.title.charAt(0),
+                          doc.document.title.charAt(0).toUpperCase(),
                         )}
                       </SelectItem>
                     ))}
@@ -364,37 +400,37 @@ export default function ProgressPage() {
             )}
           </CardHeader>
 
-          {testScoresData.length > 0 ? (
+          {isTestScorePending ? (
             <CardContent>
-              {isTestScorePending ? (
-                <div className="w-full">
-                  <Skeleton className="h-60 w-full" />
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height={250}>
-                  <AreaChart data={testScoresData}>
-                    <XAxis dataKey="date" tick={false} />
-                    <YAxis
-                      domain={[0, 100]}
-                      ticks={[0, 25, 50, 75, 100]}
-                      tickFormatter={(value) => (value % 50 === 0 ? value : "")}
-                    />
-                    <Tooltip />
-                    <Area
-                      type="monotone"
-                      dataKey="score"
-                      stroke="#4F46E5"
-                      fill="#C7D2FE"
-                      dot={{
-                        fill: "var(--color-desktop)",
-                      }}
-                      activeDot={{
-                        r: 6,
-                      }}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              )}
+              <div className="w-full">
+                <Skeleton className="h-60 w-full" />
+              </div>
+            </CardContent>
+          ) : testScoresData.length > 0 ? (
+            <CardContent>
+              <ResponsiveContainer width="100%" height={250}>
+                <AreaChart data={testScoresData}>
+                  <XAxis dataKey="date" tick={false} />
+                  <YAxis
+                    domain={[0, 100]}
+                    ticks={[0, 25, 50, 75, 100]}
+                    tickFormatter={(value) => (value % 50 === 0 ? value : "")}
+                  />
+                  <Tooltip />
+                  <Area
+                    type="monotone"
+                    dataKey="score"
+                    stroke="#4F46E5"
+                    fill="#C7D2FE"
+                    dot={{
+                      fill: "var(--color-desktop)",
+                    }}
+                    activeDot={{
+                      r: 6,
+                    }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </CardContent>
           ) : (
             <div className="px-5 pb-5">

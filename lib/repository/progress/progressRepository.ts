@@ -35,3 +35,26 @@ export async function getChartData(userId: string) {
 
   return categoryData;
 }
+
+export async function getDocumentHistories(userId: string) {
+  const documentHistories = await prismaClient.history.findMany({
+    where: {
+      userId: userId,
+    },
+    select: {
+      document: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+    },
+    distinct: ["documentId"],
+  });
+
+  if (!documentHistories) {
+    return null;
+  }
+
+  return documentHistories;
+}

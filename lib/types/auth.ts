@@ -19,7 +19,7 @@ export const registerSchema = z
       .max(30, "Confirm password must be no longer than 30 characters"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Password don't match",
+    message: "Password doesn't match",
     path: ["confirmPassword"],
   });
 
