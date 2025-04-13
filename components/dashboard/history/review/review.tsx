@@ -95,8 +95,8 @@ export default function Review({ documentId, historyId }: ReviewProps) {
                 </div>
                 <div className="mb-2 mt-6 flex items-center justify-between">
                   <span className="text-sm font-medium">{t("score")}</span>
-                  <span className="text-sm font-bold">
-                    {historyRecord.grade.toFixed(0)}%
+                  <span className="text-2xl font-bold">
+                    {historyRecord.grade.toFixed(0)}
                   </span>
                 </div>
                 <Progress value={historyRecord.grade} className="h-2" />

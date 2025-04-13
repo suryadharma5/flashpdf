@@ -1,11 +1,15 @@
 import { auth } from "@/auth";
 import { prismaClient } from "@/lib/db";
-import { getChartData } from "@/lib/repository/progress/progressRepository";
+import {
+  getChartData,
+  getDocumentHistories,
+} from "@/lib/repository/progress/progressRepository";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const documentId = searchParams.get("documentId");
+  const type = searchParams.get("type");
 
   const session = await auth();
   const userId = session?.user.id;
@@ -45,6 +49,32 @@ export async function GET(req: NextRequest) {
       {
         message: "OK",
         data: histories,
+        status: 200,
+      },
+      {
+        status: 200,
+      },
+    );
+  } else if (type === "documentHistories") {
+    const documentHistories = await getDocumentHistories(userId);
+
+    if (!documentHistories) {
+      return NextResponse.json(
+        {
+          message: "OK",
+          data: [],
+          status: 200,
+        },
+        {
+          status: 200,
+        },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        message: "OK",
+        data: documentHistories,
         status: 200,
       },
       {

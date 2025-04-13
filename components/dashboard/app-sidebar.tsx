@@ -53,7 +53,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         isActive: pathName.includes("/dashboard/material"),
         items: [
           {
-            title: "New Flashcard",
+            title: "Create Flashcard",
             icon: Plus,
             url: "/dashboard/material/create",
             isActive: pathName === "/dashboard/material/create",
@@ -62,13 +62,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "My Flashcards",
             icon: Files,
             url: "/dashboard/material/library",
-            isActive: pathName === "/dashboard/material/library",
+            isActive: pathName.includes("/dashboard/material/library"),
           },
           {
             title: "Saved Flashcards",
             icon: BookmarkIcon,
             url: "/dashboard/material/saved",
-            isActive: pathName === "/dashboard/material/saved",
+            isActive: pathName.includes("/dashboard/material/saved"),
           },
         ],
       },
@@ -76,7 +76,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: "Test History",
         url: "/dashboard/history",
         icon: History,
-        isActive: pathName === "/dashboard/history",
+        isActive: pathName.includes("/dashboard/history"),
       },
       {
         title: "Progress",
@@ -88,7 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: "Forum",
         url: "/dashboard/forum",
         icon: MessagesSquare,
-        isActive: pathName === "/dashboard/forum",
+        isActive: pathName.includes("/dashboard/forum"),
       },
     ],
   };
