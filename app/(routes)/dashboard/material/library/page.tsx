@@ -109,6 +109,8 @@ export default function Page() {
   });
 
   const documents = data?.documents ?? [];
+  const initialData: PaginatedDocumentProps | undefined =
+    queryClient.getQueryData(["documents", 1, "", null]);
 
   const deleteForumMutation = useMutation({
     mutationFn: async (data: TDeleteForumSchema) => {
@@ -253,7 +255,7 @@ export default function Page() {
             ))}
           </div>
         </>
-      ) : documents && documents.length > 0 ? (
+      ) : documents && (initialData?.documents.length ?? 0) > 0 ? (
         <>
           <div className="relative min-h-[65vh] w-full">
             {documents && documents.length > 0 ? (

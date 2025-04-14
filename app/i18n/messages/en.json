@@ -68,9 +68,9 @@
     "alertCancel": "Cancel",
     "alertContinue": "Continue",
     "documentEmpty": "You have not upload any document yet",
-    "documentNotFound": "Document not found",
+    "documentNotFound": "Flashcard not found",
     "alertFlashcardPrivate": "Flashcard is now private",
-    "alertDocumentDeleted": "Document removed!",
+    "alertDocumentDeleted": "Flashcard removed!",
     "by": "by",
     "savedDocumentEmpty": "You have not saved any document yet"
   },

@@ -100,7 +100,7 @@ export default function ForumPreview() {
     },
     onSuccess: (_data, _, context) => {
       toast.success(
-        context.previousData != null ? "Document removed" : "Document saved",
+        context.previousData != null ? "Flashcard removed" : "Flashcard saved",
         {
           duration: 3000,
         },

@@ -99,6 +99,8 @@ export default function SavedDocumentsPage() {
   });
 
   const documents = data?.documents || [];
+  const initialData: PaginatedSavedDocumentProps | undefined =
+    queryClient.getQueryData(["fetchSavedDocuments", 1, "", null]);
 
   const deleteSavedDocumentMutation = useMutation({
     mutationFn: async (documentId: string) => {
@@ -200,7 +202,7 @@ export default function SavedDocumentsPage() {
             <SkeletonCard key={index} />
           ))}
         </div>
-      ) : documents && documents.length > 0 ? (
+      ) : documents && (initialData?.documents.length ?? 0) > 0 ? (
         <>
           <div className="relative min-h-[65vh] w-full">
             {documents && documents.length > 0 ? (
