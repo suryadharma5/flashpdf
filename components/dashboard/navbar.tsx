@@ -18,8 +18,8 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
-import { getCookie } from "@/lib/cookie";
 import { GlobeIcon } from "lucide-react";
+import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -32,11 +32,10 @@ export const Navbar = () => {
   // Default to English
   const [currentLocale, setCurrentLocale] = useState("en");
 
+  const locale = useLocale();
+
   useEffect(() => {
-    const cookieLocale = getCookie("NEXT_LOCALE");
-    if (cookieLocale) {
-      setCurrentLocale(cookieLocale);
-    }
+    setCurrentLocale(locale);
   }, []);
 
   const [validPaths, setValidPaths] = useState<Record<string, boolean>>({});
