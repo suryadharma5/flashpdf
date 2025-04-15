@@ -122,7 +122,6 @@ export async function getContext(query: string, namespace: string) {
 
   matches.forEach((match) => {
     console.log(`Match score: ${match.score}`);
-    console.log(match.metadata as MetaData);
   });
 
   const qualifiedMatches = matches.filter(
@@ -134,4 +133,15 @@ export async function getContext(query: string, namespace: string) {
   );
 
   return docs.join("\n").substring(0, 2000);
+}
+
+export async function getMatchScore(query: string, namespace: string) {
+  const queryEmbeddings = await getEmbeddings(query);
+  const matches = await getMatchesFromEmbeddings(queryEmbeddings, namespace);
+
+  const qualifiedMatches = matches.filter(
+    (match) => match.score && match.score > 0.4,
+  );
+
+  return qualifiedMatches.map((match) => match.score).join("\n");
 }
