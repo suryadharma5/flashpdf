@@ -377,6 +377,7 @@ export const getCommentsById = async (forumId: string) => {
         select: {
           username: true,
           image: true,
+          id: true,
         },
       },
     },
@@ -390,4 +391,29 @@ export const getCommentsById = async (forumId: string) => {
   }
 
   return comments;
+};
+
+export const deleteComment = async (commentId: string, userId: string) => {
+  const comment = await prismaClient.comment.findUnique({
+    where: {
+      id: commentId,
+    },
+  });
+
+  if (!comment) {
+    return { status: 404 };
+  }
+
+  const deletedComment = await prismaClient.comment.delete({
+    where: {
+      id: commentId,
+      userId: userId,
+    },
+  });
+
+  if (!deletedComment) {
+    return { status: 500 };
+  }
+
+  return { status: 200 };
 };

@@ -162,7 +162,12 @@
     "hideComment": "Sembunyikan Komentar",
     "showComment": "Tunjukan Semua Komentar",
     "post": "Unggah",
-    "noPost": "Tidak ada lagi postingan untuk dimuat"
+    "noPost": "Tidak ada lagi postingan untuk dimuat",
+    "alertTitle": "Hapus Komentar",
+    "alertDescription": "Apakah kamu yakin ingin menghapus komentar ini? Tindakan ini tidak dapat dibatalkan.",
+    "continueBtn": "Lanjutkan",
+    "cancelBtn": "Batal",
+    "deleteBtn": "Hapus"
   },
   "sidebar": {
     "editTitle": "Edit Profil",
