@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { getContext } from "@/lib/pinecone";
+import { getContext, getMatchScore } from "@/lib/pinecone";
 import { getChats, saveChat } from "@/lib/repository/chat/chatRepository";
 import {
   getMostRecentUserMessage,
@@ -55,7 +55,13 @@ export async function POST(req: NextRequest) {
   enhancedQuery = query ?? "";
 
   if (lastQuestion) {
-    enhancedQuery = `${lastQuestion} | ${query}`;
+    const matchScore = await getMatchScore(lastQuestion, namespace);
+
+    if (matchScore !== "") {
+      enhancedQuery = `${lastQuestion} | ${query}`;
+    } else {
+      enhancedQuery = query ?? "";
+    }
   }
 
   if (!userMessage) {
