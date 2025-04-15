@@ -34,7 +34,7 @@ export const createQuestion = async (text: string, numOfQuestions: string) => {
         ---
         ${text}
         ---
-        Ensure that the entire process of creating flashcards and questions maintains the original language of the document so that students can learn more effectively.
+        Ensure that the entire process of creating flashcards and questions is conducted in Indonesian so that students can learn more effectively.
     `,
     schema: z.object({
       questions: z.array(
