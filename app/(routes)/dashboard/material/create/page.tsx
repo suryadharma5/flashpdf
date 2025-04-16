@@ -56,7 +56,7 @@ export default function CreatePage() {
     },
   });
 
-  const { data: status, isLoading } = useQuery({
+  const { data: status } = useQuery({
     queryKey: ["documentStatus", docId],
     queryFn: async () => {
       const res = await axiosInstance.get(
