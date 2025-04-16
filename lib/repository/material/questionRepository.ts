@@ -1,7 +1,76 @@
 import { prismaClient } from "@/lib/db";
+import { loadDocumentIntoPineCone } from "@/lib/pinecone";
 import { PrismaTransaction } from "@/lib/repository/auth/tokenRepository";
 import { TDocumentSchema } from "@/lib/types/question-form";
+import { createQuestion } from "@/lib/util/openai-helper";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+
+export async function processInBackground({
+  document,
+  documentTitle,
+  numQuestions,
+  documentId,
+}: {
+  document: File | null;
+  documentTitle: string;
+  numQuestions: string;
+  documentId: string;
+}) {
+  try {
+    const processedFile = await loadDocumentIntoPineCone(
+      document,
+      documentTitle,
+    );
+
+    if (!processedFile) throw new Error("Failed process file to pinecone");
+
+    const { documents, namespaceId } = processedFile;
+
+    const combinedText = documents
+      .flatMap((doc) => doc.map((chunk) => chunk.pageContent))
+      .join(" ");
+
+    const { generatedMaterial, usage } = await createQuestion(
+      combinedText,
+      numQuestions,
+    );
+
+    console.log("Question creation usage:", usage);
+
+    await prismaClient.document.update({
+      where: {
+        id: documentId,
+      },
+      data: {
+        namespace: namespaceId,
+        status: "done",
+        questions: {
+          create: generatedMaterial.questions.map((q) => ({
+            question: q.question,
+            correctAnswer: q.correctAnswer,
+            options: {
+              create: q.options.map((option) => ({ text: option })),
+            },
+          })),
+        },
+        flashcards: {
+          create: generatedMaterial.flashcards.map((f) => ({
+            keyPoint: f.keyPoint,
+            explanation: f.explanation,
+          })),
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error processing document:", error);
+    await prismaClient.document.update({
+      where: { id: documentId },
+      data: {
+        status: "error",
+      },
+    });
+  }
+}
 
 export const createDocumentQuestion = async (
   request: TDocumentSchema,
@@ -115,6 +184,23 @@ export const getFlashcardsData = async (documentId: string) => {
   }
 
   return flashcardsData;
+};
+
+export const getDocumentStatus = async (documentId: string) => {
+  const document = await prismaClient.document.findUnique({
+    where: {
+      id: documentId,
+    },
+    select: {
+      status: true,
+    },
+  });
+
+  if (!document) {
+    return null;
+  }
+
+  return document;
 };
 
 export const getAllDocuments = async (userId: string) => {

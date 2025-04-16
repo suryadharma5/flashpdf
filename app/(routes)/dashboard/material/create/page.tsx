@@ -26,11 +26,11 @@ import {
   TQuestionFormSchema,
 } from "@/lib/types/question-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AlertCircle, CloudUpload, File, Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -41,6 +41,7 @@ export default function CreatePage() {
 
   const [isDropping, setIsDropping] = useState(false);
   const [openCombobox, setOpenCombobox] = useState(false);
+  const [docId, setDocId] = useState<string | null>(null);
 
   const router = useRouter();
   const t = useTranslations("create");
@@ -53,6 +54,18 @@ export default function CreatePage() {
       documentTitle: "",
       category: "",
     },
+  });
+
+  const { data: status, isLoading } = useQuery({
+    queryKey: ["documentStatus", docId],
+    queryFn: async () => {
+      const res = await axiosInstance.get(
+        `/api/material?documentId=${docId}&type=checkStatus`,
+      );
+      return res.data.data.status;
+    },
+    refetchInterval: 3000,
+    enabled: !!docId,
   });
 
   const createQuestionMutation = useMutation({
@@ -73,17 +86,13 @@ export default function CreatePage() {
     },
     onSuccess: (data) => {
       form.reset();
-      router.push(
-        `/dashboard/material/library/document/${data.data.id}/pretest`,
-      );
-      toast.success("Questions created!", {
+      setDocId(data.data.documentId);
+      toast.success("Document accepted an will be process!", {
         duration: 3000,
       });
-
-      // router.push("/dashboard/material/pretest");
     },
     onError: (e) => {
-      toast.error("Failed to create question, please try again");
+      toast.error("Failed to process document, please try again");
       console.log("fail", e);
     },
   });
@@ -125,8 +134,23 @@ export default function CreatePage() {
     multiple: false,
   });
 
+  useEffect(() => {
+    if (status === "done" && docId) {
+      router.push(`/dashboard/material/library/document/${docId}/pretest`);
+      setDocId(null);
+    }
+  }, [status, docId]);
+
   if (createQuestionMutation.isPending) {
+    return <LoadingPage text="Reading document data" />;
+  }
+
+  if (status === "processing") {
     return <LoadingPage text="AI's cooking something up for you..." />;
+  }
+
+  if (status === "error") {
+    toast.error("Failed to create flashcard, please try again");
   }
 
   return (
