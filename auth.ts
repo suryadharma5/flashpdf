@@ -40,6 +40,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             name: user.username,
             image: user.image,
             streak: user.currentStreak,
+            longestStreak: user.longestStreak,
           };
         }
       }
@@ -63,6 +64,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       }
 
       token.streak = existingUser.currentStreak;
+      token.longestStreak = existingUser.longestStreak;
 
       return token;
     },

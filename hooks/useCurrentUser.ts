@@ -7,6 +7,7 @@ type NavUserProps = {
   name: string;
   streak: number;
   username: string;
+  longestStreak: number;
 };
 
 export const useCurrentUser = () => {
