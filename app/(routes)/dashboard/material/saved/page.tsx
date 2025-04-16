@@ -295,18 +295,20 @@ export default function SavedDocumentsPage() {
                       )}
 
                       <div className="mt-4 flex w-full flex-col gap-2">
-                        <Link
-                          className="w-full"
-                          href={`/dashboard/material/library/document/${doc.document.id}/flashcard`}
-                        >
-                          <Button
-                            size="sm"
+                        {doc.document.History.length > 0 ? (
+                          <Link
                             className="w-full"
-                            disabled={doc.document.History.length <= 0}
+                            href={`/dashboard/material/library/document/${doc.document.id}/flashcard`}
                           >
+                            <Button size="sm" className="w-full">
+                              {t("viewFlashcardBtn")}
+                            </Button>
+                          </Link>
+                        ) : (
+                          <Button size="sm" className="w-full" disabled>
                             {t("viewFlashcardBtn")}
                           </Button>
-                        </Link>
+                        )}
 
                         {doc.document.History.length > 0 ? (
                           <Link
