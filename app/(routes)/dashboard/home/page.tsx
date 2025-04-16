@@ -17,7 +17,7 @@ import { Forum, Question } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
 import { enUS, id } from "date-fns/locale";
-import { BookOpen, Clock, Clock9, Flame, Heart } from "lucide-react";
+import { BookOpen, Clock9, Flame, Heart, Trophy } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -156,13 +156,18 @@ export default function HomePage() {
 
                     <div className="flex items-center">
                       <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
-                        <Clock className="h-5 w-5 text-blue-600" />
+                        <Trophy className="h-5 w-5 text-blue-600" />
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">
-                          {t("progressMinutes")}
+                          {t("progressLongestStreak")}
                         </p>
-                        <p className="text-xl font-semibold">12 mins</p>
+                        <p className="text-xl font-semibold">
+                          {user?.longestStreak}{" "}
+                          {t("progressDay", {
+                            count: user?.longestStreak || 0,
+                          })}
+                        </p>
                       </div>
                     </div>
 
@@ -338,7 +343,11 @@ export default function HomePage() {
                         </CardHeader>
                         <CardFooter className="flex items-center justify-between">
                           <div className="flex items-center text-gray-600">
-                            <Heart className="mr-1 h-4 w-4 text-red-500" />
+                            <Heart
+                              className="mr-1 h-4 w-4"
+                              fill="#c20f10"
+                              color="#c20f10"
+                            />
                             <span>{post.totalLike}</span>
                           </div>
                           <Link

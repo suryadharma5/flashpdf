@@ -385,18 +385,20 @@ export default function Page() {
                         )}
 
                         <div className="flex w-full flex-col gap-2">
-                          <Link
-                            className="w-full"
-                            href={`/dashboard/material/library/document/${data.id}/flashcard`}
-                          >
-                            <Button
-                              size="sm"
+                          {data.History.length > 0 ? (
+                            <Link
                               className="w-full"
-                              disabled={data.History.length <= 0}
+                              href={`/dashboard/material/library/document/${data.id}/flashcard`}
                             >
+                              <Button size="sm" className="w-full">
+                                {t("viewFlashcardBtn")}
+                              </Button>
+                            </Link>
+                          ) : (
+                            <Button size="sm" className="w-full" disabled>
                               {t("viewFlashcardBtn")}
                             </Button>
-                          </Link>
+                          )}
 
                           {data.History.length > 0 ? (
                             <Link
