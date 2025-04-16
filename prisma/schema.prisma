@@ -87,6 +87,7 @@ model Document {
   categoryId String
   namespace  String
   isPublic   Boolean     @default(false)
+  status     String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
