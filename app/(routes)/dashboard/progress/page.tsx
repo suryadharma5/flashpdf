@@ -127,8 +127,6 @@ export default function ProgressPage() {
     },
   });
 
-  console.log({ documentHistories });
-
   const {
     data: testScoreById,
     isError: isTestScoreError,
@@ -453,9 +451,7 @@ export default function ProgressPage() {
               {t("pieChtDesc")}
             </CardDescription>
           </CardHeader>
-          {(totalPublicFlashcards ??
-          (0 > 0 || totalPrivateFlashcards) ??
-          0 > 0) ? (
+          {totalFlashcards > 0 ? (
             <CardContent className="-mt-3 pb-0">
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
