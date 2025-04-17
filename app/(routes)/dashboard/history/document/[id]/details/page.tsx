@@ -83,9 +83,9 @@ export default function HistoryDetailPage() {
   );
 
   const latestPosttest = data
-    ? [...data]
-        .reverse()
-        .find((attempt) => attempt.type.toLowerCase() === "posttest")
+    ? data[0].type.toLowerCase() === "posttest"
+      ? data[0]
+      : null
     : null;
 
   let improvement = 0;

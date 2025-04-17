@@ -2,6 +2,7 @@
 
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
 
+import { Button } from "@/components/ui/button"; // Changed from @react-email/components
 import {
   Card,
   CardContent,
@@ -16,7 +17,6 @@ import {
 } from "@/components/ui/chart";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosInstance } from "@/lib/axios";
-import { Button } from "@react-email/components";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -31,11 +31,37 @@ export default function RadarChartComponent() {
   const t = useTranslations("progress");
   const isMobile = useIsMobile();
 
-  const { data: chartData, isPending } = useQuery({
+  const {
+    data: chartData,
+    isPending,
+    refetch,
+  } = useQuery({
     queryKey: ["radarChartData"],
     queryFn: async () => {
       const response = await axiosInstance.get("/api/progress");
-      const chartData = response.data.data as RadarChartDataProps[];
+      let chartData = response.data.data as RadarChartDataProps[];
+
+      // Deduplicate categories by combining tests and averaging grades
+      const categoryMap = new Map<string, RadarChartDataProps>();
+
+      chartData.forEach((item) => {
+        if (categoryMap.has(item.category)) {
+          const existing = categoryMap.get(item.category)!;
+          existing.tests += item.tests;
+          // Weighted average for grades
+          const totalTests = existing.tests;
+          existing.averageGrade =
+            (existing.averageGrade * (totalTests - item.tests) +
+              item.averageGrade * item.tests) /
+            totalTests;
+          categoryMap.set(item.category, existing);
+        } else {
+          categoryMap.set(item.category, { ...item });
+        }
+      });
+
+      // Convert back to array
+      chartData = Array.from(categoryMap.values());
 
       const allCategories = [
         "science",
@@ -50,16 +76,18 @@ export default function RadarChartComponent() {
 
       const missingCategories = allCategories
         .filter((category) => !existingCategories.includes(category))
-        .slice(0, Math.max(0, 6 - chartData.length)); // Pastikan totalnya 6 kategori
+        .slice(0, Math.max(0, 6 - chartData.length)); // Ensure total of 6 categories
 
       const filledChartData = [
         ...chartData,
         ...missingCategories.map((category) => ({
           category,
-          tests: 0, // Default nilai jika belum ada data
+          tests: 0, // Default value if no data exists
           averageGrade: 0,
         })),
       ];
+
+      console.log({ filledChartData });
 
       return filledChartData;
     },
@@ -104,6 +132,13 @@ export default function RadarChartComponent() {
                   bottom: 10,
                   left: 10,
                 }}
+                style={
+                  {
+                    // Define CSS variables inline
+                    "--color-tests": "hsl(var(--chart-2))",
+                    "--color-averageGrade": "hsl(var(--chart-4))",
+                  } as React.CSSProperties
+                }
               >
                 <ChartTooltip
                   cursor={false}
@@ -111,7 +146,14 @@ export default function RadarChartComponent() {
                 />
                 <PolarAngleAxis
                   dataKey="category"
-                  tick={({ x, y, textAnchor, index, ...props }) => {
+                  tick={(props) => {
+                    const { x, y, textAnchor, index } = props;
+
+                    // Pastikan data ada - jika tidak, kembalikan elemen kosong bukan null
+                    if (!chartData || index >= chartData.length) {
+                      return <text />; // Return empty text element instead of null
+                    }
+
                     const data = chartData[index];
 
                     return (
@@ -121,7 +163,6 @@ export default function RadarChartComponent() {
                         textAnchor={textAnchor}
                         fontSize={13}
                         fontWeight={500}
-                        {...props}
                       >
                         {isMobile ? (
                           <></>
@@ -150,26 +191,31 @@ export default function RadarChartComponent() {
 
                 <PolarGrid />
                 <Radar
+                  name="Tests"
                   dataKey="tests"
-                  fill="var(--color-tests)"
+                  fill="hsl(var(--chart-2))"
                   fillOpacity={0.6}
-                  stroke="var(--color-tests)"
+                  stroke="hsl(var(--chart-2))"
                   strokeWidth={2}
                 />
                 <Radar
+                  name="Average Grade"
                   dataKey="averageGrade"
-                  fill="var(--color-averageGrade)"
+                  fill="hsl(var(--chart-4))"
                   fillOpacity={0.4}
-                  stroke="var(--color-averageGrade)"
+                  stroke="hsl(var(--chart-4))"
                   strokeWidth={2}
                 />
               </RadarChart>
             </ChartContainer>
           ) : (
-            <div>
+            <div className="flex flex-col items-center justify-center gap-2 p-4">
               <div>Failed to load data</div>
-              <Button className="flex">
-                <RotateCcw />
+              <Button
+                onClick={() => refetch()}
+                className="flex items-center gap-2"
+              >
+                <RotateCcw className="h-4 w-4" />
                 Reload
               </Button>
             </div>
