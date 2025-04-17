@@ -305,6 +305,7 @@ export const getPaginatedDocuments = async (
 
   const whereCondition: any = {
     userId: userId,
+    status: "done",
   };
 
   if (query && query.trim() !== "") {
