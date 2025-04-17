@@ -136,6 +136,9 @@ export default function CreatePage() {
 
   useEffect(() => {
     if (status === "done" && docId) {
+      toast.success("Flashcard created. Redirecting to pretest page", {
+        duration: 3000,
+      });
       router.push(`/dashboard/material/library/document/${docId}/pretest`);
       setDocId(null);
     }
