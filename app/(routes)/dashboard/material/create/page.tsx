@@ -26,11 +26,11 @@ import {
   TQuestionFormSchema,
 } from "@/lib/types/question-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { AlertCircle, CloudUpload, File, Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -41,7 +41,6 @@ export default function CreatePage() {
 
   const [isDropping, setIsDropping] = useState(false);
   const [openCombobox, setOpenCombobox] = useState(false);
-  const [docId, setDocId] = useState<string | null>(null);
 
   const router = useRouter();
   const t = useTranslations("create");
@@ -54,18 +53,6 @@ export default function CreatePage() {
       documentTitle: "",
       category: "",
     },
-  });
-
-  const { data: status } = useQuery({
-    queryKey: ["documentStatus", docId],
-    queryFn: async () => {
-      const res = await axiosInstance.get(
-        `/api/material?documentId=${docId}&type=checkStatus`,
-      );
-      return res.data.data.status;
-    },
-    refetchInterval: 3000,
-    enabled: !!docId,
   });
 
   const createQuestionMutation = useMutation({
@@ -82,14 +69,14 @@ export default function CreatePage() {
         },
       });
 
-      return res.data;
+      return res.data.data;
     },
     onSuccess: (data) => {
       form.reset();
-      setDocId(data.data.documentId);
-      toast.success("Document accepted an will be process!", {
+      toast.success("Flashcard created, redirecting to pretest!", {
         duration: 3000,
       });
+      router.push(`/dashboard/material/library/document/${data.id}/pretest`);
     },
     onError: (e) => {
       toast.error("Failed to process document, please try again");
@@ -134,26 +121,8 @@ export default function CreatePage() {
     multiple: false,
   });
 
-  useEffect(() => {
-    if (status === "done" && docId) {
-      toast.success("Flashcard created. Redirecting to pretest page", {
-        duration: 3000,
-      });
-      router.push(`/dashboard/material/library/document/${docId}/pretest`);
-      setDocId(null);
-    }
-  }, [status, docId]);
-
   if (createQuestionMutation.isPending) {
-    return <LoadingPage text="Reading document data" />;
-  }
-
-  if (status === "processing") {
-    return <LoadingPage text="AI's cooking something up for you..." />;
-  }
-
-  if (status === "error") {
-    toast.error("Failed to create flashcard, please try again");
+    return <LoadingPage text="AI's cooking something up for you" />;
   }
 
   return (

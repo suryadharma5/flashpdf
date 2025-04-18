@@ -1,18 +1,19 @@
 import { auth } from "@/auth";
 import { prismaClient } from "@/lib/db";
+import { loadDocumentIntoPineCone } from "@/lib/pinecone";
 import {
+  createDocumentQuestion,
   deleteDocument,
   getAllDocuments,
   getDocumentQuestion,
   getDocumentsByLimit,
-  getDocumentStatus,
   getDocumentTotalEntries,
   getFlashcardsData,
   getPaginatedDocuments,
-  processInBackground,
 } from "@/lib/repository/material/questionRepository";
 import { deleteHistory } from "@/lib/repository/material/testRepository";
-import { questionFormSchema } from "@/lib/types/question-form";
+import { questionFormSchema, TDocumentSchema } from "@/lib/types/question-form";
+import { createQuestion } from "@/lib/util/openai-helper";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -43,100 +44,78 @@ export async function POST(req: NextRequest) {
   const { document, documentTitle, numQuestions, category } =
     validatedData.data;
 
-  const createdDoc = await prismaClient.document.create({
-    data: {
-      userId: session?.user.id,
-      title: documentTitle,
-      categoryId: category,
-      status: "processing",
-      namespace: "",
-    },
-    select: {
-      id: true,
-    },
-  });
+  const processedFile = await loadDocumentIntoPineCone(document, documentTitle);
 
-  // const processedFile = await loadDocumentIntoPineCone(document, documentTitle);
+  if (!processedFile) {
+    return NextResponse.json(
+      {
+        status: 400,
+        message: "Invalid field format",
+      },
+      {
+        status: 400,
+      },
+    );
+  }
 
-  // if (!processedFile) {
-  //   return NextResponse.json(
-  //     {
-  //       status: 400,
-  //       message: "Invalid field format",
-  //     },
-  //     {
-  //       status: 400,
-  //     },
-  //   );
-  // }
+  const { documents, namespaceId: namespace } = processedFile;
 
-  // const { documents, namespaceId: namespace } = processedFile;
+  const combinedText = documents
+    .flatMap((doc) => doc.map((chunk) => chunk.pageContent))
+    .join(" ");
 
-  // const combinedText = documents
-  //   .flatMap((doc) => doc.map((chunk) => chunk.pageContent))
-  //   .join(" ");
-
-  // const { generatedMaterial, usage } = await createQuestion(
-  //   combinedText,
-  //   numQuestions,
-  // );
-
-  // console.log("Question creation usage:", usage);
-
-  // const docData: TDocumentSchema = {
-  //   userId: session?.user.id,
-  //   title: documentTitle,
-  //   questions: generatedMaterial.questions.map((q) => ({
-  //     question: q.question,
-  //     correctAnswer: q.correctAnswer,
-  //     options: q.options.map((option) => ({
-  //       text: option,
-  //     })),
-  //   })),
-  //   flashcards: generatedMaterial.flashcards.map((f) => ({
-  //     keyPoint: f.keyPoint,
-  //     explanation: f.explanation,
-  //   })),
-  //   namespace: namespace,
-  //   category: category,
-  // };
-
-  // const result = await prismaClient.$transaction(async (tx) => {
-  //   const docs = await createDocumentQuestion(docData, tx);
-
-  //   if (!docs) {
-  //     console.error("Failed to save question to db");
-  //     return NextResponse.json(
-  //       {
-  //         status: 500,
-  //         message: "Internal server error",
-  //       },
-  //       {
-  //         status: 500,
-  //       },
-  //     );
-  //   }
-
-  //   return docs;
-  // });
-
-  processInBackground({
-    document,
-    documentTitle,
+  const { generatedMaterial, usage } = await createQuestion(
+    combinedText,
     numQuestions,
-    documentId: createdDoc.id,
+  );
+
+  console.log("Question creation usage:", usage);
+
+  const docData: TDocumentSchema = {
+    userId: session?.user.id,
+    title: documentTitle,
+    questions: generatedMaterial.questions.map((q) => ({
+      question: q.question,
+      correctAnswer: q.correctAnswer,
+      options: q.options.map((option) => ({
+        text: option,
+      })),
+    })),
+    flashcards: generatedMaterial.flashcards.map((f) => ({
+      keyPoint: f.keyPoint,
+      explanation: f.explanation,
+    })),
+    namespace: namespace,
+    category: category,
+  };
+
+  const result = await prismaClient.$transaction(async (tx) => {
+    const docs = await createDocumentQuestion(docData, tx);
+
+    if (!docs) {
+      console.error("Failed to save question to db");
+      return NextResponse.json(
+        {
+          status: 500,
+          message: "Internal server error",
+        },
+        {
+          status: 500,
+        },
+      );
+    }
+
+    return docs;
   });
 
   return NextResponse.json(
     {
-      status: 202,
-      data: {
-        documentId: createdDoc.id,
-      },
-      message: "Document created and processing started",
+      status: 201,
+      data: result,
+      message: "Document created",
     },
     {
-      status: 202,
+      status: 201,
     },
   );
 }
@@ -198,30 +177,6 @@ export async function GET(req: NextRequest) {
         status: 200,
         messsage: "OK",
         data: flashcarsdData,
-      },
-      {
-        status: 200,
-      },
-    );
-  } else if (documentId && type === "checkStatus") {
-    const document = await getDocumentStatus(documentId);
-
-    if (!document) {
-      return NextResponse.json(
-        {
-          status: 404,
-          message: "not found",
-        },
-        {
-          status: 404,
-        },
-      );
-    }
-
-    return NextResponse.json(
-      {
-        status: 200,
-        data: document,
       },
       {
         status: 200,
