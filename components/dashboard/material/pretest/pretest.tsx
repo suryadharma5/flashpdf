@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -199,14 +200,15 @@ export default function Test({ documentId }: PretestProps) {
             <CardHeader className="rounded-t-md">
               <CardTitle className="text-start font-bold">
                 <div>
+                  <div className="mb-3 text-sm font-normal text-muted-foreground">
+                    {suffix?.toLowerCase() === "pretest" ? (
+                      <Badge variant={"default"}>Pre-Test</Badge>
+                    ) : (
+                      <Badge variant={"default"}>Post-Test</Badge>
+                    )}{" "}
+                  </div>
                   {documentTitle.charAt(0).toUpperCase() +
                     documentTitle.slice(1)}
-                  <p className="mb-3 text-sm font-normal text-muted-foreground">
-                    {suffix?.toLowerCase() === "pretest"
-                      ? "Pretest"
-                      : "Posttest"}{" "}
-                    {t("question")}
-                  </p>
                   <div className="mb-4 flex items-center justify-between font-normal">
                     <div className="mt-2 flex items-center space-x-2">
                       <small className="text-xs text-muted-foreground">
