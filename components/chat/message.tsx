@@ -1,6 +1,7 @@
 import { Message } from "ai";
 import { Bot, Check, CircleUser, Copy } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import Markdown from "react-markdown";
 
 type MessageProps = {
   messages: Message[];
@@ -59,7 +60,9 @@ export const MessageBlock = ({ messages }: MessageProps) => {
                   <div
                     className={`w-3/4 flex-1 rounded-lg border border-gray-200 p-3`}
                   >
-                    <div className={`text-sm`}>{message.content}</div>
+                    <div className={`text-sm`}>
+                      <Markdown children={message.content} />
+                    </div>
                   </div>
                 </div>
                 <div
