@@ -89,8 +89,9 @@ export default function Review({ documentId, historyId }: ReviewProps) {
                   </div>
                   <p>{t("performanceSummary")}</p>
                   <Badge className="ml-5">
-                    {historyRecord.type.charAt(0).toUpperCase() +
-                      historyRecord.type.slice(1).toLowerCase()}
+                    {historyRecord.type.toLowerCase() === "pretest"
+                      ? "Pre-Test"
+                      : "Post-Test"}
                   </Badge>
                 </div>
                 <div className="mb-2 mt-6 flex items-center justify-between">
