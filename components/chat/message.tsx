@@ -60,8 +60,8 @@ export const MessageBlock = ({ messages }: MessageProps) => {
                   <div
                     className={`w-3/4 flex-1 rounded-lg border border-gray-200 p-3`}
                   >
-                    <div className={`text-sm`}>
-                      <Markdown children={message.content} />
+                    <div className="text-sm">
+                      <Markdown>{message.content}</Markdown>
                     </div>
                   </div>
                 </div>
