@@ -27,7 +27,7 @@ import {
 } from "@/lib/types/question-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { AlertCircle, CloudUpload, File, Trash2Icon } from "lucide-react";
+import { AlertCircle, CloudUpload, File, Trash2Icon, Download } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
@@ -110,6 +110,27 @@ export default function CreatePage() {
     form.resetField("document");
     if (fileInputRef.current) {
       fileInputRef.current.value = ""; // Reset file input
+    }
+  };
+
+  const handleDownloadFile = () => {
+    const file = form.getValues("document");
+    if (file) {
+      const fileURL = URL.createObjectURL(file);
+      
+      const downloadLink = document.createElement("a");
+      downloadLink.href = fileURL;
+      downloadLink.download = file.name;
+      
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      
+      document.body.removeChild(downloadLink);
+      URL.revokeObjectURL(fileURL);
+      
+      toast.success("Downloading file...", {
+        duration: 2000,
+      });
     }
   };
 
@@ -227,17 +248,28 @@ export default function CreatePage() {
                           <div>
                             {field.value ? (
                               <div className="flex h-32 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed">
-                                <File className="mr-2 h-6 w-6" />
-                                <div className="flex items-center">
-                                  <small className="mt-3 text-gray-500">
-                                    {field.value.name}
+                                <File className="h-6 w-6" />
+                                <div className="flex flex-col items-center">
+                                  <div className="flex items-center mt-3">
+                                    <button
+                                      type="button"
+                                      className="flex items-center text-blue-500 hover:text-blue-700 hover:underline focus:outline-none"
+                                      onClick={handleDownloadFile}
+                                    >
+                                      <small className="text-gray-800">{field.value.name}</small>
+                                      <Download size={15} className="ml-2" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="ml-4 text-gray-500 hover:text-red-500 focus:outline-none"
+                                      onClick={handleRemoveFile}
+                                    >
+                                      <Trash2Icon size={15} />
+                                    </button>
+                                  </div>
+                                  <small className="mt-1 text-gray-500">
+                                    Click filename to download and verify
                                   </small>
-                                  <span
-                                    className="ml-4 mt-3 hover:cursor-pointer"
-                                    onClick={() => handleRemoveFile()}
-                                  >
-                                    <Trash2Icon size={15} />
-                                  </span>
                                 </div>
                               </div>
                             ) : (
