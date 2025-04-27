@@ -59,7 +59,8 @@
     "alertCancel": "Batal",
     "alertContinue": "Lanjutkan",
     "alertFailed": "Gagal membuat flashcard, silakan coba lagi!",
-    "alertSuccess": "Flashcard berhasil dibuat, mengalihkan ke pretest!"
+    "alertSuccess": "Flashcard berhasil dibuat, mengalihkan ke pretest!",
+    "placeHolderNumberOfFlashcard": "Buat antara 10 – 50 flashcard"
   },
   "myFlashcard": {
     "title": "Flashcard Saya",

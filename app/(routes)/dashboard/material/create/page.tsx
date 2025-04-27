@@ -225,7 +225,7 @@ export default function CreatePage() {
                               ref={inputRef}
                               onFocus={handleFocus}
                               className="col-span-3"
-                              placeholder="10"
+                              placeholder={t("placeHolderNumberOfFlashcard")}
                               required
                             />
                           </FormControl>

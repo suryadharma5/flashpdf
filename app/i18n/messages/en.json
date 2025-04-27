@@ -59,7 +59,8 @@
     "alertCancel": "Cancel",
     "alertContinue": "Continue",
     "alertFailed": "Failed to create flashcard, please try again!",
-    "alertSuccess": "Flashcard created, redirecting to pretest!"
+    "alertSuccess": "Flashcard created, redirecting to pretest!",
+    "placeHolderNumberOfFlashcard": "Create between 10 – 50 flashcards"
   },
   "myFlashcard": {
     "title": "My Flashcards",
