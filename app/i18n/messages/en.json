@@ -55,7 +55,7 @@
     "flashcardCount": "Total",
     "flashcardCategory": "Category",
     "flashcardFile": "PDF File",
-    "alertMessage": "Ensure that the file and all the data you input are correct. Once the flashcard is created, it cannot be edited or undone.",
+    "alertMessage": "Once the flashcard is created, it cannot be edited.",
     "alertCancel": "Cancel",
     "alertContinue": "Continue",
     "alertFailed": "Failed to create flashcard, please try again!",

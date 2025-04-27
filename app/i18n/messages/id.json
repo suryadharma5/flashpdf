@@ -55,7 +55,7 @@
     "flashcardCount": "Total",
     "flashcardCategory": "Kategori",
     "flashcardFile": "File PDF",
-    "alertMessage": "Pastikan file dan semua data yang Anda input sudah benar. Setelah flashcard dibuat, data tersebut tidak dapat diubah atau dibatalkan.",
+    "alertMessage": "Setelah flashcard dibuat, data flashcard tidak dapat diubah.",
     "alertCancel": "Batal",
     "alertContinue": "Lanjutkan",
     "alertFailed": "Gagal membuat flashcard, silakan coba lagi!",
