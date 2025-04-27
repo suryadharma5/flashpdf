@@ -12,13 +12,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { axiosInstance } from "@/lib/axios";
 import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
-import ErrorPage from "../error";
+import { useEffect, useState } from "react";
 
 type ComboBoxCategoryProps = {
   openCombobox: boolean;
@@ -41,24 +39,21 @@ export const ComboBoxCategory = ({
   const [categories, setCategories] = useState<CategoryProps[] | []>([]);
 
   const t = useTranslations("create");
+  const queryClient = useQueryClient();
 
-  const { isError } = useQuery({
-    queryKey: ["fetchCategories"],
-    queryFn: async () => {
-      const res = await axiosInstance.get("/api/category");
-      const categories = res.data.data as CategoryProps[];
-      setCategories(categories);
-      return categories;
-    },
-  });
+  const categoriesData = queryClient.getQueryData<CategoryProps[]>([
+    "fetchCategories",
+  ]);
+
+  useEffect(() => {
+    if (categoriesData) {
+      setCategories(categoriesData);
+    }
+  }, [categoriesData]);
 
   const selectedCategoryName = categories.find(
     (category) => category.id === selectedCategory,
   )?.name;
-
-  if (isError) {
-    return <ErrorPage />;
-  }
 
   return (
     <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
