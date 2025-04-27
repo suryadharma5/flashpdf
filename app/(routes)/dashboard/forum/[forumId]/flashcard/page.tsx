@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "use-intl";
 
 type ForumPreviewProps = {
   forumId: string;
@@ -29,6 +30,7 @@ type SavedDocumentProps = {
 export default function ForumPreview() {
   const params: ForumPreviewProps = useParams();
   const queryClient = useQueryClient();
+  const t = useTranslations("forum");
 
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -100,7 +102,9 @@ export default function ForumPreview() {
     },
     onSuccess: (_data, _, context) => {
       toast.success(
-        context.previousData != null ? "Flashcard removed" : "Flashcard saved",
+        context.previousData != null
+          ? t("unsaveFlashcard")
+          : t("saveFlashcard"),
         {
           duration: 3000,
         },

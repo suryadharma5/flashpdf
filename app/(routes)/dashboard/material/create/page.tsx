@@ -94,13 +94,13 @@ export default function CreatePage() {
     onSuccess: (data) => {
       form.reset();
       setFormDataToSubmit(null);
-      toast.success("Flashcard created, redirecting to pretest!", {
+      toast.success(t("alertSuccess"), {
         duration: 3000,
       });
       router.push(`/dashboard/material/library/document/${data.id}/pretest`);
     },
     onError: (e) => {
-      toast.error("Failed to create flashcard, please try again");
+      toast.error(t("alertFailed"));
       console.log("fail", e);
     },
   });

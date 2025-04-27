@@ -316,7 +316,7 @@ export default function Comment({
 
   if (commentMutation.isError) {
     console.log(commentMutation.error.response?.data.status);
-    toast.error("Something went wrong. Please try again.", {
+    toast.error(t("generalError"), {
       position: "top-right",
       duration: 3000,
     });
@@ -324,7 +324,7 @@ export default function Comment({
   }
 
   if (deleteCommentMutation.isError) {
-    toast.error("Something went wrong. Please try again.", {
+    toast.error(t("generalError"), {
       position: "top-right",
       duration: 3000,
     });
@@ -335,11 +335,9 @@ export default function Comment({
     return (
       <div className="mt-2 border-t px-6 py-4">
         <div className="py-8 text-center">
-          <p className="mt-2 text-muted-foreground">
-            Something went wrong. Please try again.
-          </p>
+          <p className="mt-2 text-muted-foreground">{t("generalError")}</p>
           <Button onClick={() => refetch()} className="mt-4">
-            Retry
+            {t("retryBtn")}
           </Button>
         </div>
       </div>
