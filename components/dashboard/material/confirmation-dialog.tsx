@@ -98,7 +98,7 @@ export function ConfirmationDialog({
             </small>
           </div>
         </div>
-        <DialogFooter className="flex sm:justify-between">
+        <DialogFooter className="flex flex-col space-y-2 md:flex-row md:justify-between md:space-y-0">
           <Button variant="outline" onClick={onClose}>
             <X className="mr-2 h-4 w-4" />
             {t("alertCancel")}
