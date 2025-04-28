@@ -39,6 +39,10 @@ type DocumentProps = {
   };
 };
 
+type UserFlashcardCountProps = {
+  _count: number;
+};
+
 export default function HomePage() {
   const user = useCurrentUser();
 
@@ -73,6 +77,20 @@ export default function HomePage() {
     },
   });
 
+  const {
+    data: userFlashcard,
+    isError: userFlashcardError,
+    isPending: userFlashcardPending,
+  } = useQuery({
+    queryKey: ["fetchUserFlashcard"],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/api/progress?type=userFlashcards");
+      return res.data.data as UserFlashcardCountProps;
+    },
+  });
+
+  console.log(userFlashcard?._count, "ini dia");
+
   const isPostTestComplete = (histories: HistoryProps[]) =>
     histories.some((history) => history.type.toLowerCase() === "posttest");
 
@@ -83,7 +101,7 @@ export default function HomePage() {
     return t("time3");
   };
 
-  if (isError || isDocumentError) {
+  if (isError || isDocumentError || userFlashcardError) {
     return <ErrorPage />;
   }
 
@@ -149,7 +167,7 @@ export default function HomePage() {
                           {t("progressCard")}
                         </p>
                         <p className="text-xl font-semibold">
-                          {isDocumentPending ? 0 : documents?.length}
+                          {userFlashcardPending ? 0 : userFlashcard?._count}
                         </p>
                       </div>
                     </div>
