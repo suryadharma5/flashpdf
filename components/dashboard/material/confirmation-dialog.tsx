@@ -48,27 +48,27 @@ export function ConfirmationDialog({
           <div className="rounded-lg border p-4">
             <h3 className="text-lg font-semibold">{t("flashcardDetail")}</h3>
             <div className="mt-3 space-y-2">
-              <div className="grid grid-cols-3 gap-2">
-                <span className="text-sm font-medium text-muted-foreground">
-                  {t("flashcardTitle")}:
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">
+                  {t("flashcardTitle")}
                 </span>
-                <span className="col-span-2 text-sm text-gray-600">
+                <span className="text-left text-sm font-medium">
                   {details.title}
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                <span className="text-sm font-medium text-muted-foreground">
-                  {t("flashcardCount")}:
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">
+                  {t("flashcardCount")}
                 </span>
-                <span className="col-span-2 text-sm text-gray-600">
+                <span className="text-left text-sm font-medium">
                   {details.numberOfCards} flashcard
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                <span className="text-sm font-medium text-muted-foreground">
-                  {t("flashcardCategory")}:
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">
+                  {t("flashcardCategory")}
                 </span>
-                <span className="col-span-2 text-sm">
+                <span className="text-left text-sm">
                   <Badge
                     className={`${categoryColors[details.category ?? "others"]} w-fit`}
                     variant={"default"}
@@ -81,11 +81,11 @@ export function ConfirmationDialog({
                 </span>
               </div>
               {details.pdfFileName && (
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="text-sm font-medium text-muted-foreground">
-                    {t("flashcardFile")}:
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    {t("flashcardFile")}
                   </span>
-                  <span className="col-span-2 truncate text-sm text-gray-600">
+                  <span className="truncate text-left text-sm font-medium">
                     {details.pdfFileName}
                   </span>
                 </div>
