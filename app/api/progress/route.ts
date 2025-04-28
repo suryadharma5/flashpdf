@@ -81,6 +81,37 @@ export async function GET(req: NextRequest) {
         status: 200,
       },
     );
+  } else if (type === "userFlashcards") {
+    const flashcardData = await prismaClient.document.aggregate({
+      where: {
+        userId: userId,
+      },
+      _count: true,
+    });
+
+    if (!flashcardData) {
+      return NextResponse.json(
+        {
+          message: "OK",
+          data: [],
+          status: 200,
+        },
+        {
+          status: 200,
+        },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        message: "OK",
+        data: flashcardData,
+        status: 200,
+      },
+      {
+        status: 200,
+      },
+    );
   }
 
   const data = await getChartData(userId);
