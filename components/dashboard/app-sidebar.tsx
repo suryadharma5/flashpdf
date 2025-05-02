@@ -22,10 +22,12 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathName = usePathname();
+  const t = useTranslations("sidebar");
 
   const data = {
     user: {
@@ -41,31 +43,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     ],
     navMain: [
       {
-        title: "Home",
+        title: t("home"),
         url: "/dashboard/home",
         icon: House,
         isActive: pathName === "/dashboard/home",
       },
       {
-        title: "Materials",
+        title: t("materials"),
         url: "#",
         icon: LayoutDashboard,
         isActive: pathName.includes("/dashboard/material"),
         items: [
           {
-            title: "Create Flashcard",
+            title: t("createFlashcard"),
             icon: Plus,
             url: "/dashboard/material/create",
             isActive: pathName === "/dashboard/material/create",
           },
           {
-            title: "My Flashcards",
+            title: t("myFlashcard"),
             icon: Files,
             url: "/dashboard/material/library",
             isActive: pathName.includes("/dashboard/material/library"),
           },
           {
-            title: "Saved Flashcards",
+            title: t("savedFlashcard"),
             icon: BookmarkIcon,
             url: "/dashboard/material/saved",
             isActive: pathName.includes("/dashboard/material/saved"),
@@ -73,13 +75,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ],
       },
       {
-        title: "Test History",
+        title: t("testHistory"),
         url: "/dashboard/history",
         icon: History,
         isActive: pathName.includes("/dashboard/history"),
       },
       {
-        title: "Progress",
+        title: t("progress"),
         url: "/dashboard/progress",
         icon: ChartLine,
         isActive: pathName === "/dashboard/progress",

@@ -170,6 +170,7 @@
     "attempt": "percobaan"
   },
   "forum": {
+    "title": "Forum Flashcard",
     "discussion": "Diskusi",
     "firstThought": "Jadi yang pertama memberikan Komentar",
     "searchForum": "Cari Forum...",
@@ -196,7 +197,14 @@
     "saving": "Menyimpan...",
     "errUsernameExist": "Nama pengguna sudah ada!",
     "errUploadImage": "Gagal memperbarui profil, silakan coba lagi!",
-    "successUpdate": "Profil berhasil diperbarui!"
+    "successUpdate": "Profil berhasil diperbarui!",
+    "home": "Beranda",
+    "materials": "Materi",
+    "createFlashcard": "Buat Flashcard",
+    "myFlashcard": "Flashcard Saya",
+    "savedFlashcard": "Flashcard Tersimpan",
+    "testHistory": "Riwayat Tes",
+    "progress": "Progres"
   },
   "search": {
     "title": "Urutkan",
