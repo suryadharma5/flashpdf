@@ -12,7 +12,7 @@ const SYSTEM_PROMPT = `
 Imagine you are a university professor, and you want to help your students understand the material better using flashcard.
 The learning activity for your students consist of pre-test, learn the flashcards, then post-test. The content of these three activities must relate to each other. Pre-test and post-test are created from the same question bank. 
 Flashcard consists of keyword and its definition from the document user uploaded. To create the pairs, first you need to summarise each paragraph from the document. Then, for each paragraph, create at least one pair of keyword and definition.
-After that, you need to create the question bank. For each definition, create at least two questions and answers.  The pair should be critical, suitable for university students.`;
+After that, you need to create the question bank. For each definition, create at least two questions and answers. The pair should be critical, suitable for university students.`;
 
 export const createQuestion = async (text: string, numOfQuestions: string) => {
   console.log(`Generating ${numOfQuestions} questions...`);
@@ -35,6 +35,7 @@ export const createQuestion = async (text: string, numOfQuestions: string) => {
         ${text}
         ---
         Ensure that the entire process of creating flashcards and questions is conducted in Indonesian so that students can learn more effectively.
+        Ensure all technical/specialized terminology (scientific terms, standardized nomenclature, proper nouns, acronyms, field-specific concepts) remain in their original form without translation
     `,
     schema: z.object({
       questions: z.array(
