@@ -170,6 +170,7 @@
     "attempt": "attempt"
   },
   "forum": {
+    "title": "Flashcards Forum",
     "discussion": "Discussion",
     "firstThought": "Be the first to share your thoughts!",
     "searchForum": "Search Forums...",
@@ -196,7 +197,14 @@
     "saving": "Saving...",
     "errUsernameExist": "Username already exist!",
     "errUploadImage": "Failed to update profile, please try again!",
-    "successUpdate": "Profile updated!"
+    "successUpdate": "Profile updated!",
+    "home": "Home",
+    "materials": "Materials",
+    "createFlashcard": "Create Flashcard",
+    "myFlashcard": "My Flashcards",
+    "savedFlashcard": "Saved Flashcards",
+    "testHistory": "Test History",
+    "progress": "Progress"
   },
   "search": {
     "title": "Sort by",

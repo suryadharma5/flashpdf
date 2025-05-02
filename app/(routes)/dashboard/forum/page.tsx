@@ -249,7 +249,7 @@ export default function ForumPage() {
   return (
     <div className="container mx-auto flex max-w-7xl flex-col items-start p-4">
       <h1 className="mb-8 w-full text-start text-3xl font-bold">
-        Flashcards Forum
+        {t("title")}
       </h1>
 
       <div className="w-full max-w-4xl">
