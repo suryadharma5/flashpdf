@@ -30,7 +30,7 @@ export default async function RootLayout({
   // Get the locale from headers on the server-side
   // Get locale from cookies or default to 'en'
   const cookieStore = await cookies();
-  const locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
+  const locale = cookieStore.get("NEXT_LOCALE")?.value || "id";
 
   // Load messages for the current locale
   const messages = await getTranslations(locale);

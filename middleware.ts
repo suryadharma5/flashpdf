@@ -11,7 +11,7 @@ import {
 
 // Define supported locales
 const locales = ["en", "id"];
-const defaultLocale = "en";
+const defaultLocale = "id";
 
 // Create the internationalization middleware
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
