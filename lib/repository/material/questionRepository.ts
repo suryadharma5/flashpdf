@@ -128,7 +128,7 @@ export const getDocumentQuestion = async (documentId: string) => {
   // Get 10 ID pertanyaan acak
   const randomQuestionIds = await prismaClient.$queryRaw<{ id: string }[]>`
     SELECT id FROM "questions"
-    WHERE "documentId" = ${documentId}
+    WHERE "studyMaterialId" = ${documentId}
     ORDER BY RANDOM()
     LIMIT 10
   `;

@@ -16,11 +16,11 @@ datasource db {
 
 // authentication
 model User {
-  id            String    @id @default(cuid())
-  username      String?   @unique
-  name          String?
-  password      String?
-  email         String    @unique
+  id            String    @id @default(cuid()) @db.VarChar(40)
+  username      String?   @unique @db.VarChar(255)
+  name          String?   @db.VarChar(255)
+  password      String?   @db.VarChar(255)
+  email         String    @unique @db.VarChar(255)
   emailVerified DateTime?
   image         String?
   accounts      Account[]
@@ -46,8 +46,8 @@ model User {
 }
 
 model VerificationToken {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String   @id @default(cuid()) @db.VarChar(40)
+  email     String   @unique @db.VarChar(255)
   token     String   @unique
   expiresAt DateTime
 
@@ -56,17 +56,15 @@ model VerificationToken {
 }
 
 model Account {
-  userId            String
-  type              String
-  provider          String
+  userId            String  @db.VarChar(40)
+  type              String  @db.VarChar(255)
+  provider          String  @db.VarChar(255)
   providerAccountId String
-  refresh_token     String?
   access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
   id_token          String?
-  session_state     String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -79,12 +77,12 @@ model Account {
 
 // question generation
 model Document {
-  id         String      @id @default(cuid())
-  title      String
+  id         String      @id @default(cuid()) @db.VarChar(40)
+  title      String      @db.VarChar(255)
   questions  Question[]
   flashcards Flashcard[]
-  userId     String
-  categoryId String
+  userId     String      @db.VarChar(40)
+  categoryId String      @db.VarChar(40)
   namespace  String
   isPublic   Boolean     @default(false)
 
@@ -97,14 +95,14 @@ model Document {
   Forum         Forum[]
   SavedDocument SavedDocument[]
   Notes         Notes[]
-  Category      Category?       @relation(fields: [categoryId], references: [id])
+  Category      Category        @relation(fields: [categoryId], references: [id])
 
-  @@map("documents")
+  @@map("study_materials")
 }
 
 model Category {
-  id   String @id @default(cuid())
-  name String @unique
+  id   String @id @default(cuid()) @db.VarChar(40)
+  name String @unique @db.VarChar(255)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -115,11 +113,11 @@ model Category {
 }
 
 model Question {
-  id            String   @id @default(cuid())
-  question      String   @db.VarChar()
+  id            String   @id @default(cuid()) @db.VarChar(40)
+  question      String
   correctAnswer String
   options       Option[]
-  documentId    String
+  documentId    String   @map("studyMaterialId") @db.VarChar(40)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -131,9 +129,9 @@ model Question {
 }
 
 model Option {
-  id         String @id @default(cuid())
-  text       String @db.VarChar()
-  questionId String
+  id         String @id @default(cuid()) @db.VarChar(40)
+  text       String
+  questionId String @db.VarChar(40)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -145,10 +143,10 @@ model Option {
 
 // Tambahkan model baru untuk flashcard
 model Flashcard {
-  id          String   @id @default(cuid())
+  id          String   @id @default(cuid()) @db.VarChar(40)
   keyPoint    String
   explanation String
-  documentId  String
+  documentId  String   @map("studyMaterialId") @db.VarChar(40)
   document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
@@ -163,17 +161,17 @@ enum TestType {
 }
 
 model History {
-  id         String   @id @default(cuid())
+  id         String   @id @default(cuid()) @db.VarChar(40)
   grade      Int
   type       TestType
-  userId     String
-  documentId String
+  userId     String   @db.VarChar(40)
+  documentId String   @map("studyMaterialId") @db.VarChar(40)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user            User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  document        Document?         @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document        Document          @relation(fields: [documentId], references: [id], onDelete: Cascade)
   AnswerHistory   AnswerHistory[]
   QuestionHistory QuestionHistory[]
 
@@ -181,24 +179,24 @@ model History {
 }
 
 model AnswerHistory {
-  id        String @id @default(cuid())
+  id        String @id @default(cuid()) @db.VarChar(40)
   answer    String
-  userId    String
-  historyId String
+  userId    String @db.VarChar(40)
+  historyId String @db.VarChar(40)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   history History @relation(fields: [historyId], references: [id], onDelete: Cascade)
 
   @@map("answer_histories")
 }
 
 model QuestionHistory {
-  id         String @id @default(cuid())
-  historyId  String
-  questionId String
+  id         String @id @default(cuid()) @db.VarChar(40)
+  historyId  String @db.VarChar(40)
+  questionId String @db.VarChar(40)
 
   createdAt DateTime @default(now())
 
@@ -209,33 +207,33 @@ model QuestionHistory {
 }
 
 model Chat {
-  id         String @id @default(cuid())
+  id         String @id @default(cuid()) @db.VarChar(40)
   messages   Json
-  documentId String
-  userId     String
+  documentId String @map("studyMaterialId") @db.VarChar(40)
+  userId     String @db.VarChar(40)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  document Document? @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("chats")
 }
 
 model Forum {
-  id          String @id @default(cuid())
-  title       String
+  id          String @id @default(cuid()) @db.VarChar(40)
+  title       String @db.VarChar(255)
   description String
-  documentId  String
-  userId      String
+  documentId  String @map("studyMaterialId") @db.VarChar(40)
+  userId      String @db.VarChar(40)
   totalLike   Int    @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  document Document?   @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  user     User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   likes    ForumLike[]
   comments Comment[]
 
@@ -243,9 +241,9 @@ model Forum {
 }
 
 model ForumLike {
-  id        String   @id @default(cuid())
-  userId    String
-  forumId   String
+  id        String   @id @default(cuid()) @db.VarChar(40)
+  userId    String   @db.VarChar(40)
+  forumId   String   @db.VarChar(40)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -259,21 +257,21 @@ model ForumLike {
 model Comment {
   id        String   @id @default(cuid())
   comment   String
-  forumId   String
-  userId    String
+  forumId   String   @db.VarChar(40)
+  userId    String   @db.VarChar(40)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   forum Forum @relation(fields: [forumId], references: [id], onDelete: Cascade)
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("comments")
+  @@map("forum_comments")
 }
 
 model SavedDocument {
-  id         String @id @default(cuid())
-  userId     String
-  documentId String
+  id         String @id @default(cuid()) @db.VarChar(40)
+  userId     String @db.VarChar(40)
+  documentId String @map("studyMaterialId") @db.VarChar(40)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -282,20 +280,20 @@ model SavedDocument {
   document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@unique([userId, documentId])
-  @@map("saved_documents")
+  @@map("saved_study_materials")
 }
 
 model Notes {
-  id         String @id @default(cuid())
-  userId     String
-  documentId String
+  id         String @id @default(cuid()) @db.VarChar(40)
+  userId     String @db.VarChar(40)
+  documentId String @map("studyMaterialId") @db.VarChar(40)
   notes      String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  document Document? @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notes")
 }
