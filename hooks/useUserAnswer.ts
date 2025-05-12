@@ -1,42 +1,39 @@
 import { axiosInstance } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 
-type AnswerHistoryProps = {
-  id: string;
-  answer: string;
-};
-
 type OptionProps = {
   text: string;
 };
 
 type QuestionHistoryProps = {
-  question: {
-    correctAnswer: string;
-    question: string;
-    options: OptionProps[];
-  };
+  correctAnswer: string;
+  question: string;
+  options: OptionProps[];
+};
+
+type HistoryItemsProps = {
+  answer: string;
+  question: QuestionHistoryProps;
 };
 
 export type HistoryProps = {
   grade: number;
   type: string;
   createdAt: string;
-  AnswerHistory: AnswerHistoryProps[];
-  QuestionHistory: QuestionHistoryProps[];
+  HistoryItems: HistoryItemsProps[];
 };
 
-export const useUserAnswer = (documentId: string, historyId: string) => {
+export const useUserAnswer = (historyId: string) => {
   const { data, isLoading, isError, isSuccess, error } = useQuery({
-    queryKey: ["fetchUserAnswer", documentId, historyId],
+    queryKey: ["fetchUserAnswer", historyId],
     queryFn: async () => {
       const res = await axiosInstance.get(
-        `/api/history?documentId=${documentId}&historyId=${historyId}`,
+        `/api/history?&historyId=${historyId}`,
       );
 
       return res.data;
     },
-    enabled: !!documentId && !!historyId,
+    enabled: !!historyId,
   });
 
   const historyRecord: HistoryProps = data?.data;
