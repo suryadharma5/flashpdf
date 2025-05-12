@@ -35,7 +35,7 @@ export default function Review({ documentId, historyId }: ReviewProps) {
     isError: isHistoryError,
     error: historyError,
     isSuccess: historySuccess,
-  } = useUserAnswer(documentId, historyId);
+  } = useUserAnswer(historyId);
 
   console.log({ historyRecord });
 
@@ -105,7 +105,7 @@ export default function Review({ documentId, historyId }: ReviewProps) {
             </CardHeader>
 
             <CardContent className="mt-3 space-y-6">
-              {historyRecord.QuestionHistory.map((data, idx) => (
+              {historyRecord.HistoryItems.map((data, idx) => (
                 <div className="rounded-lg border px-6 pb-6 pt-4" key={idx}>
                   <div className="flex items-center justify-start">
                     <h2
@@ -117,7 +117,7 @@ export default function Review({ documentId, historyId }: ReviewProps) {
                       {idx + 1}. {data.question.question}
                     </h2>
                     {data.question.correctAnswer ===
-                    historyRecord.AnswerHistory[idx].answer ? (
+                    historyRecord.HistoryItems[idx].answer ? (
                       <CheckCircle
                         className={cn(
                           "ml-4 text-green-500",
@@ -134,14 +134,15 @@ export default function Review({ documentId, historyId }: ReviewProps) {
                     )}
                   </div>
                   <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                    {historyRecord.QuestionHistory[idx].question.options.map(
+                    {historyRecord.HistoryItems[idx].question.options.map(
                       (option, index) => {
                         const userAnswer =
-                          historyRecord.AnswerHistory[idx].answer;
+                          historyRecord.HistoryItems[idx].answer;
                         const isCorrect =
                           option.text === data.question.correctAnswer;
                         const isUserAnswer = option.text === userAnswer;
 
+                        console.log({ userAnswer });
                         return (
                           <div
                             key={index}

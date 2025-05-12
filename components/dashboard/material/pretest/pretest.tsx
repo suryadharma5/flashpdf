@@ -119,7 +119,6 @@ export default function Test({ documentId }: PretestProps) {
 
     const processedAnswers = userAnswers.map((answer) => ({
       answer: answer,
-      userId: user?.id ?? "",
     }));
 
     const questionsHistory = questions.map((q) => ({
