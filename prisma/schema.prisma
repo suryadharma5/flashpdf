@@ -124,6 +124,7 @@ model Question {
 
   document        Document?         @relation(fields: [documentId], references: [id], onDelete: Cascade)
   QuestionHistory QuestionHistory[]
+  HistoryItems    HistoryItems[]
 
   @@map("questions")
 }
@@ -174,6 +175,7 @@ model History {
   document        Document          @relation(fields: [documentId], references: [id], onDelete: Cascade)
   AnswerHistory   AnswerHistory[]
   QuestionHistory QuestionHistory[]
+  HistoryItems    HistoryItems[]
 
   @@map("histories")
 }
@@ -296,4 +298,19 @@ model Notes {
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notes")
+}
+
+model HistoryItems {
+  id         String @id @default(cuid()) @db.VarChar(40)
+  historyId  String @db.VarChar(40)
+  questionId String @db.VarChar(40)
+  answer     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  history  History  @relation(fields: [historyId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("history_items")
 }

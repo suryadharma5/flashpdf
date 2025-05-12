@@ -2,8 +2,7 @@ import { auth } from "@/auth";
 import { prismaClient } from "@/lib/db";
 import { updateUserStreak } from "@/lib/repository/auth/userRepository";
 import {
-  createAnswerHistory,
-  createQuestionsHistory,
+  createHistoryItems,
   createTestHistory,
   getHistoriesTotalEntries,
   getUserAnswerHistories,
@@ -51,36 +50,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const answersWithHistoryId = answersData.map((answer) => ({
-      ...answer,
-      historyId: history.id,
-    }));
+    const historyItemsData = questionsData.map((question, index) => {
+      const answer = answersData[index];
 
-    const userAnswers = await createAnswerHistory(answersWithHistoryId, tx);
+      return {
+        historyId: history.id,
+        questionId: question.questionId,
+        answer: answer.answer,
+      };
+    });
 
-    if (!userAnswers) {
-      return NextResponse.json(
-        {
-          status: 500,
-          message: "internal server error",
-        },
-        {
-          status: 500,
-        },
-      );
-    }
+    const historyItems = await createHistoryItems(historyItemsData, tx);
 
-    const questionsWithHistoryId = questionsData.map((q) => ({
-      ...q,
-      historyId: history.id,
-    }));
-
-    const questionsHistory = await createQuestionsHistory(
-      questionsWithHistoryId,
-      tx,
-    );
-
-    if (!questionsHistory) {
+    if (!historyItems) {
       return NextResponse.json(
         {
           status: 500,
@@ -121,12 +103,8 @@ export async function GET(req: NextRequest) {
   const page = searchParams.get("page");
   const userId = await auth();
 
-  if (historyId && documentId) {
-    const userAnswers = await getUserAnswerHistory(
-      documentId,
-      historyId,
-      userId!.user.id,
-    );
+  if (historyId) {
+    const userAnswers = await getUserAnswerHistory(historyId, userId!.user.id);
 
     if (!userAnswers) {
       return NextResponse.json(

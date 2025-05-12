@@ -88,7 +88,6 @@ const historySchema = z.object({
 
 const answerHistorySchema = z.object({
   answer: z.string().min(1),
-  userId: z.string().min(1),
   historyId: z.string().optional(),
 });
 
@@ -97,8 +96,15 @@ const questionHistorySchema = z.object({
   historyId: z.string().optional(),
 });
 
+export const createHistoryItemSchema = z.object({
+  historyId: z.string().min(1).max(40),
+  questionId: z.string().min(1).max(40),
+  answer: z.string(),
+});
+
 const answerHistoriesSchema = z.array(answerHistorySchema).min(1);
 const questionsHistorySchema = z.array(questionHistorySchema).min(1);
+const createHistoriesItemsSchema = z.array(createHistoryItemSchema).min(1); // eslint-disable-line @typescript-eslint/no-unused-vars
 
 export const uploadHistorySchema = z.object({
   history: historySchema,
@@ -113,3 +119,6 @@ export type TTestTypeEnum = z.infer<typeof testTypeEnum>;
 export type THistorySchema = z.infer<typeof historySchema>;
 export type TAnswerHistoriesSchema = z.infer<typeof answerHistoriesSchema>;
 export type TQuestionsHistorySchema = z.infer<typeof questionsHistorySchema>;
+export type TCreateHistoryItemsSchema = z.infer<
+  typeof createHistoriesItemsSchema
+>;

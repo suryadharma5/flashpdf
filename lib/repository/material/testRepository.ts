@@ -1,9 +1,8 @@
 import { prismaClient } from "@/lib/db";
 import { PrismaTransaction } from "@/lib/repository/auth/tokenRepository";
 import {
-  TAnswerHistoriesSchema,
+  TCreateHistoryItemsSchema,
   THistorySchema,
-  TQuestionsHistorySchema,
 } from "@/lib/types/question-form";
 
 export const createTestHistory = async (
@@ -23,45 +22,20 @@ export const createTestHistory = async (
   return history;
 };
 
-export const createAnswerHistory = async (
-  request: TAnswerHistoriesSchema,
+export const createHistoryItems = async (
+  request: TCreateHistoryItemsSchema,
   tx?: PrismaTransaction,
 ) => {
   const prismaTx = tx || prismaClient;
 
-  const answerHistoryData = request.map((answer) => ({
-    answer: answer.answer,
-    userId: answer.userId,
-    historyId: answer.historyId!,
-  }));
-
-  const answerHistory = await prismaTx.answerHistory.createMany({
-    data: answerHistoryData,
+  const historyItems = await prismaTx.historyItems.createMany({
+    data: request,
   });
 
-  return answerHistory;
-};
-
-export const createQuestionsHistory = async (
-  request: TQuestionsHistorySchema,
-  tx?: PrismaTransaction,
-) => {
-  const prismaTx = tx || prismaClient;
-
-  const questionsHistoryData = request.map((question) => ({
-    questionId: question.questionId,
-    historyId: question.historyId!,
-  }));
-
-  const questionsHistory = await prismaTx.questionHistory.createMany({
-    data: questionsHistoryData,
-  });
-
-  return questionsHistory;
+  return historyItems;
 };
 
 export const getUserAnswerHistory = async (
-  documentId: string,
   historyId: string,
   userId: string,
   tx?: PrismaTransaction,
@@ -75,17 +49,14 @@ export const getUserAnswerHistory = async (
           id: historyId,
         },
         {
-          documentId: documentId,
-        },
-        {
           userId: userId,
         },
       ],
     },
     include: {
-      AnswerHistory: true,
-      QuestionHistory: {
+      HistoryItems: {
         select: {
+          answer: true,
           question: {
             select: {
               correctAnswer: true,

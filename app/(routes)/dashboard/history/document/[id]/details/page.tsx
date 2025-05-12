@@ -26,7 +26,7 @@ import {
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -56,6 +56,7 @@ type ParamsProps = {
 
 export default function HistoryDetailPage() {
   const t = useTranslations("history");
+  const locale = useLocale();
   const params: ParamsProps = useParams();
   const isMobile = useIsMobile();
 
@@ -116,9 +117,19 @@ export default function HistoryDetailPage() {
             </Button>
           </Link>
           <h1 className="text-3xl font-bold">
-            {data[0].document.title.charAt(0).toUpperCase() +
-              data[0].document.title.slice(1).toLowerCase()}{" "}
-            summary
+            {locale === "en" ? (
+              <p>
+                {data[0].document.title.charAt(0).toUpperCase() +
+                  data[0].document.title.slice(1).toLowerCase()}{" "}
+                summary
+              </p>
+            ) : (
+              <p>
+                Rangkuman{" "}
+                {data[0].document.title.charAt(0).toUpperCase() +
+                  data[0].document.title.slice(1).toLowerCase()}{" "}
+              </p>
+            )}
           </h1>
         </div>
         <Badge
