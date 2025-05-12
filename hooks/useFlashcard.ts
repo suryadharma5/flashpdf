@@ -2,6 +2,7 @@ import { axiosInstance } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 
 export type FlashCardDataProps = {
+  id: string;
   keyPoint: string;
   explanation: string;
 };
@@ -20,6 +21,7 @@ export const useFlashcard = (documentId: string) => {
 
   const flashcardsData: FlashCardDataProps[] =
     data?.data.flashcards.map((f: FlashCardDataProps) => ({
+      id: f.id,
       keyPoint: f.keyPoint,
       explanation: f.explanation,
     })) || [];
