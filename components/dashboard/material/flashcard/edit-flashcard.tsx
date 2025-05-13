@@ -23,7 +23,8 @@ import {
 } from "@/lib/types/question-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -55,6 +56,8 @@ export const EditFlashcardDialog = ({
     defaultValues: defaultValues,
   });
 
+  const t = useTranslations("flashcard");
+
   const onSubmit = (data: TEditFlashcardSchema) => {
     console.log(data);
     if (Object.keys(form.formState.dirtyFields).length === 0) {
@@ -85,11 +88,11 @@ export const EditFlashcardDialog = ({
     onSuccess: (res) => {
       setKeyPoint(res.keyPoint);
       setExplanation(res.explanation);
-      toast.success("Flashcard updated successfully");
+      toast.success(t("updateFlashcardSuccess"));
       setIsEditDialogOpen(false);
     },
     onError: () => {
-      toast.error(`Error updating flashcard`);
+      toast.error(t("updateFlashcardError"));
     },
   });
 
@@ -114,9 +117,9 @@ export const EditFlashcardDialog = ({
               name="keyPoint"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Poin Utama</FormLabel>
+                  <FormLabel>{t("keypointLabel")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Masukkan poin utama" {...field} />
+                    <Input placeholder={t("keypointPlaceHolder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -128,11 +131,11 @@ export const EditFlashcardDialog = ({
               name="explanation"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Penjelasan</FormLabel>
+                  <FormLabel>{t("explanationLabel")}</FormLabel>
                   <FormControl>
                     <Textarea
                       rows={5}
-                      placeholder="Masukkan penjelasan"
+                      placeholder={t("explanationPlaceHolder")}
                       {...field}
                     />
                   </FormControl>
@@ -144,8 +147,7 @@ export const EditFlashcardDialog = ({
             <div className="flex items-center space-x-2 rounded-lg border border-amber-200 bg-amber-50 p-2">
               <AlertCircle className="h-5 w-5 text-amber-800" />
               <small className="text-xs text-amber-800">
-                Perubahan pada flashcard ini juga akan terlihat oleh pengguna
-                lain yang sudah menyimpannya.
+                {t("alertEditFlashcard")}
               </small>
             </div>
 
@@ -155,7 +157,7 @@ export const EditFlashcardDialog = ({
                 type="button"
                 onClick={() => setIsEditDialogOpen(false)}
               >
-                Batal
+                {t("cancelBtn")}
               </Button>
               <Button
                 type="submit"
@@ -163,7 +165,11 @@ export const EditFlashcardDialog = ({
                   !form.formState.isDirty || updateFlashcardMutation.isPending
                 }
               >
-                Simpan
+                {updateFlashcardMutation.isPending ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  t("saveBtn")
+                )}
               </Button>
             </DialogFooter>
           </form>

@@ -60,12 +60,12 @@ export const Flashcard = ({
       );
     },
     onSuccess: () => {
-      toast.success("Flashcard deleted successfully");
+      toast.success(t("deleteFlashcardSuccess"));
       window.location.reload();
       setIsDeleteDialogOpen(false);
     },
     onError: () => {
-      toast.error("Failed to delete flashcard");
+      toast.error(t("deleteFlashcardError"));
     },
   });
   return (
@@ -172,8 +172,8 @@ export const Flashcard = ({
       />
 
       <Alert
-        title="Apakah Anda yakin?"
-        description="Flashcard akan dihapus permanen dan tidak bisa dikembalikan. Apakah Anda yakin ingin melanjutkan?"
+        title={t("alertDeleteConfirmation")}
+        description={t("alertDeleteMessage")}
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         onSubmit={() => {
