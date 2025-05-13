@@ -60,7 +60,8 @@
     "alertContinue": "Continue",
     "alertFailed": "Failed to create flashcard, please try again!",
     "alertSuccess": "Flashcard created, redirecting to pretest!",
-    "placeHolderNumberOfFlashcard": "Create between 10 – 50 flashcards"
+    "placeHolderNumberOfFlashcard": "Create between 10 – 50 flashcards",
+    "loadingText": "AI's cooking something up for you"
   },
   "myFlashcard": {
     "title": "My Flashcards",
@@ -103,7 +104,20 @@
     "nextBtn": "Next",
     "prevBtn": "Previous",
     "askAi": "Ask AI",
-    "placeHolderAiInput": "Ask me anything!"
+    "placeHolderAiInput": "Ask me anything!",
+    "deleteFlashcardSuccess": "Flashcard deleted successfully",
+    "deleteFlashcardError": "Failed to delete flashcard, please try again!",
+    "alertDeleteConfirmation": "Are you sure?",
+    "alertDeleteMessage": "The flashcard will be permanently deleted and cannot be restored. Are you sure you want to proceed?",
+    "updateFlashcardSuccess": "Flashcard updated successfully",
+    "updateFlashcardError": "Failed to update flashcard, please try again!",
+    "keypointLabel": "Key Point",
+    "keypointPlaceHolder": "Input key point",
+    "explanationLabel": "Explanation",
+    "explanationPlaceHolder": "Input explanation",
+    "alertEditFlashcard": "Changes to this flashcard will also be visible to other users who have already saved it.",
+    "cancelBtn": "Cancel",
+    "saveBtn": "Save"
   },
   "test": {
     "question": "questions",

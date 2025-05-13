@@ -161,7 +161,7 @@ export default function CreatePage() {
   });
 
   if (createQuestionMutation.isPending) {
-    return <LoadingPage text="AI's cooking something up for you" />;
+    return <LoadingPage text={t("loadingText")} />;
   }
 
   if (isError) {

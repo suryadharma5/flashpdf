@@ -60,7 +60,8 @@
     "alertContinue": "Lanjutkan",
     "alertFailed": "Gagal membuat flashcard, silakan coba lagi!",
     "alertSuccess": "Flashcard berhasil dibuat, mengalihkan ke pretest!",
-    "placeHolderNumberOfFlashcard": "Buat antara 10 – 50 flashcard"
+    "placeHolderNumberOfFlashcard": "Buat antara 10 – 50 flashcard",
+    "loadingText": "AI sedang menyiapkan sesuatu untukmu"
   },
   "myFlashcard": {
     "title": "Flashcard Saya",
@@ -103,7 +104,20 @@
     "nextBtn": "Berikutnya",
     "prevBtn": "Sebelumnya",
     "askAi": "Tanya AI",
-    "placeHolderAiInput": "Tanyakan apa saja!"
+    "placeHolderAiInput": "Tanyakan apa saja!",
+    "deleteFlashcardSuccess": "Flashcard berhasil dihapus",
+    "deleteFlashcardError": "Gagal menghapus flashcard, silakan coba lagi!",
+    "alertDeleteConfirmation": "Apakah Anda yakin?",
+    "alertDeleteMessage": "Flashcard akan dihapus secara permanen dan tidak dapat dikembalikan. Apakah Anda yakin ingin melanjutkan?",
+    "updateFlashcardSuccess": "Flashcard berhasil diperbarui",
+    "updateFlashcardError": "Gagal memperbarui flashcard, silakan coba lagi!",
+    "keypointLabel": "Poin Utama",
+    "keypointPlaceHolder": "Masukkan poin utama",
+    "explanationLabel": "Penjelasan",
+    "explanationPlaceHolder": "Masukkan penjelasan",
+    "alertEditFlashcard": "Perubahan pada flashcard ini juga akan terlihat oleh pengguna lain yang sudah menyimpannya.",
+    "cancelBtn": "Batal",
+    "saveBtn": "Simpan"
   },
   "test": {
     "question": "pertanyaan",
