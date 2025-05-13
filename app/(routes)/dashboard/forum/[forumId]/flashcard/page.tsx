@@ -179,6 +179,7 @@ export default function ForumPreview() {
         nextCard={nextCard}
         prevCard={prevCard}
         questions={flashcardsData}
+        isEditable={false}
       />
     </div>
   );

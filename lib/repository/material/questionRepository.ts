@@ -165,6 +165,7 @@ export const getFlashcardsData = async (documentId: string) => {
     include: {
       flashcards: {
         select: {
+          id: true,
           keyPoint: true,
           explanation: true,
         },
@@ -418,4 +419,36 @@ export const deleteDocument = async (documentId: string, userId: string) => {
     status: 200,
     data: deletedDocument,
   };
+};
+
+export const updateFlashcard = async (
+  id: string,
+  changes: Partial<{ keyPoint: string; explanation: string }>,
+) => {
+  const updatedFlashcard = await prismaClient.flashcard.update({
+    where: {
+      id: id,
+    },
+    data: changes,
+  });
+
+  if (!updatedFlashcard) {
+    return null;
+  }
+
+  return updatedFlashcard;
+};
+
+export const deleteFlashcard = async (id: string) => {
+  const deletedFlashcard = await prismaClient.flashcard.delete({
+    where: {
+      id: id,
+    },
+  });
+
+  if (!deletedFlashcard) {
+    return null;
+  }
+
+  return deletedFlashcard;
 };

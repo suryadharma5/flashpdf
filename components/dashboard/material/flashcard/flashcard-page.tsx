@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useFlashcard } from "@/hooks/useFlashcard";
 import { axiosInstance } from "@/lib/axios";
 import { cn } from "@/lib/utils";
@@ -28,7 +29,7 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
 
   const isMobile = useIsMobile();
 
-  const { flashcardsData, isError, isLoading, error, namespace } =
+  const { flashcardsData, isError, isLoading, error, namespace, userId } =
     useFlashcard(id);
 
   const {
@@ -43,8 +44,6 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
       return res.data.data;
     },
   });
-
-  console.log({ data });
 
   const {
     messages,
@@ -67,6 +66,8 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
   });
 
   const flipCard = () => setIsFlipped(!isFlipped);
+  const user = useCurrentUser();
+  const isEditable = user?.id === userId;
 
   const nextCard = useCallback(() => {
     setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcardsData.length);
@@ -142,6 +143,7 @@ const FlashcardPage = ({ id }: FlashcardProps) => {
             nextCard={nextCard}
             prevCard={prevCard}
             questions={flashcardsData}
+            isEditable={isEditable}
           />
         </TabsContent>
 

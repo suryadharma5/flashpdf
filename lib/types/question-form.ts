@@ -112,6 +112,11 @@ export const uploadHistorySchema = z.object({
   questions: questionsHistorySchema,
 });
 
+export const editFlashcardSchema = z.object({
+  keyPoint: z.string().min(1, "Key point must be filled").optional(),
+  explanation: z.string().min(1, "Explanation must be filled").optional(),
+});
+
 export type TQuestionFormSchema = z.infer<typeof questionFormSchema>;
 export type TDocumentSchema = z.infer<typeof documentSchema>;
 export type TUploadHistorySchema = z.infer<typeof uploadHistorySchema>;
@@ -122,3 +127,4 @@ export type TQuestionsHistorySchema = z.infer<typeof questionsHistorySchema>;
 export type TCreateHistoryItemsSchema = z.infer<
   typeof createHistoriesItemsSchema
 >;
+export type TEditFlashcardSchema = z.infer<typeof editFlashcardSchema>;
