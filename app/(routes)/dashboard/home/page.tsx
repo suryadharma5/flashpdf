@@ -89,8 +89,6 @@ export default function HomePage() {
     },
   });
 
-  console.log(userFlashcard?._count, "ini dia");
-
   const isPostTestComplete = (histories: HistoryProps[]) =>
     histories.some((history) => history.type.toLowerCase() === "posttest");
 
