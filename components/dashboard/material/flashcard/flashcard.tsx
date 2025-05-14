@@ -34,7 +34,7 @@ export const Flashcard = ({
   questions,
   isEditable,
 }: FlashcardProps) => {
-  let currentCard = questions[currentCardIndex];
+  const currentCard = questions[currentCardIndex];
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -75,8 +75,8 @@ export const Flashcard = ({
   });
 
   useEffect(() => {
-    setKeyPoint((prev) => (prev = currentCard.keyPoint));
-    setExplanation((prev) => (prev = currentCard.explanation));
+    setKeyPoint((prev) => (prev = currentCard.keyPoint)); // eslint-disable-line @typescript-eslint/no-unused-vars
+    setExplanation((prev) => (prev = currentCard.explanation)); // eslint-disable-line @typescript-eslint/no-unused-vars
   }, [nextCard, prevCard]);
 
   return (
