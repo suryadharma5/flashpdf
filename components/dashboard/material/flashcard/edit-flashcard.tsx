@@ -22,7 +22,7 @@ import {
   TEditFlashcardSchema,
 } from "@/lib/types/question-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
@@ -57,6 +57,7 @@ export const EditFlashcardDialog = ({
   });
 
   const t = useTranslations("flashcard");
+  const queryClient = useQueryClient();
 
   const onSubmit = (data: TEditFlashcardSchema) => {
     console.log(data);
@@ -88,7 +89,19 @@ export const EditFlashcardDialog = ({
     onSuccess: (res) => {
       setKeyPoint(res.keyPoint);
       setExplanation(res.explanation);
-      toast.success(t("updateFlashcardSuccess"));
+
+      queryClient.invalidateQueries({
+        queryKey: ["fetchFlashcardData"],
+      });
+
+      toast.success(t("updateFlashcardSuccess"), {
+        duration: 3000,
+        cancel: {
+          label: "close",
+          onClick: () => console.log("Close"),
+        },
+      });
+
       setIsEditDialogOpen(false);
     },
     onError: () => {

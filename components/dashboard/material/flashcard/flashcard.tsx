@@ -9,7 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Edit, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { EditFlashcardDialog } from "./edit-flashcard";
 
@@ -34,7 +34,7 @@ export const Flashcard = ({
   questions,
   isEditable,
 }: FlashcardProps) => {
-  const currentCard = questions[currentCardIndex];
+  let currentCard = questions[currentCardIndex];
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -60,7 +60,12 @@ export const Flashcard = ({
       );
     },
     onSuccess: () => {
-      toast.success(t("deleteFlashcardSuccess"));
+      toast.success(t("deleteFlashcardSuccess"), {
+        cancel: {
+          label: "Close",
+          onClick: () => console.log("Action!"),
+        },
+      });
       window.location.reload();
       setIsDeleteDialogOpen(false);
     },
@@ -68,6 +73,12 @@ export const Flashcard = ({
       toast.error(t("deleteFlashcardError"));
     },
   });
+
+  useEffect(() => {
+    setKeyPoint((prev) => (prev = currentCard.keyPoint));
+    setExplanation((prev) => (prev = currentCard.explanation));
+  }, [nextCard, prevCard]);
+
   return (
     <>
       <Card className="w-full max-w-4xl border-0 bg-white shadow-none">
