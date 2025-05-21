@@ -1,5 +1,10 @@
+"use client";
+
+import { useIsMobile } from "@/hooks/use-mobile";
+import GuidanceImg from "@/public/guidance.svg";
+import { motion } from "framer-motion";
 import Image from "next/image";
-import PlaceHolderImage from "@/public/placeholder.svg";
+import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 
 export default function Guidance() {
@@ -26,21 +31,48 @@ export default function Guidance() {
     },
   ];
 
+  const router = useRouter();
+  const isMobile = useIsMobile();
+
   return (
     <>
-      <div className="mt-16" id="how-it-works">
-        <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-12">
-          How FlashAI Works
-        </h2>
-        <div className="flex flex-col md:flex-row gap-8 items-center md:justify-between">
+      <div id="how-it-works" className={isMobile ? "mt-32" : "mt-60"}>
+        <motion.div
+          initial={{ opacity: 0, x: 0 }}
+          whileInView={{ opacity: 1, x: 0, scale: 1.02 }}
+          transition={{
+            duration: 0.5,
+            ease: "easeOut",
+            delay: 0.2,
+          }}
+          viewport={{ once: true, amount: 0.5 }}
+          className="mb-16 text-center"
+        >
+          <h2 className="mb-4 text-3xl font-bold text-gray-900 dark:text-gray-100 md:text-4xl">
+            How FlashAI Works
+          </h2>
+          <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
+            FlashAI transforms study materials into effective learning tools
+            with personalized flashcards, quizzes, and review sessions. .
+          </p>
+        </motion.div>
+        <div className="flex flex-col items-center gap-8 md:flex-row md:justify-between">
           <div className="space-y-4">
             {items.map((item, idx) => (
-              <div
+              <motion.div
                 key={idx}
-                className="flex items-start hover:scale-105 transition"
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0, scale: 1.02 }}
+                transition={{
+                  duration: 0.5,
+                  ease: "easeOut",
+                  delay: idx * 0.1,
+                }}
+                viewport={{ once: true }}
+                className="flex items-start"
               >
                 <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center h-12 w-12 rounded-md bg-black text-white">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-md bg-black text-white">
                     {idx + 1}
                   </div>
                 </div>
@@ -50,13 +82,13 @@ export default function Guidance() {
                   </h3>
                   <p className="mt-1 text-sm text-gray-500">{item.subtitle}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
           {/* end */}
           <div className="mt-10 md:mt-0">
             <Image
-              src={PlaceHolderImage}
+              src={GuidanceImg}
               alt="Visual guide on how to use FlashAI"
               width={300}
               height={300}
@@ -65,28 +97,14 @@ export default function Guidance() {
           </div>
         </div>
       </div>
-      <div className="mt-16 text-center">
+      <div className="mt-20 text-center">
         <h2 className="text-3xl font-extrabold text-gray-900">
           Ready to revolutionize your study method?
         </h2>
         <div className="mt-8">
           <Button
-            className="
-            px-8
-            py-3
-            border
-            border-transparent
-            text-base
-            font-medium
-            rounded-md
-            text-white
-            bg-black
-            hover:bg-gray-800
-            md:py-4
-            md:text-lg
-            md:px-10
-            hover:scale-110
-            transition"
+            className="rounded-md border border-transparent bg-black px-8 py-3 text-base font-medium text-white transition hover:scale-110 hover:bg-gray-800 md:px-10 md:py-4 md:text-lg"
+            onClick={() => router.push("/sign-in")}
           >
             Start Creating Flashcards
           </Button>

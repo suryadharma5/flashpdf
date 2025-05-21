@@ -1,0 +1,390 @@
+"use client";
+
+import ErrorPage from "@/components/dashboard/error";
+import { ForumProps } from "@/components/dashboard/forum/comment";
+import { LoadingPage } from "@/components/dashboard/loading";
+import { SkeletonCard } from "@/components/dashboard/skeleton-card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { axiosInstance } from "@/lib/axios";
+import { categoryColors } from "@/lib/util/category";
+import { cn } from "@/lib/utils";
+import { Forum, Question } from "@prisma/client";
+import { useQuery } from "@tanstack/react-query";
+import { formatDistanceToNowStrict } from "date-fns";
+import { enUS, id } from "date-fns/locale";
+import { BookOpen, Clock9, Flame, Heart, Trophy } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
+import { Suspense } from "react";
+
+type HistoryProps = {
+  type: string;
+};
+
+type DocumentProps = {
+  id: string;
+  createdAt: string;
+  title: string;
+  isPublic: boolean;
+  questions: Question[];
+  History: HistoryProps[];
+  Forum: Forum[];
+  Category?: {
+    name: string;
+  };
+};
+
+type UserFlashcardCountProps = {
+  _count: number;
+};
+
+export default function HomePage() {
+  const user = useCurrentUser();
+
+  const username = user ? (user.username ?? user.name ?? "Guest") : "Guest";
+
+  const isMobile = useIsMobile();
+  const t = useTranslations("home");
+  const locale = useLocale();
+  const dateFnsLocale = locale === "id" ? id : enUS;
+
+  const {
+    data: posts,
+    isError,
+    isPending: isForumPending,
+  } = useQuery({
+    queryKey: ["fetchDashboardForum"],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/api/forum?limit=3");
+      return res.data.data as ForumProps[];
+    },
+  });
+
+  const {
+    data: documents,
+    isError: isDocumentError,
+    isPending: isDocumentPending,
+  } = useQuery({
+    queryKey: ["fetchDashboardDocument"],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/api/material?limit=3");
+      return res.data.data as DocumentProps[];
+    },
+  });
+
+  const {
+    data: userFlashcard,
+    isError: userFlashcardError,
+    isPending: userFlashcardPending,
+  } = useQuery({
+    queryKey: ["fetchUserFlashcard"],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/api/progress?type=userFlashcards");
+      return res.data.data as UserFlashcardCountProps;
+    },
+  });
+
+  const isPostTestComplete = (histories: HistoryProps[]) =>
+    histories.some((history) => history.type.toLowerCase() === "posttest");
+
+  const timeOfDay = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return t("time1");
+    if (hour < 18) return t("time2");
+    return t("time3");
+  };
+
+  if (isError || isDocumentError || userFlashcardError) {
+    return <ErrorPage />;
+  }
+
+  return (
+    <Suspense fallback={<LoadingPage />}>
+      <main
+        className={cn(
+          "flex-1 overflow-y-auto overflow-x-hidden",
+          isMobile && "mb-20",
+        )}
+      >
+        <div className="mx-auto px-4 py-8 xl:max-w-5xl">
+          <div className="space-y-10">
+            <div className="mx-auto">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                {/* Welcome Card */}
+                <Card className="col-span-1 border border-gray-100 bg-gradient-to-br from-gray-50 to-white p-6 shadow-sm md:col-span-2">
+                  <div className="flex h-full flex-col justify-between">
+                    <div>
+                      <h1 className="text-2xl font-medium text-gray-900">
+                        {t("introduction")} {timeOfDay()},{" "}
+                        <span className="font-bold">{username}</span>
+                      </h1>
+                      <p className="mt-2 text-muted-foreground">
+                        {t("welcomeDesc")}
+                      </p>
+                    </div>
+
+                    <div className="mt-6 flex flex-wrap gap-3">
+                      <Link href="/dashboard/material/create">
+                        <Button
+                          className="bg-black text-white hover:bg-gray-800"
+                          size="lg"
+                        >
+                          {t("buttonCreate")}
+                        </Button>
+                      </Link>
+                      <Link href="/dashboard/material/library">
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          className="border-gray-200"
+                        >
+                          {t("buttonContinue")}
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="border border-gray-100 p-6 shadow-sm">
+                  <h2 className="mb-4 text-sm font-medium uppercase tracking-wider text-gray-500">
+                    {t("progressTitle")}
+                  </h2>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center">
+                      <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-purple-100">
+                        <BookOpen className="h-5 w-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">
+                          {t("progressCard")}
+                        </p>
+                        <p className="text-xl font-semibold">
+                          {userFlashcardPending ? 0 : userFlashcard?._count}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center">
+                      <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+                        <Trophy className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">
+                          {t("progressLongestStreak")}
+                        </p>
+                        <p className="text-xl font-semibold">
+                          {user?.longestStreak}{" "}
+                          {t("progressDay", {
+                            count: user?.longestStreak || 0,
+                          })}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center">
+                      <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-amber-100">
+                        <Flame className="h-5 w-5 text-amber-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">
+                          {t("progressStreak")}
+                        </p>
+                        <p className="text-xl font-semibold">
+                          {user?.streak ?? 0}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-xl font-semibold">
+                  {t("sectionRecentTitle")}
+                </h2>
+                <Link href="/dashboard/material/library">
+                  <Button
+                    variant="link"
+                    className="text-gray-600 hover:text-black"
+                  >
+                    {t("expandSection")}
+                  </Button>
+                </Link>
+              </div>
+              {isDocumentPending ? (
+                <div
+                  className={`grid w-full md:grid-cols-2 lg:grid-cols-3 ${isMobile ? "gap-4" : "gap-6"}`}
+                >
+                  {[...Array(3)].map((_, index) => (
+                    <SkeletonCard key={index} />
+                  ))}
+                </div>
+              ) : (
+                documents &&
+                (documents.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+                    {documents?.map((doc) => (
+                      <Card key={doc.id}>
+                        <CardHeader>
+                          <Badge
+                            variant={"default"}
+                            className={`mb-1 w-fit border-2 ${categoryColors[doc.Category!.name] || "border-green-400"}`}
+                          >
+                            {doc?.Category?.name.replace(
+                              doc?.Category?.name.charAt(0),
+                              doc?.Category?.name.charAt(0).toUpperCase(),
+                            ) || "Uncategorized"}
+                          </Badge>
+                          <CardTitle className="text-lg">{doc.title}</CardTitle>
+                          <div className="mt-2 flex items-center gap-1 text-muted-foreground">
+                            <Clock9 size={15} />
+                            <p className="text-xs">
+                              {formatDistanceToNowStrict(doc.createdAt, {
+                                locale: dateFnsLocale,
+                                addSuffix: true,
+                              })}
+                            </p>
+                          </div>
+                        </CardHeader>
+                        <CardFooter className="flex items-center justify-between">
+                          <div className="flex w-full flex-col gap-2">
+                            <Link
+                              className="w-full"
+                              href={`/dashboard/material/library/document/${doc.id}/flashcard`}
+                            >
+                              <Button
+                                size="sm"
+                                className="w-full"
+                                disabled={doc.History.length <= 0}
+                              >
+                                {t("viewFlashcardBtn")}
+                              </Button>
+                            </Link>
+                            {doc.History.length > 0 ? (
+                              <Link
+                                href={`/dashboard/material/library/document/${doc.id}/posttest`}
+                                className="w-full"
+                              >
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="w-full"
+                                >
+                                  {isPostTestComplete(doc.History)
+                                    ? t("retakePostTestBtn")
+                                    : t("takePostTestBtn")}
+                                </Button>
+                              </Link>
+                            ) : (
+                              <Link
+                                href={`/dashboard/material/library/document/${doc.id}/pretest`}
+                                className="w-full"
+                              >
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="w-full"
+                                >
+                                  {t("takePretestBtn")}
+                                </Button>
+                              </Link>
+                            )}
+                          </div>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <Card className="p-5 text-center text-muted-foreground">
+                    {t("noFlashcard")}
+                  </Card>
+                ))
+              )}
+            </div>
+
+            <div>
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-xl font-semibold">
+                  {t("sectionTrendingTitle")}
+                </h2>
+                <Link href={`/dashboard/forum`}>
+                  <Button
+                    variant="link"
+                    className="text-gray-600 hover:text-black"
+                  >
+                    {t("expandSection")}
+                  </Button>
+                </Link>
+              </div>
+              {isForumPending ? (
+                <div
+                  className={`grid w-full md:grid-cols-2 lg:grid-cols-3 ${isMobile ? "gap-4" : "gap-6"}`}
+                >
+                  {[...Array(3)].map((_, index) => (
+                    <SkeletonCard key={index} />
+                  ))}
+                </div>
+              ) : (
+                posts &&
+                (posts.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+                    {posts.map((post) => (
+                      <Card key={post.id}>
+                        <CardHeader>
+                          <Badge
+                            variant={"default"}
+                            className={`mb-1 w-fit ${categoryColors[post.document.Category?.name ?? "science"]}`}
+                          >
+                            {post.document?.Category?.name.replace(
+                              post.document.Category?.name.charAt(0),
+                              post.document.Category?.name
+                                .charAt(0)
+                                .toUpperCase(),
+                            ) || "Uncategorized"}
+                          </Badge>
+                          <CardTitle className="text-lg">
+                            {post.title}
+                          </CardTitle>
+                          <p className="text-sm text-muted-foreground">
+                            {t("trendDesc")} {post.user.username}
+                          </p>
+                        </CardHeader>
+                        <CardFooter className="flex items-center justify-between">
+                          <div className="flex items-center text-gray-600">
+                            <Heart
+                              className="mr-1 h-4 w-4"
+                              fill="#c20f10"
+                              color="#c20f10"
+                            />
+                            <span>{post.totalLike}</span>
+                          </div>
+                          <Link
+                            href={`/dashboard/forum/${post.documentId}/flashcard`}
+                          >
+                            <Button>{t("viewFlashcardBtn")}</Button>
+                          </Link>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <Card className="p-5 text-center text-muted-foreground">
+                    {t("noTrendingFlashcard")}
+                  </Card>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+    </Suspense>
+  );
+}

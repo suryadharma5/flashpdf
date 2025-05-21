@@ -1,0 +1,200 @@
+import { auth } from "@/auth";
+import { prismaClient } from "@/lib/db";
+import { updateUserStreak } from "@/lib/repository/auth/userRepository";
+import {
+  createHistoryItems,
+  createTestHistory,
+  getHistoriesTotalEntries,
+  getUserAnswerHistories,
+  getUserAnswerHistory,
+  getUserHistoriesByDocumentId,
+  getUserProgressHistory,
+} from "@/lib/repository/material/testRepository";
+import { uploadHistorySchema } from "@/lib/types/question-form";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function POST(req: NextRequest) {
+  const body = await req.json();
+
+  const validatedData = uploadHistorySchema.safeParse(body.data);
+
+  if (!validatedData.success) {
+    console.log(validatedData.error);
+    return NextResponse.json(
+      {
+        status: 400,
+        message: "Invalid field type",
+      },
+      {
+        status: 400,
+      },
+    );
+  }
+
+  const historyData = validatedData.data.history;
+  const answersData = validatedData.data.answers;
+  const questionsData = validatedData.data.questions;
+
+  const result = await prismaClient.$transaction(async (tx) => {
+    const history = await createTestHistory(historyData, tx);
+
+    if (!history) {
+      return NextResponse.json(
+        {
+          status: 500,
+          message: "internal server error",
+        },
+        {
+          status: 500,
+        },
+      );
+    }
+
+    const historyItemsData = questionsData.map((question, index) => {
+      const answer = answersData[index];
+
+      return {
+        historyId: history.id,
+        questionId: question.questionId,
+        answer: answer.answer,
+      };
+    });
+
+    const historyItems = await createHistoryItems(historyItemsData, tx);
+
+    if (!historyItems) {
+      return NextResponse.json(
+        {
+          status: 500,
+          message: "internal server error",
+        },
+        {
+          status: 500,
+        },
+      );
+    }
+
+    const session = await auth();
+    const userId = session?.user.id;
+
+    await updateUserStreak(userId);
+
+    return history;
+  });
+
+  return NextResponse.json(
+    {
+      status: 201,
+      message: "created",
+      data: result,
+    },
+    {
+      status: 201,
+    },
+  );
+}
+
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const documentId = searchParams.get("documentId");
+  const historyId = searchParams.get("historyId");
+  const type = searchParams.get("type");
+  const limit = searchParams.get("limit");
+  const page = searchParams.get("page");
+  const userId = await auth();
+
+  if (historyId) {
+    const userAnswers = await getUserAnswerHistory(historyId, userId!.user.id);
+
+    if (!userAnswers) {
+      return NextResponse.json(
+        {
+          status: 404,
+          message: "not found",
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        status: 200,
+        data: userAnswers,
+        message: "OK",
+      },
+      {
+        status: 200,
+      },
+    );
+  } else if (documentId) {
+    const histories = await getUserHistoriesByDocumentId(
+      documentId,
+      userId!.user.id,
+    );
+
+    const data = histories != null ? histories : [];
+
+    return NextResponse.json(
+      {
+        status: 200,
+        data: data,
+        message: "OK",
+      },
+      {
+        status: 200,
+      },
+    );
+  } else if (type === "progress") {
+    const histories = await getUserProgressHistory(userId!.user.id);
+    const data = histories != null ? histories : [];
+
+    return NextResponse.json(
+      {
+        status: 200,
+        data: data,
+        message: "OK",
+      },
+      {
+        status: 200,
+      },
+    );
+  } else {
+    const currPage = parseInt(page!) - 1 || 0;
+    const currLimit = parseInt(limit!) || 6;
+    const offset = currPage * currLimit;
+
+    const totalEntries = await getHistoriesTotalEntries(userId!.user.id);
+    const totalPages = Math.ceil(totalEntries / currLimit);
+    const hasNext = currPage + 1 < totalPages;
+    const hasPrev = currPage > 0;
+
+    const histories = await getUserAnswerHistories(
+      userId!.user.id,
+      currLimit,
+      offset,
+    );
+
+    console.log({ currLimit, offset });
+
+    const data = histories != null ? histories : [];
+
+    return NextResponse.json(
+      {
+        status: 200,
+        data: {
+          histories: data,
+          totalEntries,
+          totalPages,
+          hasNext,
+          hasPrev,
+        },
+        message: "OK",
+      },
+      {
+        status: 200,
+      },
+    );
+  }
+}

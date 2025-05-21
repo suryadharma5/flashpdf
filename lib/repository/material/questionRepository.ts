@@ -1,0 +1,454 @@
+import { prismaClient } from "@/lib/db";
+import { PrismaTransaction } from "@/lib/repository/auth/tokenRepository";
+import { TDocumentSchema } from "@/lib/types/question-form";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+
+// export async function processInBackground({
+//   document,
+//   documentTitle,
+//   numQuestions,
+//   documentId,
+// }: {
+//   document: File | null;
+//   documentTitle: string;
+//   numQuestions: string;
+//   documentId: string;
+// }) {
+//   try {
+//     const processedFile = await loadDocumentIntoPineCone(
+//       document,
+//       documentTitle,
+//     );
+
+//     if (!processedFile) throw new Error("Failed process file to pinecone");
+
+//     const { documents, namespaceId } = processedFile;
+
+//     const combinedText = documents
+//       .flatMap((doc) => doc.map((chunk) => chunk.pageContent))
+//       .join(" ");
+
+//     const { generatedMaterial, usage } = await createQuestion(
+//       combinedText,
+//       numQuestions,
+//     );
+
+//     console.log("Question creation usage:", usage);
+
+//     await prismaClient.document.update({
+//       where: {
+//         id: documentId,
+//       },
+//       data: {
+//         namespace: namespaceId,
+//         status: "done",
+//         questions: {
+//           create: generatedMaterial.questions.map((q) => ({
+//             question: q.question,
+//             correctAnswer: q.correctAnswer,
+//             options: {
+//               create: q.options.map((option) => ({ text: option })),
+//             },
+//           })),
+//         },
+//         flashcards: {
+//           create: generatedMaterial.flashcards.map((f) => ({
+//             keyPoint: f.keyPoint,
+//             explanation: f.explanation,
+//           })),
+//         },
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error processing document:", error);
+//     await prismaClient.document.update({
+//       where: { id: documentId },
+//       data: {
+//         status: "error",
+//       },
+//     });
+//   }
+// }
+
+export const createDocumentQuestion = async (
+  request: TDocumentSchema,
+  tx?: PrismaTransaction,
+) => {
+  const prismaTx = tx || prismaClient;
+
+  const docs = await prismaTx.document.create({
+    data: {
+      userId: request.userId,
+      title: request.title,
+      questions: {
+        create: request.questions.map((question) => ({
+          question: question.question,
+          correctAnswer: question.correctAnswer,
+          options: {
+            create: question.options.map((option) => ({
+              text: option.text,
+            })),
+          },
+        })),
+      },
+      flashcards: {
+        create: request.flashcards.map((flashcard) => ({
+          keyPoint: flashcard.keyPoint,
+          explanation: flashcard.explanation,
+        })),
+      },
+      namespace: request.namespace,
+      categoryId: request.category,
+    },
+  });
+
+  if (!docs) {
+    return null;
+  }
+
+  return docs;
+};
+
+export const getDocumentQuestion = async (documentId: string) => {
+  const document = await prismaClient.document.findUnique({
+    where: { id: documentId },
+    include: {
+      user: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  if (!document) {
+    return null;
+  }
+
+  // Get 10 ID pertanyaan acak
+  const randomQuestionIds = await prismaClient.$queryRaw<{ id: string }[]>`
+    SELECT id FROM "questions"
+    WHERE "studyMaterialId" = ${documentId}
+    ORDER BY RANDOM()
+    LIMIT 10
+  `;
+
+  const questionIds = randomQuestionIds.map((q) => q.id);
+
+  // Fetch pertanyaan lengkap
+  const questions = await prismaClient.question.findMany({
+    where: {
+      id: { in: questionIds },
+    },
+    include: {
+      options: true,
+    },
+  });
+
+  // Sort pertanyaan secara manual untuk mempertahankan urutan acak
+  const sortedQuestions = questionIds
+    .map((id) => questions.find((question) => question.id === id))
+    .filter(Boolean);
+
+  // Kembalikan dokumen dengan pertanyaan acak
+  return {
+    ...document,
+    questions: sortedQuestions,
+  };
+};
+
+export const getFlashcardsData = async (documentId: string) => {
+  const flashcardsData = await prismaClient.document.findUnique({
+    where: {
+      id: documentId!,
+    },
+    include: {
+      flashcards: {
+        select: {
+          id: true,
+          keyPoint: true,
+          explanation: true,
+        },
+      },
+      user: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  if (!flashcardsData) {
+    return null;
+  }
+
+  return flashcardsData;
+};
+
+export const getAllDocuments = async (userId: string) => {
+  const documents = await prismaClient.document.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      History: true,
+      questions: {
+        select: {
+          question: true,
+        },
+      },
+      Forum: {
+        select: {
+          id: true,
+        },
+      },
+      Category: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (!documents) {
+    return null;
+  }
+
+  return documents;
+};
+
+export const getDocumentTotalEntries = async (
+  userId: string,
+  query?: string,
+  category?: string,
+) => {
+  const whereCondition: any = {
+    userId: userId,
+  };
+
+  if (query && query.trim() !== "") {
+    whereCondition.title = {
+      contains: query,
+      mode: "insensitive" as const,
+    };
+  }
+
+  if (category && category.trim() !== "") {
+    whereCondition.Category = {
+      name: category,
+    };
+  }
+
+  const totalCount = await prismaClient.document.aggregate({
+    _count: {
+      id: true,
+    },
+    where: whereCondition,
+  });
+
+  return totalCount;
+};
+
+export const getPaginatedDocuments = async (
+  userId: string,
+  limit: number,
+  offset: number,
+  query?: string,
+  category?: string,
+) => {
+  const baseQuery = {
+    skip: offset,
+    take: limit,
+    include: {
+      History: true,
+      flashcards: {
+        select: {
+          id: true,
+        },
+      },
+      Forum: {
+        select: {
+          id: true,
+        },
+      },
+      Category: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  } as const;
+
+  const whereCondition: any = {
+    userId: userId,
+  };
+
+  if (query && query.trim() !== "") {
+    whereCondition.title = {
+      contains: query,
+      mode: "insensitive" as const,
+    };
+  }
+
+  if (category && category.trim() !== "") {
+    whereCondition.Category = {
+      name: category,
+    };
+  }
+
+  const documents = await prismaClient.document.findMany({
+    ...baseQuery,
+    where: whereCondition,
+  });
+
+  if (!documents) {
+    return null;
+  }
+
+  return documents;
+};
+
+export const getDocumentsByLimit = async (limit: number, userId: string) => {
+  const documents = await prismaClient.document.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      History: true,
+      questions: {
+        select: {
+          question: true,
+        },
+      },
+      Forum: {
+        select: {
+          id: true,
+        },
+      },
+      Category: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: limit,
+  });
+
+  if (!documents) {
+    return null;
+  }
+
+  return documents;
+};
+
+export const updateDocumentStatus = async (
+  id: string,
+  userId: string,
+  isPublic: boolean,
+  tx?: PrismaTransaction,
+) => {
+  const prismaTx = tx || prismaClient;
+
+  try {
+    await prismaTx.document.update({
+      where: {
+        id: id,
+        userId: userId,
+      },
+      data: {
+        isPublic: isPublic,
+      },
+    });
+
+    return {
+      success: true,
+      message: "success",
+    };
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        // Error: Record not found
+        return {
+          success: false,
+          message: "not found",
+        };
+      }
+    }
+
+    return {
+      success: false,
+      message: "something went wrong",
+    };
+  }
+};
+
+export const deleteDocument = async (documentId: string, userId: string) => {
+  const document = await getDocumentQuestion(documentId);
+
+  if (!document) {
+    return {
+      status: 404,
+      data: null,
+    };
+  }
+
+  const deletedDocument = await prismaClient.document.delete({
+    where: {
+      id: documentId,
+      userId,
+    },
+  });
+
+  if (!deletedDocument) {
+    return {
+      status: 500,
+      data: null,
+    };
+  }
+
+  return {
+    status: 200,
+    data: deletedDocument,
+  };
+};
+
+export const updateFlashcard = async (
+  id: string,
+  changes: Partial<{ keyPoint: string; explanation: string }>,
+) => {
+  const updatedFlashcard = await prismaClient.flashcard.update({
+    where: {
+      id: id,
+    },
+    data: changes,
+  });
+
+  if (!updatedFlashcard) {
+    return null;
+  }
+
+  return updatedFlashcard;
+};
+
+export const deleteFlashcard = async (id: string) => {
+  const deletedFlashcard = await prismaClient.flashcard.delete({
+    where: {
+      id: id,
+    },
+  });
+
+  if (!deletedFlashcard) {
+    return null;
+  }
+
+  return deletedFlashcard;
+};

@@ -1,0 +1,128 @@
+import { auth } from "@/auth";
+import { prismaClient } from "@/lib/db";
+import {
+  getChartData,
+  getDocumentHistories,
+} from "@/lib/repository/progress/progressRepository";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const documentId = searchParams.get("documentId");
+  const type = searchParams.get("type");
+
+  const session = await auth();
+  const userId = session?.user.id;
+
+  if (documentId) {
+    const document = await prismaClient.document.findUnique({
+      where: {
+        id: documentId,
+      },
+    });
+
+    if (!document) {
+      return NextResponse.json(
+        {
+          message: "not found",
+          status: 404,
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+
+    const histories = await prismaClient.history.findMany({
+      where: {
+        documentId,
+        userId: userId,
+      },
+      select: {
+        grade: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: "asc" },
+    });
+
+    return NextResponse.json(
+      {
+        message: "OK",
+        data: histories,
+        status: 200,
+      },
+      {
+        status: 200,
+      },
+    );
+  } else if (type === "documentHistories") {
+    const documentHistories = await getDocumentHistories(userId);
+
+    if (!documentHistories) {
+      return NextResponse.json(
+        {
+          message: "OK",
+          data: [],
+          status: 200,
+        },
+        {
+          status: 200,
+        },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        message: "OK",
+        data: documentHistories,
+        status: 200,
+      },
+      {
+        status: 200,
+      },
+    );
+  } else if (type === "userFlashcards") {
+    const flashcardData = await prismaClient.document.aggregate({
+      where: {
+        userId: userId,
+      },
+      _count: true,
+    });
+
+    if (!flashcardData) {
+      return NextResponse.json(
+        {
+          message: "OK",
+          data: [],
+          status: 200,
+        },
+        {
+          status: 200,
+        },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        message: "OK",
+        data: flashcardData,
+        status: 200,
+      },
+      {
+        status: 200,
+      },
+    );
+  }
+
+  const data = await getChartData(userId);
+  return NextResponse.json(
+    {
+      message: "OK",
+      data: data,
+      status: 200,
+    },
+    {
+      status: 200,
+    },
+  );
+}

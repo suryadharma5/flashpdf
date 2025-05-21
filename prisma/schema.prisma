@@ -1,0 +1,316 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// authentication
+model User {
+  id            String    @id @default(cuid()) @db.VarChar(40)
+  username      String?   @unique @db.VarChar(255)
+  name          String?   @db.VarChar(255)
+  password      String?   @db.VarChar(255)
+  email         String    @unique @db.VarChar(255)
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+
+  currentStreak    Int       @default(0)
+  longestStreak    Int       @default(0)
+  lastActivityDate DateTime?
+  streakUpdatedAt  DateTime?
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  Document      Document[]
+  History       History[]
+  AnswerHistory AnswerHistory[]
+  Chat          Chat[]
+  Forum         Forum[]
+  ForumLike     ForumLike[]
+  ForumComment  Comment[]
+  SavedDocument SavedDocument[]
+  Notes         Notes[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  id        String   @id @default(cuid()) @db.VarChar(40)
+  email     String   @unique @db.VarChar(255)
+  token     String   @unique
+  expiresAt DateTime
+
+  @@unique([email, token])
+  @@map("verification_token")
+}
+
+model Account {
+  userId            String  @db.VarChar(40)
+  type              String  @db.VarChar(255)
+  provider          String  @db.VarChar(255)
+  providerAccountId String
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@map("accounts")
+}
+
+// question generation
+model Document {
+  id         String      @id @default(cuid()) @db.VarChar(40)
+  title      String      @db.VarChar(255)
+  questions  Question[]
+  flashcards Flashcard[]
+  userId     String      @db.VarChar(40)
+  categoryId String      @db.VarChar(40)
+  namespace  String
+  isPublic   Boolean     @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  History       History[]
+  Chat          Chat[]
+  Forum         Forum[]
+  SavedDocument SavedDocument[]
+  Notes         Notes[]
+  Category      Category        @relation(fields: [categoryId], references: [id])
+
+  @@map("study_materials")
+}
+
+model Category {
+  id   String @id @default(cuid()) @db.VarChar(40)
+  name String @unique @db.VarChar(255)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document Document[]
+
+  @@map("categories")
+}
+
+model Question {
+  id            String   @id @default(cuid()) @db.VarChar(40)
+  question      String
+  correctAnswer String
+  options       Option[]
+  documentId    String   @map("studyMaterialId") @db.VarChar(40)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document        Document?         @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  QuestionHistory QuestionHistory[]
+  HistoryItems    HistoryItems[]
+
+  @@map("questions")
+}
+
+model Option {
+  id         String @id @default(cuid()) @db.VarChar(40)
+  text       String
+  questionId String @db.VarChar(40)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  question Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("options")
+}
+
+// Tambahkan model baru untuk flashcard
+model Flashcard {
+  id          String   @id @default(cuid()) @db.VarChar(40)
+  keyPoint    String
+  explanation String
+  documentId  String   @map("studyMaterialId") @db.VarChar(40)
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("flashcards")
+}
+
+enum TestType {
+  PRETEST
+  POSTTEST
+}
+
+model History {
+  id         String   @id @default(cuid()) @db.VarChar(40)
+  grade      Int
+  type       TestType
+  userId     String   @db.VarChar(40)
+  documentId String   @map("studyMaterialId") @db.VarChar(40)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document        Document          @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  AnswerHistory   AnswerHistory[]
+  QuestionHistory QuestionHistory[]
+  HistoryItems    HistoryItems[]
+
+  @@map("histories")
+}
+
+model AnswerHistory {
+  id        String @id @default(cuid()) @db.VarChar(40)
+  answer    String
+  userId    String @db.VarChar(40)
+  historyId String @db.VarChar(40)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  history History @relation(fields: [historyId], references: [id], onDelete: Cascade)
+
+  @@map("answer_histories")
+}
+
+model QuestionHistory {
+  id         String @id @default(cuid()) @db.VarChar(40)
+  historyId  String @db.VarChar(40)
+  questionId String @db.VarChar(40)
+
+  createdAt DateTime @default(now())
+
+  history  History  @relation(fields: [historyId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("questions_history")
+}
+
+model Chat {
+  id         String @id @default(cuid()) @db.VarChar(40)
+  messages   Json
+  documentId String @map("studyMaterialId") @db.VarChar(40)
+  userId     String @db.VarChar(40)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("chats")
+}
+
+model Forum {
+  id          String @id @default(cuid()) @db.VarChar(40)
+  title       String @db.VarChar(255)
+  description String
+  documentId  String @map("studyMaterialId") @db.VarChar(40)
+  userId      String @db.VarChar(40)
+  totalLike   Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes    ForumLike[]
+  comments Comment[]
+
+  @@map("forums")
+}
+
+model ForumLike {
+  id        String   @id @default(cuid()) @db.VarChar(40)
+  userId    String   @db.VarChar(40)
+  forumId   String   @db.VarChar(40)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  forum Forum @relation(fields: [forumId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([forumId, userId])
+  @@map("forum_likes")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  comment   String
+  forumId   String   @db.VarChar(40)
+  userId    String   @db.VarChar(40)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  forum Forum @relation(fields: [forumId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("forum_comments")
+}
+
+model SavedDocument {
+  id         String @id @default(cuid()) @db.VarChar(40)
+  userId     String @db.VarChar(40)
+  documentId String @map("studyMaterialId") @db.VarChar(40)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, documentId])
+  @@map("saved_study_materials")
+}
+
+model Notes {
+  id         String @id @default(cuid()) @db.VarChar(40)
+  userId     String @db.VarChar(40)
+  documentId String @map("studyMaterialId") @db.VarChar(40)
+  notes      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notes")
+}
+
+model HistoryItems {
+  id         String @id @default(cuid()) @db.VarChar(40)
+  historyId  String @db.VarChar(40)
+  questionId String @db.VarChar(40)
+  answer     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  history  History  @relation(fields: [historyId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("history_items")
+}
