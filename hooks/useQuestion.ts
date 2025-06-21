@@ -17,6 +17,7 @@ export const useQuestions = (documentId: string) => {
       );
       return res.data;
     },
+    refetchOnWindowFocus: false,
     enabled: !!documentId,
   });
 
