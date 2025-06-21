@@ -35,7 +35,7 @@
   "create": {
     "title": "Buat Flashcard",
     "warnTitle": "Penting",
-    "warnMessage": "Saat Anda membuat flashcard, pretest akan secara otomatis dibuat. Anda harus menyelesaikan pretest sebelum mengakses flashcard untuk membantu mempersonalisasi pengalaman belajar Anda.",
+    "warnMessage": "Saat Anda membuat flashcard, pretest akan otomatis dibuat dan harus diselesaikan terlebih dahulu untuk mempersonalisasi pengalaman belajar Anda, dan pastikan file yang diunggah berisi teks agar sistem dapat memproses dengan benar.",
     "formTitle": "Detail Flashcard",
     "formDescription": "Masukkan informasi untuk flashcard baru Anda",
     "formDocTitle": "Judul Flashcard",

@@ -35,7 +35,7 @@
   "create": {
     "title": "Create New Flashcard",
     "warnTitle": "Important",
-    "warnMessage": "When you create a flashcard, a pretest will be automatically generated. You'll need to complete the pretest before accessing the flashcards to help personalize your learning experience.",
+    "warnMessage": "When you create a flashcard, a pretest will be automatically generated and must be completed first to personalize your learning experience, and please make sure the uploaded file contains text so the system can process it properly.",
     "formTitle": "Flashcard Details",
     "formDescription": "Enter the information for your new flashcard",
     "formDocTitle": "Flashcard Title",
