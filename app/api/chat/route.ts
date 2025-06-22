@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { getContext, getMatchScore } from "@/lib/pinecone";
+import { getContext } from "@/lib/pinecone";
 import { getChats, saveChat } from "@/lib/repository/chat/chatRepository";
 import {
   getMostRecentUserMessage,
@@ -32,10 +32,18 @@ START CONTEXT BLOCK
 {{context}}
 END OF CONTEXT BLOCK
 
+Conversation History:
+{{chat_history}}
+
+User's Current Question:
+{{current_question}}
+
 Remember:
 - If context is empty and question is about specific information, ALWAYS respond with the "cannot find answer" message
 - Only answer specific questions if there is actual context provided
 - Always match the language of the user's question
+- If the user's current question is vague, such as "jelaskan lebih lanjut", "maksudnya?", "kok bisa?", or "why?", assume it is a follow-up to the previous message in the conversation history
+- In follow-up cases, you may use the previous question and answer to clarify meaning — but still only use information provided in the context block
 `;
 
 export async function POST(req: NextRequest) {
@@ -54,16 +62,6 @@ export async function POST(req: NextRequest) {
 
   enhancedQuery = query ?? "";
 
-  if (lastQuestion) {
-    const matchScore = await getMatchScore(lastQuestion, namespace);
-
-    if (matchScore !== "") {
-      enhancedQuery = `${lastQuestion} | ${query}`;
-    } else {
-      enhancedQuery = query ?? "";
-    }
-  }
-
   if (!userMessage) {
     return NextResponse.json(
       {
@@ -78,7 +76,9 @@ export async function POST(req: NextRequest) {
 
   const context = await getContext(enhancedQuery, namespace);
 
-  const prompt = SYSTEM_PROMPT.replace("{{context}}", context);
+  const prompt = SYSTEM_PROMPT.replace("{{context}}", context)
+    .replace("{{chat_history}}", lastQuestion || "")
+    .replace("{{current_question}}", query || "");
 
   return createDataStreamResponse({
     execute: async (dataStream) => {
