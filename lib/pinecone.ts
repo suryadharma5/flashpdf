@@ -124,15 +124,20 @@ export async function getContext(query: string, namespace: string) {
     console.log(`Match score: ${match.score}`);
   });
 
-  const qualifiedMatches = matches.filter(
-    (match) => match.score && match.score > 0.4,
+  var qualifiedMatches = matches.filter(
+    (match) => match.score && match.score >= 0.4,
   );
+
+  if (qualifiedMatches.length === 0) {
+    console.log("Qualified matches not found");
+    qualifiedMatches = matches.slice(0, 2);
+  }
 
   const docs = qualifiedMatches.map(
     (match) => (match.metadata as MetaData).text,
   );
 
-  return docs.join("\n").substring(0, 2000);
+  return docs.join("\n");
 }
 
 export async function getMatchScore(query: string, namespace: string) {
